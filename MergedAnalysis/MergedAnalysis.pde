@@ -239,7 +239,7 @@ void setup(){
           }          
         }
         if (sortprob==0.5){
-          sum05 += sortint;
+          sum05a += sortint;
           if (lr==1 && sortint==1){
             left05a = left05a +1;
           }

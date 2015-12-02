@@ -66,8 +66,6 @@ int maxdirectory;
 ColourTable colourtable1; 
 
 
-//intList p01;
-
 
 
 
@@ -143,7 +141,6 @@ void setup(){
   float rightorwrong[] = new float[rowsn.length];
   float colordata [] = new float [rowsn.length];
   float sizedata [] = new float [rowsn.length];
-  float data01 [] = new float [rowsn.length];
   for (TableRow row : table.rows()){
       while (i<rowsn.length-1&& i>=a){
        if ( i<b){
@@ -271,11 +268,8 @@ void setup(){
     lineChart.setData(new float[] {0.1, 0.25, 0.5, 0.75, 0.9},
                       new float[] {ratioleft01, ratioleft025, ratioleft05, ratioleft075, ratioleft09});
     lineChart.showXAxis(true);
-
     lineChart.showYAxis(true);
     lineChart.setMinY(0);
-
-    
     lineChart.setXAxisLabel("Left Trigger Probability");
     lineChart.setYAxisLabel("Test subject Left Trigger Probability");
     lineChart.setPointColour(color (140, 140, 255));
@@ -287,17 +281,13 @@ void setup(){
     scatterplot = new XYChart(this);
     scatterplot.setData(trials,rightorwrong);
     scatterplot.showXAxis(true);
-
     scatterplot.showYAxis(true);
     scatterplot.setMinY(-1);
     scatterplot.setMaxY(2);
-
-    
     scatterplot.setXAxisLabel("Trials");
     scatterplot.setYAxisLabel("Test subject Correct Inference");
     scatterplot.setPointColour(trialcnt, colourtable1);
     scatterplot.setPointSize(sizedata, 10);
-
     scatterplot.setLineWidth(2); 
     scatterplot.getRightSpacing();
   }
@@ -311,28 +301,25 @@ void draw(){
   //text(g+"min session",width/2,30);
   String ra1 = nf(ratioleft01,1,10);
   text(ra1+"ratio01",width/2,40);
-    text(filecount+"filecount",width/2,30);
-
-    if (switchkey==1){
-    lineChart.draw(15,15,width-30,height-30);
-    fill(255);
-    textSize(15);
-    text("Test Subject percentage of chosing left", CENTER, height-(height-15));
-    }
-    if (switchkey==2){
+  text(filecount+"filecount",width/2,30);
+  if (switchkey==1){
+  lineChart.draw(15,15,width-30,height-30);
+  fill(255);
+  textSize(15);
+  text("Test Subject percentage of chosing left", CENTER, height-(height-15));
+  }
+  if (switchkey==2){
     lineChart2.draw(15,15,width-30,height-30);
     text("Test Subject percentage of determining correct reward", CENTER, height-(height-15));
     }
-      if (switchkey==3){
+  if (switchkey==3){
     scatterplot.draw(15,15,width-30,height-30);
     text("Test Subject percentage of determining correct reward", CENTER, height-(height-15));
-    //}
   }
   
   
     }
  void keyPressed(){
-   //if (key==CODED){
      if (key=='1'){
        switchkey=1;
        loop();
