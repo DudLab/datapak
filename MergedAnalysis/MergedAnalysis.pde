@@ -208,165 +208,74 @@ void setup(){
 
         if(trialint>25){
           if (sortprob==0.1){
-          sum01a =sum01a + sortint;
-        
-          if (lr==1 && sortint==1){
-            left01a = left01a +1;
+            sum01a += sortint;          
+            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+              left01a = left01a +1;
+            }
           }
-          if (lr==1 && sortint==0){
-            left01a = left01a +0;
+          if (sortprob==0.25){
+            sum025a += sortint;
+            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+              left025a = left025a +1;
+            }         
           }
-          if (lr==2 && sortint==1){
-            left01a = left01a +0;
+          if (sortprob==0.5){
+            sum05a += sortint;
+            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+              left05a = left05a +1;
+            }        
           }
-          if (lr==2 && sortint==0){
-            left01a = left01a +1;
+          if (sortprob==0.75){
+            sum075a += sortint;
+            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+              left075a = left075a +1;
+            }
           }
-        }
-        if (sortprob==0.25){
-          sum025a += sortint;
-          if (lr==1 && sortint==1){
-            left025a = left025a +1;
-          }
-          if (lr==1 && sortint==0){
-            left025a = left025a +0;
-          }
-          if (lr==2 && sortint==1){
-            left025a = left025a +0;
-          }
-          if (lr==2 && sortint==0){
-            left025a = left025a +1;
-          }          
-        }
-        if (sortprob==0.5){
-          sum05a += sortint;
-          if (lr==1 && sortint==1){
-            left05a = left05a +1;
-          }
-          if (lr==1 && sortint==0){
-            left05a = left05a +0;
-          }
-          if (lr==2 && sortint==1){
-            left05a = left05a +0;
-          }
-          if (lr==2 && sortint==0){
-            left05a = left05a +1;
-          }          
-        }
-        if (sortprob==0.75){
-          sum075a += sortint;
-          if (lr==1 && sortint==1){
-            left075a = left075a +1;
-          }
-          if (lr==1 && sortint==0){
-            left075a = left075a +0;
-          }
-          if (lr==2 && sortint==1){
-            left075a = left075a +0;
-          }
-          if (lr==2 && sortint==0){
-            left075a = left075a +1;
-          }
-        }
+          
         if (sortprob==0.9){
-          sum09a += sortint;
-          if (lr==1 && sortint==1){
-            left09a = left09a +1;
+            sum09a += sortint;
+            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+              left09a = left09a +1;
+            }        
           }
-          if (lr==1 && sortint==0){
-            left09a = left09a +0;
-          }
-          if (lr==2 && sortint==1){
-            left09a = left09a +0;
-          }
-          if (lr==2 && sortint==0){
-            left09a = left09a +1;
-          }          
         }
-      
-      
-          }
+          
         if (sortprob==0.1){
-          sum01 =sum01 + sortint;
+          sum01 += sortint;
         
-          if (lr==1 && sortint==1){
-            left01 = left01 +1;
-          }
-          if (lr==1 && sortint==0){
-            left01 = left01 +0;
-          }
-          if (lr==2 && sortint==1){
-            left01 = left01 +0;
-          }
-          if (lr==2 && sortint==0){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left01 = left01 +1;
           }
         }
         if (sortprob==0.25){
           sum025 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left025 = left025 +1;
-          }
-          if (lr==1 && sortint==0){
-            left025 = left025 +0;
-          }
-          if (lr==2 && sortint==1){
-            left025 = left025 +0;
-          }
-          if (lr==2 && sortint==0){
-            left025 = left025 +1;
-          }          
+          }    
         }
         if (sortprob==0.5){
           sum05 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left05 = left05 +1;
-          }
-          if (lr==1 && sortint==0){
-            left05 = left05 +0;
-          }
-          if (lr==2 && sortint==1){
-            left05 = left05 +0;
-          }
-          if (lr==2 && sortint==0){
-            left05 = left05 +1;
-          }          
+          }       
         }
         if (sortprob==0.75){
           sum075 += sortint;
-          if (lr==1 && sortint==1){
-            left075 = left075 +1;
-          }
-          if (lr==1 && sortint==0){
-            left075 = left075 +0;
-          }
-          if (lr==2 && sortint==1){
-            left075 = left075 +0;
-          }
-          if (lr==2 && sortint==0){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left075 = left075 +1;
           }
         }
         if (sortprob==0.9){
           sum09 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left09 = left09 +1;
-          }
-          if (lr==1 && sortint==0){
-            left09 = left09 +0;
-          }
-          if (lr==2 && sortint==1){
-            left09 = left09 +0;
-          }
-          if (lr==2 && sortint==0){
-            left09 = left09 +1;
-          }          
-      }
-
+          }         
+        }
       i++;
       c=+inc;
       z++;
     }
+    
     lineChart2 = new XYChart(this);
     lineChart2.setData(new float[] {0.1, 0.25, 0.5, 0.75, 0.9},
                       new float[] {ratio01, ratio025, ratio05, ratio075, ratio09});
@@ -445,33 +354,36 @@ void draw(){
   //text(g+"min session",width/2,30);
   //String ra1 = nf(ratioleft01,1,10);
   //text(ra1+"ratio01",width/2,40);
-   text(ratio01a+"ratio01",width/2,40);
-   text(filecount+"filecount",width/2,30);
-
-    if (switchkey==1){
+  text(ratio01a+"ratio01",width/2,40);
+  text(filecount+"filecount",width/2,30);
+  if (switchkey==1){
     lineChart.draw(15,15,width-30,height-30);
     fill(255);
     textSize(15);
     text("Test Subject percentage of chosing left", CENTER, height-(height-15));
-    }
-    if (switchkey==2){
+  }
+    
+  if (switchkey==2){
     lineChart2.draw(15,15,width-30,height-30);
     text("Test Subject percentage of determining correct reward", CENTER, height-(height-15));
-    }
-    if (switchkey==3){
+  }
+    
+  if (switchkey==3){
     scatterplot.draw(15,15,width-30,height-30);
     text("Test Subject percentage of determining correct reward", CENTER, height-(height-15));
-   }
-   if (switchkey==4){
+  }
+   
+  if (switchkey==4){
     lineChart1a.draw(15,15,width-30,height-30);
     text("Test Subject % choosing left (2nd half of trials/block)", CENTER, height-(height-15));
-   }
-   if (switchkey==5){
+  }
+   
+  if (switchkey==5){
     lineChart2a.draw(15,15,width-30,height-30);
     text("Test Subject percentage of determining correct reward (2nd half of trials/block)", CENTER, height-(height-15));
-   }
-  
-    }
+  }
+}
+
  void keyPressed(){
    //if (key==CODED){
      if (key=='1'){
@@ -504,12 +416,12 @@ void draw(){
      }
      if (key=='r'){
        rp++;
-       setup();
-      
+       setup();      
      }
+     
      if (keyCode==UP&&(f<sessioncount)){
           f++;
-        }
+     }
      if (keyCode==DOWN&&(f>0)){
           f--;
      }
@@ -526,3 +438,4 @@ void draw(){
           filecount--;
      }
    }
+   
