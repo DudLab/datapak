@@ -86,9 +86,11 @@ int sessioncount;
 int filecount=1;
 int maxdirectory;
 ColourTable colourtable1; 
-
-
-//intList p01;
+ColourTable colourtable01;
+ColourTable colourtable025;
+ColourTable colourtable05;
+ColourTable colourtable075;
+ColourTable colourtable09;
 
 
 
@@ -149,22 +151,28 @@ void setup(){
   String [] rowsn = loadStrings(n);
   osub = rowsn.length/250;
   sessioncount = rowsn.length/250;  
-  int a =(op2s*250);  
-
-  int b = (op3s*250);
+  
   size(1200,600);
   colourtable1 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
-
+  colourtable01 = ColourTable.getPresetColourTable(ColourTable.PURPLES,0,1);
+  colourtable025 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
+  colourtable05 = ColourTable.getPresetColourTable(ColourTable.GREENS,0,1);
+  colourtable075 = ColourTable.getPresetColourTable(ColourTable.ORANGES,0,1);
+  colourtable09= ColourTable.getPresetColourTable(ColourTable.REDS,0,1);
   increment = rowsn.length;
   minincrement =0;
   float trialcnt [] = new float[rowsn.length];
   float trials [] = new float[rowsn.length];
-   float prob [] = new float[rowsn.length];
+  float prob [] = new float[rowsn.length];
   float rightorwrong[] = new float[rowsn.length];
   float colordata [] = new float [rowsn.length];
   float sizedata [] = new float [rowsn.length];
-  float halfway [] = new float [rowsn.length];
-
+  float data01 [] = new float [rowsn.length];
+  float data025 [] = new float [rowsn.length];
+  float data05 [] = new float [rowsn.length];
+  float data075 [] = new float [rowsn.length];
+  float data09 [] = new float [rowsn.length];
+  float time [] = new float [rowsn.length];
   
   for (TableRow row : table.rows()){
       while (i<rowsn.length-1){
@@ -202,9 +210,10 @@ void setup(){
         trialcnt [i]= z/(rowsn.length);
         sizedata [i]= (10/((rowsn.length)/250))*i;
         colordata [i]= colourtable1.findColour(sortprob);
-        trials[i] = Float.parseFloat(thisRow[13]);
+        time [i] = Float.parseFloat(thisRow[0]);
         prob [i] = Float.parseFloat(thisRow[4]);
         rightorwrong [i] = Float.parseFloat(thisRow[5]);
+        trials[i] = Float.parseFloat(thisRow[13]);
 
         if(trialint>25){
           if (sortprob==0.1){
@@ -242,7 +251,7 @@ void setup(){
           
         if (sortprob==0.1){
           sum01 += sortint;
-        
+
           if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left01 = left01 +1;
           }

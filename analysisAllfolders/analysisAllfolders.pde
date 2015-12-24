@@ -63,7 +63,12 @@ int op3s;
 int sessioncount;
 int filecount=1;
 int maxdirectory;
-ColourTable colourtable1; 
+ColourTable colourtable1;
+ColourTable colourtable01;
+ColourTable colourtable025;
+ColourTable colourtable05;
+ColourTable colourtable075;
+ColourTable colourtable09;
 
 
 
@@ -132,12 +137,16 @@ void setup(){
   int b = (op3s*250);
   size(1200,600);
   colourtable1 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
-
+  colourtable01 = ColourTable.getPresetColourTable(ColourTable.PURPLES,0,1);
+  colourtable025 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
+  colourtable05 = ColourTable.getPresetColourTable(ColourTable.GREENS,0,1);
+  colourtable075 = ColourTable.getPresetColourTable(ColourTable.ORANGES,0,1);
+  colourtable09= ColourTable.getPresetColourTable(ColourTable.REDS,0,1);
   increment = rowsn.length;
   minincrement =0;
   float trialcnt [] = new float[rowsn.length];
   float trials [] = new float[rowsn.length];
-   float prob [] = new float[rowsn.length];
+  float prob [] = new float[rowsn.length];
   float rightorwrong[] = new float[rowsn.length];
   float colordata [] = new float [rowsn.length];
   float sizedata [] = new float [rowsn.length];
@@ -170,81 +179,35 @@ void setup(){
 
         
         if (sortprob==0.1){
-          sum01 =sum01 + sortint;
-        
-          if (lr==1 && sortint==1){
-            left01 = left01 +1;
-          }
-          if (lr==1 && sortint==0){
-            left01 = left01 +0;
-          }
-          if (lr==2 && sortint==1){
-            left01 = left01 +0;
-          }
-          if (lr==2 && sortint==0){
+          sum01 += sortint;        
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left01 = left01 +1;
           }
         }
         if (sortprob==0.25){
           sum025 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left025 = left025 +1;
-          }
-          if (lr==1 && sortint==0){
-            left025 = left025 +0;
-          }
-          if (lr==2 && sortint==1){
-            left025 = left025 +0;
-          }
-          if (lr==2 && sortint==0){
-            left025 = left025 +1;
-          }          
+          }    
         }
         if (sortprob==0.5){
           sum05 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left05 = left05 +1;
-          }
-          if (lr==1 && sortint==0){
-            left05 = left05 +0;
-          }
-          if (lr==2 && sortint==1){
-            left05 = left05 +0;
-          }
-          if (lr==2 && sortint==0){
-            left05 = left05 +1;
-          }          
+          }       
         }
         if (sortprob==0.75){
           sum075 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left075 = left075 +1;
           }
-          if (lr==1 && sortint==0){
-            left075 = left075 +0;
-          }
-          if (lr==2 && sortint==1){
-            left075 = left075 +0;
-          }
-          if (lr==2 && sortint==0){
-            left075 = left075 +1;
-          }          
         }
         if (sortprob==0.9){
           sum09 += sortint;
-          if (lr==1 && sortint==1){
+          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
             left09 = left09 +1;
-          }
-          if (lr==1 && sortint==0){
-            left09 = left09 +0;
-          }
-          if (lr==2 && sortint==1){
-            left09 = left09 +0;
-          }
-          if (lr==2 && sortint==0){
-            left09 = left09 +1;
-          }          
-      }
+          }         
+        }
         }
       i++;
       c=+inc;
