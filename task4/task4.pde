@@ -1,43 +1,21 @@
-int w = 800;
-int h = 600;
+int w = 1600;
+int h = 800;
+int s = (w-800)/2;
+int sh = (h-600);
 PImage bg;
 int trialstate = 0;
 int wallwidth = 100;
-int wallheight = 10; 
-int[][] blocks = {
- 
-  //boundary
-  {0, -21, w, 20, 1},
-  {0, h, w, 20, 1},
-  {-21, 0, 20, h, 1},
-  {w, 0, 20, h, 1},
-  
-  {200, 570, 400, 30, 1},
-  {250, 540, 50, 30, 1},
-  {500, 540, 50, 30, 1},
-  {300, 500, 200, 10, 1},
-  {600, 480, 200, 20, 1},
-  {0, 480, 200, 20, 1},
-  {375, 560, 50, 40, 0},
-  {70, 470, 30, 10, 0},
-  {0, 430, 20, 10, 1},
-  {700, 470, 30, 10, 0},
-  {780, 430, 20, 10, 1},
-  {110, 380, 200, 20, 1},
-  {490, 380, 200, 20, 1},
-};
- 
-void setup() {
-  size(800, 600);
-  bg=loadImage("smallgrid.jpg");
-  //noStroke();
-  noSmooth();
-  frameRate(30);
-}
- 
+int wallheight = 10;
 float psize=20;
-float px=w-psize;
-float py=h-psize;
+float splatxs=h-psize-10;
+float splats= h-psize-20;
+float splatsh=sh+500;
+float splatm= h-psize-30;
+float c =((w/2)-psize*0.5);
+float px=(w/2)-psize*0.5;
+float bl=c-psize;
+float br=c+psize;
+float py=h-70;
 float rx=px;
 float ry=py;
 float pxv=0;
@@ -46,6 +24,83 @@ float pspeed=5;
 float gravity=0; 
 boolean dead = false;
 boolean falling = true;
+float[][] blocks = {
+ 
+  //boundary
+  {0, -21, w, 20, 1},
+  {0, h, w, 20, 1},
+  {-21, 0, 20, h, 1},
+  {w, 0, 20, h, 1},
+  {0, h-20, w, 20, 1},
+  //main platform
+  {bl,0+sh,psize,500,1},
+  {br,0+sh,psize,500,1},
+  {bl-400,0+sh,psize,500,1},
+  {br+400,0+sh,psize,500,1},
+  {70+s, 470+sh, 30, 10, 0},
+  {0+s, 430+sh, 20, 10, 1},
+  {700+s, 470+sh, 30, 10, 0},
+  {780+s, 430+sh, 20, 10, 1},
+  {110+s, 380+sh, 200, 20, 1},
+  {490+s, 380+sh, 200, 20, 1},
+  //small obstacle
+  
+  //medium obstacles
+
+  {200+s, h-psize, 400, 30, 1},
+  {650, splats, 50, 20, 1},
+  {900, splats, 50, 20, 1},
+  {650-100, splats, 50, 20, 0},
+  {900+100, splats, 50, 20, 0}, 
+  {500, splatxs, 50, 10, 1},
+  {1050, splatxs, 50, 10, 1},
+  {500-20, splatxs, 25, 10, 0},
+  {1050+50, splatxs, 25, 10, 0},
+  {500-20-25*(1), splatxs, 25, 10, 0},
+  {1050+50+25*(1), splatxs, 25, 10, 0}, 
+  {500-20-25*(2), splatxs, 25, 10, 1},
+  {1050+50+25*(2), splatxs, 25, 10, 1}, 
+  {500-20-25*(3), splatxs, 25, 10, 0},
+  {1050+50+25*(3), splatxs, 25, 10, 0},
+  {500-20-25*(4), splatxs, 25, 10, 0},
+  {1050+50+25*(4), splatxs, 25, 10, 0},
+  {500-20-25*(5), splatxs, 25, 10, 1},
+  {1050+50+25*(5), splatxs, 25, 10, 1},
+  {500-20-25*(6), splatxs, 25, 10, 0},
+  {1050+50+25*(6), splatxs, 25, 10, 0},
+  {500-20-25*(7), splatxs, 25, 10, 0},
+  {1050+50+25*(7), splatxs, 25, 10, 0},  
+  {500-20-25*(8), splatxs, 25, 10, 1},
+  {1050+50+25*(8), splatxs, 25, 10, 1},  
+  {500-20-25*(9), splatxs, 25, 10, 0},
+  {1050+50+25*(9), splatxs, 25, 10, 0},  
+  {500-20-25*(10), splatxs, 25, 10, 0},
+  {1050+50+25*(10), splatxs, 25, 10, 0},  
+  {500-20-25*(11), splatxs, 25, 10, 1},
+  {1050+50+25*(11), splatxs, 25, 10, 1},  
+  {500-20-25*(12), splatxs, 25, 10, 0},
+  {1050+50+25*(12), splatxs, 25, 10, 0},  
+  
+  {0,splats-30,50,50,0},
+  {w-50,splats-30,50,50,0},
+  
+  {600+s-(200-psize*0.5), 480+sh, 400-psize*0.5+200, 20, 1},
+  {0+s-200, 480+sh, 400-psize*0.5+200, 20, 1},
+  
+  //{375+s, 560, 50, 40, 0},
+
+  
+};
+ 
+void setup() {
+  size(1600, 800);
+  bg=loadImage("smallgrid.jpg");
+  //noStroke();
+  noSmooth();
+  frameRate(30);
+}
+ 
+
 wall[] walls;
 
 void wallupdate(){
@@ -160,7 +215,7 @@ void draw() {
   image(bg,0,0);
   playerInput();
   blockUpdate();
-  wallupdate();
+  //wallupdate();
   playerUpdate();
  
   fill(255, 0, 0);
