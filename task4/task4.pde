@@ -126,8 +126,8 @@ int[][] blocks = {
   {480-25*(13), splatxs, 25, 10, 0},
   {1100+25*(13), splatxs, 25, 10, 0},
   
-  {100,h-45,50,25,1},
-  {w-150,h-45,50,25,1},  
+  {100,h-45,50,25,0},
+  {w-150,h-45,50,25,0},  
   {50,splats-30,50,50,1},
   {w-100,splats-30,50,50,1},  
   {0,splats-30,50,50,0},
@@ -195,22 +195,21 @@ void blockUpdate() {
     }
    
    //right side moving platform
-    if (blocks[i][4]==2) {
+    if (blocks[i][4]==2) {//on bottom
       if (px+pxv+psize>blocks[i][0]-y && px+pxv<blocks[i][0]+blocks[i][2]-y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
-        falling=false;
-         }
+        pxv=0;
       }
+    }
       
-    if (blocks[i][4]==2) {
-      if (px+pxv+psize>blocks[i][0]-y && px+pxv<blocks[i][0]+blocks[i][2]-y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
-        pyv+=10;
-        pxv+=10;
+    if (blocks[i][4]==2) {//top
+      if (px+psize>blocks[i][0]-y && px<blocks[i][0]+blocks[i][2]-y && py+pyv+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        pyv=0;        
         gravity=0;
         falling = false;
       }
     }
     
-    if (blocks[i][4]==2) {
+    if (blocks[i][4]==2) {//side
       if (px+pxv+psize>blocks[i][0]-y && px+pxv<blocks[i][0]+blocks[i][2]-y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {       
         pyv+=2;
         gravity=0;
@@ -220,14 +219,13 @@ void blockUpdate() {
     //left side moving platform
     if (blocks[i][4]==3) {
       if (px+pxv+psize>blocks[i][0]+y && px+pxv<blocks[i][0]+blocks[i][2]+y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
-        falling=false;
+        pxv=0;
       }
     }
       
     if (blocks[i][4]==3) {
-      if (px+pxv+psize>blocks[i][0]+y && px+pxv<blocks[i][0]+blocks[i][2]+y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
-        pyv+=10;
-        pxv-=10;
+      if (px+psize>blocks[i][0]+y && px<blocks[i][0]+blocks[i][2]+y && py+pyv+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        pyv=0;
         gravity=0;
         falling = false;
       }
@@ -317,28 +315,30 @@ void playerUpdate() {
  
 void draw() {
   background(0);
-
   image(bg,0,0);
-  playerInput();
-  blockUpdate();
-  playerUpdate();
- 
   fill(255, 0, 0);
   text(frameRate, 20, 20);
   text(pxv, 20, 30);
   text(y, 20, 40);
   fill(0);
-  //rect(w-50-y,380,50,20);
-  //rect(y,380,50,20);
+  playerInput();
+  blockUpdate();
+  playerUpdate();
+ 
+
+
  
   switch(trialstate){
     case 0:
+    trialstate=1;
     break;
     
     case 1:
+    trialstate=2;
     break;
     
     case 2:
+    trialstate=3;
     break;
     
   }
