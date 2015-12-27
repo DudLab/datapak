@@ -2,13 +2,13 @@ int w = 1600;
 int h = 800;
 int s = (w-800)/2;
 int sh = (h-600);
-PImage spritesheet;
 int DIM_X = 4;
 int DIM_Y = 4;
+PImage spritesheet;
 PImage[] sprites = new PImage[DIM_X*DIM_Y];
 PImage bg;
-PImage lv;
-PImage lava;
+PImage wall; 
+PImage wall1;
 int trialstate = 0;
 int wallwidth = 100;
 int wallheight = 10;
@@ -101,6 +101,7 @@ int[][] blocks = {
 void setup() {
   size(1600, 800);
   bg=loadImage("smallgrid.jpg");
+  wall=loadImage("wall.jpg");
   spritesheet = loadImage("lava1.png");
   int W = spritesheet.width/DIM_X;
   int H = spritesheet.height/DIM_Y;
@@ -109,7 +110,7 @@ void setup() {
     int y = i/DIM_Y*H;
     sprites[i] = spritesheet.get(x, y, W, H);
   }
-  //noStroke();
+  noStroke();
   noSmooth();
   frameRate(30);
 }
@@ -171,6 +172,10 @@ void blockUpdate() {
       fill(0, 250, 0);
       image(sprites[frameCount%sprites.length],blocks[i][0],blocks[i][1],blocks[i][2],blocks[i][3]);
       
+    }
+    if (blocks[i][4]==1) {
+      wall1 = wall.get(blocks[i][0],blocks[i][1],blocks[i][2],blocks[i][3]);
+      image(wall1,blocks[i][0],blocks[i][1]);
     }
   }
 }
