@@ -1,5 +1,6 @@
 int w = 1600;
 int h = 800;
+int y;
 int s = (w-800)/2;
 int sh = (h-600);
 int DIM_X = 4;
@@ -13,85 +14,126 @@ int trialstate = 0;
 int wallwidth = 100;
 int wallheight = 10;
 int psize=20;
-int c =((w/2)-psize/2);
+int c =((w/2)-20/2);
 int bl=c-20;
 int br=c+20;
-int splatxs=h-psize-10;
-int splats= h-psize-20;
+int splatxs=h-30;
+int splats= h-40;
 int splatsh=sh+500;
-int splatm= h-psize-30;
+int splatm= h-50;
 float px=(w/2)-psize/2;
 float py=h-70;
 float rx=px;
 float ry=py;
 float pxv=0;
 float pyv=0;
-float pspeed=5;
+float pspeed=7.5;
 float gravity=0; 
 boolean dead = false;
 boolean falling = true;
 int[][] blocks = {
  
-  //boundary
+  //boundary platforms [1]
   {0, -21, w, 20, 1},
   {0, h, w, 20, 1},
   {-21, 0, 20, h, 1},
   {w, 0, 20, h, 1},
   {0, h-20, w, 20, 1},
-  //main platform
-  {bl,0+sh,psize,500,1},
-  {br,0+sh,psize,500,1},
-  {bl-400,0+sh,psize,500,1},
-  {br+400,0+sh,psize,500,1},
-  {70+s, 470+sh, 30, 10, 0},
-  {0+s, 430+sh, 20, 10, 1},
+  //walls
+  {bl,0+sh,20,500,1},
+  {br,0+sh,20,500,1},
+  {220,0+sh,20,500,1},
+  {1360,0+sh,20,500,1},
+  {w-20,0,20,h,1},
+  {0,0,20,h,1},
+   
+  //L&R side platforms [2]
+  {w-70,680,50,20,1},
+  {20,680,50,20,1},
+  
+  {w-220,630,50,20,1},
+  {170,630,50,20,1},
+  
+  {w-70,580,50,20,1},
+  {20,580,50,20,1},
+  
+  {w-220,530,50,20,1},
+  {170,530,50,20,1},
+  
+  {w-70,480,50,20,1},
+  {20,480,50,20,1},
+  
+  {w-220,430,50,20,1},
+  {170,430,50,20,1},
+  
+  {w-70,380,50,20,1},
+  {20,380,50,20,1},
+  
+  //moving platforms corresponding to [2]
+  {w-50,380,50,20,2},
+  {0,380,50,20,3},
+  {w-50,480,50,20,2},
+  {0,480,50,20,3},
+  {w-50,580,50,20,2},
+  {0,580,50,20,3},
+  //{w-50-y,380,50,20,2},
+  //{y,380,50,20,2},
+  //{w-70,480,50,20,1},
+  //{20,480,50,20,1},
+
   {700+s, 470+sh, 30, 10, 0},
+  {70+s, 470+sh, 30, 10, 0},
+  {700+s, 470+sh, 30, 10, 0},
+  {0+s, 430+sh, 20, 10, 1},
   {780+s, 430+sh, 20, 10, 1},
   {110+s, 380+sh, 200, 20, 1},
   {490+s, 380+sh, 200, 20, 1},
-  //small obstacle
   
-  //medium obstacles
-
-  {200+s, h-psize, 400, 30, 1},
+  //first floor obstacles
+  {200+s, h-20, 400, 30, 1},
   {650, splats, 50, 20, 1},
   {900, splats, 50, 20, 1},
   {650-100, splats, 50, 20, 0},
   {900+100, splats, 50, 20, 0}, 
   {500, splatxs, 50, 10, 1},
   {1050, splatxs, 50, 10, 1},
-  {500-20, splatxs, 25, 10, 0},
-  {1050+50, splatxs, 25, 10, 0},
-  {500-20-25*(1), splatxs, 25, 10, 0},
-  {1050+50+25*(1), splatxs, 25, 10, 0}, 
-  {500-20-25*(2), splatxs, 25, 10, 1},
-  {1050+50+25*(2), splatxs, 25, 10, 1}, 
-  {500-20-25*(3), splatxs, 25, 10, 0},
-  {1050+50+25*(3), splatxs, 25, 10, 0},
-  {500-20-25*(4), splatxs, 25, 10, 0},
-  {1050+50+25*(4), splatxs, 25, 10, 0},
-  {500-20-25*(5), splatxs, 25, 10, 1},
-  {1050+50+25*(5), splatxs, 25, 10, 1},
-  {500-20-25*(6), splatxs, 25, 10, 0},
-  {1050+50+25*(6), splatxs, 25, 10, 0},
-  {500-20-25*(7), splatxs, 25, 10, 0},
-  {1050+50+25*(7), splatxs, 25, 10, 0},  
-  {500-20-25*(8), splatxs, 25, 10, 1},
-  {1050+50+25*(8), splatxs, 25, 10, 1},  
-  {500-20-25*(9), splatxs, 25, 10, 0},
-  {1050+50+25*(9), splatxs, 25, 10, 0},  
-  {500-20-25*(10), splatxs, 25, 10, 0},
-  {1050+50+25*(10), splatxs, 25, 10, 0},  
-  {500-20-25*(11), splatxs, 25, 10, 1},
-  {1050+50+25*(11), splatxs, 25, 10, 1},  
-  {500-20-25*(12), splatxs, 25, 10, 0},
-  {1050+50+25*(12), splatxs, 25, 10, 0},  
+  {480, splatxs, 25, 10, 0},
+  {1100, splatxs, 25, 10, 0},
+  {480-25*(1), splatxs, 25, 10, 0},
+  {1100+25*(1), splatxs, 25, 10, 0}, 
+  {480-25*(2), splatxs, 25, 10, 1},
+  {1100+25*(2), splatxs, 25, 10, 1}, 
+  {480-25*(3), splatxs, 25, 10, 0},
+  {1100+25*(3), splatxs, 25, 10, 0},
+  {480-25*(4), splatxs, 25, 10, 0},
+  {1100+25*(4), splatxs, 25, 10, 0},
+  {480-25*(5), splatxs, 25, 10, 1},
+  {1100+25*(5), splatxs, 25, 10, 1},
+  {480-25*(6), splatxs, 25, 10, 0},
+  {1100+25*(6), splatxs, 25, 10, 0},
+  {480-25*(7), splatxs, 25, 10, 0},
+  {1100+25*(7), splatxs, 25, 10, 0},  
+  {480-25*(8), splatxs, 25, 10, 1},
+  {1100+25*(8), splatxs, 25, 10, 1}, 
+  {480-25*(9), splatxs, 25, 10, 0},
+  {1100+25*(9), splatxs, 25, 10, 0},
+  {480-25*(10), splatxs, 25, 10, 0},
+  {1100+25*(10), splatxs, 25, 10, 0},
+  {480-25*(11), splatxs, 25, 10, 1},
+  {1100+25*(11), splatxs, 25, 10, 1},  
+  {480-25*(12), splatxs, 25, 10, 0},
+  {1100+25*(12), splatxs, 25, 10, 0},
+  {480-25*(13), splatxs, 25, 10, 0},
+  {1100+25*(13), splatxs, 25, 10, 0},
   
+  {100,h-45,50,25,1},
+  {w-150,h-45,50,25,1},  
+  {50,splats-30,50,50,1},
+  {w-100,splats-30,50,50,1},  
   {0,splats-30,50,50,0},
-  {w-50,splats-30,50,50,0},
-  
-  {600+s-(200-psize/2), 480+sh, 400-psize/2+200, 20, 1},
-  {0+s-200, 480+sh, 400-psize/2+200, 20, 1},
+  {w-50,splats-30,50,50,0},  
+  {600+s-(190), 480+sh, 590, 20, 1},
+  {0+s-200, 480+sh, 590, 20, 1},
   
   //{375+s, 560, 50, 40, 0},
 
@@ -103,6 +145,7 @@ void setup() {
   bg=loadImage("smallgrid.jpg");
   wall=loadImage("wall.jpg");
   spritesheet = loadImage("lava1.png");
+  y=0;
   int W = spritesheet.width/DIM_X;
   int H = spritesheet.height/DIM_Y;
   for (int i=0; i<sprites.length; i++) {
@@ -116,31 +159,17 @@ void setup() {
 }
  
 
-wall[] walls;
 
-void wallupdate(){
-  int wallcnt =10;
-  int wallnum[] = new int[wallcnt];
-  walls = new wall[wallcnt];
-  for(int j=0; j<wallcnt; j++){
-    wallnum[j] = (50*j);
-    walls[j] = new wall(((2*width/3))+wallwidth,(wallnum[j]),wallwidth,wallheight,walls);
-    fill(255);
-    rect(((2*width/3)),(wallnum[j]),wallwidth,wallheight);
-    rect(((2*width/3))+wallwidth,(wallnum[j])+25,wallwidth,wallheight);
-    //if (onwall(((2*width/3))+wallwidth,(wallnum[j])+25,wallwidth,wallheight) || onwall(((2*width/3))+wallwidth,(wallnum[j]),wallwidth,wallheight)){
-    //    onwall=true;
-    //}
-  } 
-}
 void blockUpdate() {
-  
+  y+=1;
+  if (y>220){
+    y=0;
+  }
+
   for (int i = 0; i<blocks.length; i++) {
  
     fill(100);
-
-
- 
+    //regular platforms 
     if (px+pxv+psize>blocks[i][0] && px+pxv<blocks[i][0]+blocks[i][2] && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
       if (blocks[i][4]==0) {
         dead=true;
@@ -152,7 +181,6 @@ void blockUpdate() {
       if (blocks[i][4]==0) {
         dead=true;
       }
- 
       pyv=0;
       gravity=0;
       falling = false;
@@ -162,33 +190,89 @@ void blockUpdate() {
       if (blocks[i][4]==0) {
         dead=true;
       }
- 
       pyv=0;
       gravity=0;
     }
- 
-    rect(blocks[i][0], blocks[i][1], blocks[i][2], blocks[i][3]);
+   
+   //right side moving platform
+    if (blocks[i][4]==2) {
+      if (px+pxv+psize>blocks[i][0]-y && px+pxv<blocks[i][0]+blocks[i][2]-y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        falling=false;
+         }
+      }
+      
+    if (blocks[i][4]==2) {
+      if (px+pxv+psize>blocks[i][0]-y && px+pxv<blocks[i][0]+blocks[i][2]-y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        pyv+=10;
+        pxv+=10;
+        gravity=0;
+        falling = false;
+      }
+    }
+    
+    if (blocks[i][4]==2) {
+      if (px+pxv+psize>blocks[i][0]-y && px+pxv<blocks[i][0]+blocks[i][2]-y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {       
+        pyv+=2;
+        gravity=0;
+      }
+    }
+      
+    //left side moving platform
+    if (blocks[i][4]==3) {
+      if (px+pxv+psize>blocks[i][0]+y && px+pxv<blocks[i][0]+blocks[i][2]+y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        falling=false;
+      }
+    }
+      
+    if (blocks[i][4]==3) {
+      if (px+pxv+psize>blocks[i][0]+y && px+pxv<blocks[i][0]+blocks[i][2]+y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        pyv+=10;
+        pxv-=10;
+        gravity=0;
+        falling = false;
+      }
+    }
+    if (blocks[i][4]==3) {
+      if (px+pxv+psize>blocks[i][0]+y && px+pxv<blocks[i][0]+blocks[i][2]+y && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
+        pyv+=2;
+        gravity=0;
+
+        }
+      }
+      
+    
     if (blocks[i][4]==0) {
       fill(0, 250, 0);
-      image(sprites[frameCount%sprites.length],blocks[i][0],blocks[i][1],blocks[i][2],blocks[i][3]);
-      
+      image(sprites[frameCount%sprites.length],blocks[i][0],blocks[i][1],blocks[i][2],blocks[i][3]);      
     }
+    
     if (blocks[i][4]==1) {
+      rect(blocks[i][0], blocks[i][1], blocks[i][2], blocks[i][3]);
       wall1 = wall.get(blocks[i][0],blocks[i][1],blocks[i][2],blocks[i][3]);
       image(wall1,blocks[i][0],blocks[i][1]);
+      
     }
+    if (blocks[i][4]==2) {
+      rect(blocks[i][0]-y, blocks[i][1], blocks[i][2], blocks[i][3]);
+    }
+    if (blocks[i][4]==3) {
+      rect(blocks[i][0]+y, blocks[i][1], blocks[i][2], blocks[i][3]);
+    }    
   }
 }
  
  
  
 boolean[] keys = new boolean[256];
+
 void keyPressed() {
   keys[keyCode]=true;
 };
+
 void keyReleased() {
   keys[keyCode]=false;
 };
+
 void playerInput() {
   pxv=0;
   pyv=0;
@@ -208,13 +292,12 @@ void playerInput() {
    
   if(keys[82]){
     dead=false;
-    px=rx;
-    py=ry;
+    //px=rx;
+    //py=ry;
   }
    
   pyv+=gravity;
   gravity+=0.5;
- 
   falling = true;
 }
 void playerUpdate() {
@@ -222,7 +305,7 @@ void playerUpdate() {
   py+=pyv;
    
   fill(255, 0, 0);
-  if(dead==true){
+  if (dead==true){
     fill(255,150,150);
   }
   rect(px, py, psize, psize);
@@ -238,26 +321,25 @@ void draw() {
   image(bg,0,0);
   playerInput();
   blockUpdate();
-  //wallupdate();
   playerUpdate();
  
   fill(255, 0, 0);
   text(frameRate, 20, 20);
   text(pxv, 20, 30);
-}
-
-class wall{
-  int wallx;
-  int wally;
-  int wallwidth;
-  int wallheight;
-  wall[] wa;
-  
-  wall(int wx, int wy, int ww,int wh, wall[] w){
-    wallx = wx;
-    wally = wy;
-    wallwidth = ww;
-    wallheight = wh;
-    wa = w;
+  text(y, 20, 40);
+  fill(0);
+  //rect(w-50-y,380,50,20);
+  //rect(y,380,50,20);
+ 
+  switch(trialstate){
+    case 0:
+    break;
+    
+    case 1:
+    break;
+    
+    case 2:
+    break;
+    
   }
 }
