@@ -2,19 +2,25 @@ int w = 1600;
 int h = 800;
 int s = (w-800)/2;
 int sh = (h-600);
+PImage spritesheet;
+int DIM_X = 4;
+int DIM_Y = 4;
+PImage[] sprites = new PImage[DIM_X*DIM_Y];
 PImage bg;
+PImage lv;
+PImage lava;
 int trialstate = 0;
 int wallwidth = 100;
 int wallheight = 10;
-float psize=20;
-float splatxs=h-psize-10;
-float splats= h-psize-20;
-float splatsh=sh+500;
-float splatm= h-psize-30;
-float c =((w/2)-psize*0.5);
-float px=(w/2)-psize*0.5;
-float bl=c-psize;
-float br=c+psize;
+int psize=20;
+int c =((w/2)-psize/2);
+int bl=c-20;
+int br=c+20;
+int splatxs=h-psize-10;
+int splats= h-psize-20;
+int splatsh=sh+500;
+int splatm= h-psize-30;
+float px=(w/2)-psize/2;
 float py=h-70;
 float rx=px;
 float ry=py;
@@ -24,7 +30,7 @@ float pspeed=5;
 float gravity=0; 
 boolean dead = false;
 boolean falling = true;
-float[][] blocks = {
+int[][] blocks = {
  
   //boundary
   {0, -21, w, 20, 1},
@@ -84,8 +90,8 @@ float[][] blocks = {
   {0,splats-30,50,50,0},
   {w-50,splats-30,50,50,0},
   
-  {600+s-(200-psize*0.5), 480+sh, 400-psize*0.5+200, 20, 1},
-  {0+s-200, 480+sh, 400-psize*0.5+200, 20, 1},
+  {600+s-(200-psize/2), 480+sh, 400-psize/2+200, 20, 1},
+  {0+s-200, 480+sh, 400-psize/2+200, 20, 1},
   
   //{375+s, 560, 50, 40, 0},
 
@@ -95,6 +101,14 @@ float[][] blocks = {
 void setup() {
   size(1600, 800);
   bg=loadImage("smallgrid.jpg");
+  spritesheet = loadImage("lava1.png");
+  int W = spritesheet.width/DIM_X;
+  int H = spritesheet.height/DIM_Y;
+  for (int i=0; i<sprites.length; i++) {
+    int x = i%DIM_X*W;
+    int y = i/DIM_Y*H;
+    sprites[i] = spritesheet.get(x, y, W, H);
+  }
   //noStroke();
   noSmooth();
   frameRate(30);
@@ -119,13 +133,12 @@ void wallupdate(){
   } 
 }
 void blockUpdate() {
+  
   for (int i = 0; i<blocks.length; i++) {
  
     fill(100);
- 
-    if (blocks[i][4]==0) {
-      fill(0, 250, 0);
-    }
+
+
  
     if (px+pxv+psize>blocks[i][0] && px+pxv<blocks[i][0]+blocks[i][2] && py+psize>blocks[i][1] && py<blocks[i][1]+blocks[i][3]) {
       if (blocks[i][4]==0) {
@@ -154,6 +167,11 @@ void blockUpdate() {
     }
  
     rect(blocks[i][0], blocks[i][1], blocks[i][2], blocks[i][3]);
+    if (blocks[i][4]==0) {
+      fill(0, 250, 0);
+      image(sprites[frameCount%sprites.length],blocks[i][0],blocks[i][1],blocks[i][2],blocks[i][3]);
+      
+    }
   }
 }
  
