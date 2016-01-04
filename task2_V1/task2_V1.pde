@@ -20,8 +20,6 @@ String data = " ";
 String paramData = " ";
 String directoryName = "test";
 String testsubjectname = " ";
-
-
 FloatList circle_diameter;
 boolean overcircle1;
 boolean overcircle2;
