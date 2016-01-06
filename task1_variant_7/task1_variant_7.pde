@@ -56,6 +56,7 @@ int topLeftXc;
 int topLeftYc;
 int block = 0;
 int blockWidth = 50;
+int shiftstate = 0;
 int textY = 120;
 int trialState = 0;
 int trialCnt = 0;
@@ -189,7 +190,7 @@ void draw() {
   time= millis();
   background(0);
   x0 = (displayWidth*0.5);
-  y0 = (displayHeight*0.5);
+  y0 = (900);
 
 
   fill(rectColor);
@@ -245,18 +246,38 @@ void draw() {
     trigState = false;
     rightORwrong = 1;
     userchoiceleft = 1;
-    if (pos1 == true) {
-      x1 = x0 - 200;//
-      y1 = y0 - 400;
-      x2 = x0 + 200;//
-      y2 = y0 - 200;
-    } else {
-      x1 = x0 - 200;//
-      y1 = y0 - 200;
-      x2 = x0 + 200;//
-      y2 = y0 - 400;
+    if (trialCnt>250) {
+      shiftstate=1;
+    }else{
+      shiftstate=0;
     }
-
+    if (shiftstate==0) {
+      if (pos1 == true) {
+        x1 = x0 - 300;
+        y1 = y0 - 400;
+        x2 = x0 + 300;
+        y2 = y0 - 400;
+      } else {
+        x1 = x0 - 300;
+        y1 = y0 - 400;
+        x2 = x0 + 300;
+        y2 = y0 - 400;
+      }
+    }
+    
+    if (shiftstate==1) {
+      if (pos1 == true) {
+        x1 = x0 - 300;
+        y1 = y0 - 750;
+        x2 = x0 + 300;
+        y2 = y0 - 400;
+      } else {
+        x1 = x0 - 300;
+        y1 = y0 - 750;
+        x2 = x0 + 300;
+        y2 = y0 - 400;
+      }
+    }
     if ((trialCnt % blockWidth) == 0 && trialCnt>0) {
       block = block + 1;
     }

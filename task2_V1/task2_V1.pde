@@ -194,7 +194,7 @@ void draw(){
           break;
       case 3:
           if (onRing == true && keyPressed==true){
-                        fill(middle);
+            fill(middle);
             ellipse(x0,y0,a,a);
             fill(0);
             ellipse(x0, y0, a-d, a- d);
