@@ -1,6 +1,7 @@
 import org.gicentre.utils.stat.*;
 import org.gicentre.utils.colour.*;
 int i;
+int ks;
 int tt=0;
 float ac = 0.1;
 float ag = ac;
@@ -14,8 +15,11 @@ float nA = 1;
 float actA = 0;
 float rprob=0.0;
 float vB= 0;
-float gB;
-float nB;
+float g1 = 2;
+float g2 = 3;
+float n1 = 5;
+float gB = g1/g2;
+float nB = n1/g2;
 float actB = -1;
 float rshift = 0;
 XYChart vc;
@@ -40,6 +44,8 @@ void setup(){
   float [] nb = new float[1111];
   float [] actb = new float[1111];  
   for (i=0; i<1111; i++){
+    t[i] = (tt);
+    pr[i] = (tt)*0.01;
     if ((i % 101)==0 && i>1){
      rprob = rprob + 0.1;
      rshift = rshift + 0.2;
@@ -48,8 +54,8 @@ void setup(){
      n[i] = (nA);
      act[i] = (actA);
      vb[i] = (vB);
-     gb[i] = (0.6666666666666666666666666666666666666666);
-     nb[i] = (1.6666666666666666666666666666666666666666);
+     gb[i] = (gB);
+     nb[i] = (nB);
      tt = 0;
     }
     if (i<1){
@@ -58,23 +64,26 @@ void setup(){
      n[i] = (nA);
      act[i] = (actA);     
      vb[i] = (vB);
-     gb[i] = (5/3);
+     gb[i] = (gB);
      nb[i] = (nB);  
     }else{
       if (tt>0){
-        v[i]=(v[i-1] + ac*(rprob-v[i-1]));
-        g[i]=(g[i-1] + ac*((g[i-1])*(rprob-v[i-1])));
-        n[i]=(n[i-1] + ac*(n[i-1])*(-rprob+v[i-1]));
+        //sigma=0;
+        v[i]=(v[i-1] + 0.1*(rprob-v[i-1]));
+        g[i]=(g[i-1] + 0.2*((g[i-1])*(rprob-v[i-1])));
+        n[i]=(n[i-1] + 0.2*-1*(n[i-1])*(rprob-v[i-1]));
         act[i]=(g[i]-n[i]);
-        vb[i]=(vb[i-1] + ac*(rshift-vb[i-1]));
-        gb[i]=(gb[i-1] + (ag*gb[i-1])*(rshift-vb[i-1]));
-        nb[i]=(nb[i-1] + (an*nb[i-1])*(rshift-vb[i-1])*(-1));      
+        
+        vb[i]=(vb[i-1] + 0.02*(rprob-vb[i]));
+        
+        //gb[i]=(gb[i-1] + ((0.02*gb[i-1])*(rprob-vb[i])));
+        gb[i]=(gb[i-1] + 0.2*((gb[i-1])*(rprob-vb[i-1])));        
+        //gb[i]=(gb[i-1] + (0.2*(vb[i])));
+        nb[i]=(nb[i-1] + (0.2*nb[i-1])*(vb[i])*(-1));
+        actb[i]=(gb[i]-nb[i]);        
       }
     }
-    t[i] = (tt);
 
-    actb[i]=(gb[i]-nb[i]);    
-    pr[i] = (tt)*0.01;
     tt++;
   }
   
@@ -118,7 +127,7 @@ void setup(){
   actc.setData(t,act);
   actc.showXAxis(true);
   actc.showYAxis(true);
-  actc.setMinY(-2);
+  actc.setMinY(-3);
   actc.setXAxisLabel("Time");
   actc.setYAxisLabel("Act(R,P)");
   actc.setPointColour(color (153, 153, 255));
@@ -144,6 +153,7 @@ void setup(){
   gcb.showXAxis(true);
   gcb.showYAxis(true);
   gcb.setMinY(0);
+  gcb.setMaxY(4);
   gcb.setXAxisLabel("p(R)");
   gcb.setYAxisLabel("G(R,P) from r=0 to r=2");
   gcb.setPointColour(color (0, 128, 255));
@@ -156,6 +166,7 @@ void setup(){
   ncb.showXAxis(true);
   ncb.showYAxis(true);
   ncb.setMinY(0);
+  ncb.setMaxY(2);
   ncb.setXAxisLabel("p(R)");
   ncb.setYAxisLabel("N(R,P) from r=0 to r=2");
   ncb.setPointColour(color (0, 75, 153));
@@ -174,7 +185,7 @@ void setup(){
   actcb.setPointSize(2);
   //actcb.setLineWidth(2);
   actcb.getRightSpacing();
-  print(gb[0]);
+  print(vb[1110]);
 }
 
 
@@ -188,4 +199,13 @@ void draw(){
   gcb.draw(400,400,width/4, 400);
   ncb.draw(800,400,width/4, 400);
   actcb.draw(1200,400,width/4, 400);  
+}
+
+void keyPressed(){
+  if (keyCode==UP && ks<2){
+    ks++;
+  }
+  if (keyCode==DOWN && ks>0){
+    ks--;
+  }
 }

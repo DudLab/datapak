@@ -120,14 +120,14 @@ public void setup() {
   lineColor = color (255, 255, 255);
   strokeWeight(0);
 
-  float p_pos = 0.5;
-  if (random(1) <= p_pos) {
-    pos1 = true;
-    pos = 1;
-  } else {
-    pos1 = false;
-    pos = 2;
-  }
+  //float p_pos = 0.5;
+  //if (random(1) <= p_pos) {
+  //  pos1 = true;
+  //  pos = 1;
+  //} else {
+  //  pos1 = false;
+  //  pos = 2;
+  //}
 
   int d = day(); 
   if (d<10) {
@@ -252,32 +252,21 @@ void draw() {
       shiftstate=0;
     }
     if (shiftstate==0) {
-      if (pos1 == true) {
-        x1 = x0 - 300;
-        y1 = y0 - 400;
-        x2 = x0 + 300;
-        y2 = y0 - 400;
-      } else {
-        x1 = x0 - 300;
-        y1 = y0 - 400;
-        x2 = x0 + 300;
-        y2 = y0 - 400;
-      }
+      pos = 1;
+      x1 = x0 - 300;
+      y1 = y0 - 400;
+      x2 = x0 + 300;
+      y2 = y0 - 400;
     }
     
     if (shiftstate==1) {
-      if (pos1 == true) {
-        x1 = x0 - 300;
-        y1 = y0 - 750;
-        x2 = x0 + 300;
-        y2 = y0 - 400;
-      } else {
-        x1 = x0 - 300;
-        y1 = y0 - 750;
-        x2 = x0 + 300;
-        y2 = y0 - 400;
-      }
+      pos = 2;
+      x1 = x0 - 300;
+      y1 = y0 - 750;
+      x2 = x0 + 300;
+      y2 = y0 - 400;
     }
+    
     if ((trialCnt % blockWidth) == 0 && trialCnt>0) {
       block = block + 1;
     }
