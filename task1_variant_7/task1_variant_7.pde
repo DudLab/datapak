@@ -222,8 +222,8 @@ void draw() {
     text("go back to collection area", (displayWidth*0.125), textY + 140);
     ellipse(x0, y0, collectDiameter, collectDiameter);
   }
-  if (trialCnt >= 250) {
-    noLoop();
+  if (trialCnt >= 500) {
+    exit();
   }
   switch(trialState) {
 
@@ -296,7 +296,7 @@ void draw() {
     forageDistance = forageDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
     time=millis();
 
-    if (trialCnt<11) {
+    if (trialCnt<11 || trialCnt > 250 && trialCnt < 261) {
       stroke(240, 180, 0, 100);
       //fill(0, 3, 255);
       //ellipse(x1, y1, wrongcircleDiameter, wrongcircleDiameter);
