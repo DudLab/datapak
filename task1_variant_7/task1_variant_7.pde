@@ -38,6 +38,7 @@ float y1;
 float x2;
 float y2;
 FloatList trig_prob;
+FloatList trig_prob1;
 int whichTrig;
 int collectDiameter = 20;
 int targetcircleDiameter = 150; 
@@ -55,11 +56,12 @@ int bottomRightYc;
 int topLeftXc;
 int topLeftYc;
 int block = 0;
-int blockWidth = 50;
+int blockWidth = 50;//50
 int shiftstate = 0;
 int textY = 120;
 int trialState = 0;
 int trialCnt = 0;
+int maxtrial = 500;//500
 float maxpoints = 0;
 float r = random(0, 1);
 float p;
@@ -148,6 +150,14 @@ public void setup() {
   trig_prob.append(0.75);
   trig_prob.append(0.9);
   trig_prob.shuffle();
+  
+  trig_prob1 = new FloatList();
+  trig_prob1.append(0.1);
+  trig_prob1.append(0.25);
+  trig_prob1.append(0.5);
+  trig_prob1.append(0.75);
+  trig_prob1.append(0.9);
+  trig_prob1.shuffle();
 
 
 
@@ -222,7 +232,7 @@ void draw() {
     text("go back to collection area", (displayWidth*0.125), textY + 140);
     ellipse(x0, y0, collectDiameter, collectDiameter);
   }
-  if (trialCnt >= 500) {
+  if (trialCnt >= maxtrial || block-5 > 5) {
     exit();
   }
   switch(trialState) {
@@ -246,7 +256,7 @@ void draw() {
     trigState = false;
     rightORwrong = 1;
     userchoiceleft = 1;
-    if (trialCnt>250) {
+    if (trialCnt>maxtrial/2) {
       shiftstate=1;
     }else{
       shiftstate=0;
@@ -270,8 +280,12 @@ void draw() {
     if ((trialCnt % blockWidth) == 0 && trialCnt>0) {
       block = block + 1;
     }
-
-    p = trig_prob.get(block);
+    if (trialCnt<maxtrial/2){
+      p = trig_prob.get(block);
+    }
+    if (trialCnt>=maxtrial/2){
+      p = trig_prob1.get(block-5);
+    }    
     i = testsubjectname;
     //left reward probability of returning true
     if (random(1) <= p) {

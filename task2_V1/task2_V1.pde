@@ -239,7 +239,7 @@ void draw(){
           ellipse(x0,y0, startdiameter, startdiameter);
           trialCnt++;
           confirmtime=0;
-          data = str(time) + "," + int(trialCnt) + "," +;
+          data = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + ",";
           output.println(data);
           output.flush();
         }else{
