@@ -29,16 +29,21 @@ int startdiameter = 60;
 int ringnumbers;
 int trialState;
 int trialCnt = 0;
+int resetint = 0;
+int outguessint = 0;
+int inguessint = 0;
+int totguessint = outguessint + inguessint;
+int direc = 1;
+float circlediameter;
 float d;
 float a;
 float x0;
 float y0;
+float outdist = 0;
+float indist = 0;
+float totdist = outdist + indist;
 String i = " ";
-long time;
-long time1;
-long time2;
-long time3;
-long time4;
+long time = 0;
 boolean onRing=false;
 boolean ringstate = false;
 boolean startstate = false;
@@ -72,7 +77,7 @@ void setup(){
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialNum, blockWidth, ringwidth, time, forageDistance, collectionDistance, totalDistance, optimalTotalDistance, Totaldifference, score";
+  String firstLine = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
   output.println(firstLine);
   output.flush(); 
   
@@ -81,9 +86,15 @@ void setup(){
   parameters = createWriter("DataBuffer/" + fileName+"_p.csv");
 
 
-  String firstLineParam = "trialNum, blockWidth, MillisTime, pos, leftTriggerProbability, MouseX, MouseY, Start/CollectionDiameter, ForageDiameter, CircleX0, Circle Y0, CircleX1, CircleY1, CircleX2, CircleyY2, TrialState";
-  parameters.println(firstLineParam);
-  parameters.flush();    
+  String firstLineParam = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, mousex, mousey";
+  if (trialState>0){
+    paramData = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," + 
+    d  + "," + int(direc) + "," + int(mouseX) + "," + int(mouseY);
+    //int(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," + 
+   // d  + "," + int(direc) + "," + int(outguessint) + "," + int(inguessint) + "," + int(totguesss) "," + int(outdist) + "," + int(indist) + "," + int(totdist);
+    parameters.println(firstLineParam);
+    parameters.flush();
+  }
 }
 void draw(){
   time=millis();
@@ -91,31 +102,39 @@ void draw(){
   x0 = displayWidth*0.5;
   y0 = displayHeight*0.5;
   fill(0,255,255);
-  rect(x0-300,y0-300,30,confirmtime);
+  rect(x0-400,y0-400,30,confirmtime);
   fill(255);
   a =  startdiameter + d*ringnumbers;
+  circlediameter = (startdiameter + (6*ringnumbers-d));
   float disX = x0 - mouseX;
   float disY = y0 - mouseY;
   float cursorDistance =((sqrt(sq(disX) + sq(disY))));
   float innercircleDistance = a-d;
+  if (trialState>3){
+    direc = -1;
+  }else{
+    direc = 1;
+    
+  }
   textSize(16);
   fill(255, 255, 255, 150);
-  text("hold the up key over the correct ring", (displayWidth*0.125), 120);  
-  //text("TrialState", (displayWidth*0.125), 120);
+  text("hold the UP key over the correct ring staying still", (displayWidth*0.125), 120);  
+  text("Trialcnt:"+ trialCnt, (x0-400), y0);
   //text(trialState, (displayWidth*0.125),140);
-  //text("Ring number", (displayWidth*0.125), 160);
+  //text("Ring number" + ringnumbers, (displayWidth*0.125), 160);
   //text(ringnumbers, (displayWidth*0.125),180);
   //text("diameter", (displayWidth*0.125), 200);
-  //text(a, (displayWidth*0.125),220);
-  //text("innercircledistance", (displayWidth*0.125), 240);
-  //text(innercircleDistance, (displayWidth*0.125),260);
+  //text(totguessint, (displayWidth*0.125),220);
+  text("outdist:" + outdist, (x0-500), y0+100);
+  text("indist:" + indist, (x0-500),y0+200);
   //text("cursordistance", (displayWidth*0.125), 280);
   //text(cursorDistance, (displayWidth*0.125),300);
   //text("time1", (displayWidth*0.125), 320);
   //text(time1,(displayWidth*0.125),340);
-    fill(middle);
-    ellipse(x0,y0,a,a);
-  if (cursorDistance > innercircleDistance*0.5 && cursorDistance < 0.5*a) {
+  fill(middle);
+  ellipse(x0,y0,a,a);
+  if (cursorDistance > innercircleDistance*0.5 && cursorDistance < 0.5*a 
+  && pmouseX==mouseX && pmouseY==mouseY && confirmtime == 60) {
     onRing = true;
 
   }else{
@@ -138,7 +157,7 @@ void draw(){
         block = block + 1;
       }
       d = circle_diameter.get(block);
-      if (cursorDistance < 0.5*startdiameter && confirmtime==60){
+      if (onRing == true){
         startstate = true;
         trialState=1;
         fill(middle);
@@ -146,7 +165,7 @@ void draw(){
         fill(0);
         ellipse(x0, y0, a-d, a- d);
         fill(startcolor);
-        ellipse(x0,y0, startdiameter, startdiameter);            
+        ellipse(x0,y0, startdiameter, startdiameter);       
         ringnumbers = 2;
         confirmtime=0;        
       }else{
@@ -154,7 +173,8 @@ void draw(){
       }    
       break;
     case 1:
-      if (onRing == true && confirmtime==60){
+      outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
+      if (onRing == true){
         ringstate=true;
         ringnumbers = 4;                   
         trialState=2;
@@ -170,23 +190,25 @@ void draw(){
       }    
       break;
     case 2:
-    if (onRing == true && confirmtime==60){
-      ringstate=true;
-      ringnumbers = 6;            
-      trialState=3;
-      fill(middle);
-      ellipse(x0,y0,a,a);
-      fill(0);
-      ellipse(x0, y0, a-d, a- d);
-      fill(startcolor);
-      ellipse(x0,y0, startdiameter, startdiameter);
-      confirmtime=0;
-    }else{
-      ringstate=false;
-    }   
-    break;
+      outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
+      if (onRing == true){
+        ringstate=true;
+        ringnumbers = 6;            
+        trialState=3;
+        fill(middle);
+        ellipse(x0,y0,a,a);
+        fill(0);
+        ellipse(x0, y0, a-d, a- d);
+        fill(startcolor);
+        ellipse(x0,y0, startdiameter, startdiameter);
+        confirmtime=0;
+      }else{
+        ringstate=false;
+      }   
+      break;
     case 3:
-      if (onRing == true && confirmtime==60){
+      outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
+      if (onRing == true){
         fill(middle);
         ellipse(x0,y0,a,a);
         fill(0);
@@ -200,14 +222,15 @@ void draw(){
         fill(0);
         ellipse(x0, y0, a-d, a- d);
         fill(startcolor);
-        ellipse(x0,y0, startdiameter, startdiameter);  
+        ellipse(x0,y0, startdiameter, startdiameter);
         confirmtime=0;        
       }else{
         ringstate=false;
       }      
       break;
     case 4:
-      if (onRing == true && confirmtime==60){
+      indist = indist + dist(mouseX, mouseY, pmouseX, pmouseY);       
+      if (onRing == true){
         fill(middle);
         ellipse(x0,y0,a,a);
         fill(0);
@@ -228,24 +251,44 @@ void draw(){
       }   
       break;
       case 5:
-        if (onRing == true && confirmtime==60){
+        indist = indist + dist(mouseX, mouseY, pmouseX, pmouseY);         
+        if (onRing == true){
           ringnumbers = 0;
-          trialState=0;
+          trialState = 6;
           fill(middle);
           ellipse(x0,y0,a,a);
           fill(0);
           ellipse(x0, y0, a-d, a- d);
           fill(startcolor);
-          ellipse(x0,y0, startdiameter, startdiameter);
-          trialCnt++;
-          confirmtime=0;
-          data = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + ",";
-          output.println(data);
-          output.flush();
+          ellipse(x0,y0, startdiameter, startdiameter);       
         }else{
           ringstate=false;
         }
         break;
+    case 6:
+      indist = indist + dist(mouseX, mouseY, pmouseX, pmouseY);  
+      if (onRing == true){
+        startstate = true;
+        trialState = 1;
+        fill(middle);
+        ellipse(x0,y0,a,a);
+        fill(0);
+        ellipse(x0, y0, a-d, a- d);
+        fill(startcolor);
+        ellipse(x0,y0, startdiameter, startdiameter);       
+        ringnumbers = 2;
+        confirmtime=0;
+        trialCnt++;     
+        data =str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," + d  
+        + "," + int(direc) + "," + int(outguessint) + "," + int(inguessint) + "," + int(totguessint) + "," + int(outdist) + "," + int(indist) + "," + int(totdist);
+        output.println(data);
+        output.flush();
+        outdist = 0;
+        indist = 0;     
+      }else{
+        ringstate = false;
+      }
+      break;
       }
  subjectInput();     
 }
@@ -259,15 +302,23 @@ void keyPressed() {
 void keyReleased() {
   keys[keyCode] = false;
   confirmtime = 0;
+  resetint = 1;
 };
 void subjectInput(){
-  
-  if (keys[UP] && pmouseX==mouseX && pmouseY==mouseY){
+  if (confirmtime>59 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
+  if (keys[UP] && pmouseX==mouseX && pmouseY==mouseY && resetint == 1){
     if (confirmtime<60){
       confirmtime++;
     }
-  }
-  if (pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY){
-    confirmtime=0;
+    if (confirmtime==60){
+      if (trialState>3){
+        inguessint = inguessint + 1;
+      }else{
+        if (trialState>0){
+          outguessint = outguessint + 1;
+        }        
+      }
+      resetint = 0;
+    }
   }
 }
