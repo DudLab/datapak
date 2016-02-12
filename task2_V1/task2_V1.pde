@@ -117,12 +117,15 @@ void draw(){
 
   }
   if (practiceint<1){
-    d = circle_diameter.get(block);
+    if (block < 3){
+      d = circle_diameter.get(block);
+    }else{
+      exit();
+    }    
     paramData = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," +
     d  + "," + int(direc) + "," + int(mouseX) + "," + int(mouseY); 
     parameters.println(paramData);
-    parameters.flush();
-    
+    parameters.flush();    
   }else{
     fill(middle);
     ellipse(x0,y0,a,a);

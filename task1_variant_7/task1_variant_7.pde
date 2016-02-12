@@ -62,6 +62,8 @@ int textY = 120;
 int trialState = 0;
 int trialCnt = 0;
 int maxtrial = 500;//500
+int whichside = 0;
+int flickerint = 0;
 float maxpoints = 0;
 float r = random(0, 1);
 float p;
@@ -232,8 +234,20 @@ void draw() {
     text("go back to collection area", (displayWidth*0.125), textY + 140);
     ellipse(x0, y0, collectDiameter, collectDiameter);
   }
-  if (trialCnt >= maxtrial || block-5 > 5) {
-    exit();
+  if (flickerint>0){
+    if (whichside == 1){
+      stroke(240, 180, 0, 100);
+      fill(inside);
+      strokeWeight(0);
+      ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
+    }
+    if (whichside == 2){
+      stroke(240, 180, 0, 100);
+      fill(middle);
+      strokeWeight(0);
+      ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);      
+    }
+    flickerint--;
   }
   switch(trialState) {
 
@@ -254,14 +268,15 @@ void draw() {
 
   case 1:
     trigState = false;
+    whichside = 0;
     rightORwrong = 1;
     userchoiceleft = 1;
-    if (trialCnt>maxtrial/2) {
+    if (trialCnt>(maxtrial/2)-1) {
       shiftstate=1;
     }else{
       shiftstate=0;
     }
-    if (shiftstate==0) {
+    if (shiftstate == 0) {
       pos = 1;
       x1 = x0 - 300;
       y1 = y0 - 400;
@@ -269,7 +284,7 @@ void draw() {
       y2 = y0 - 400;
     }
     
-    if (shiftstate==1) {
+    if (shiftstate == 1) {
       pos = 2;
       x1 = x0 - 300;
       y1 = y0 - 750;
@@ -280,12 +295,17 @@ void draw() {
     if ((trialCnt % blockWidth) == 0 && trialCnt>0) {
       block = block + 1;
     }
-    if (trialCnt<maxtrial/2){
-      p = trig_prob.get(block);
+    
+    if (block - 5 < 5){
+      if (trialCnt < maxtrial/2){
+        p = trig_prob.get(block);
+      }else{
+        p = trig_prob1.get(block-5);
+      }
+    }else{
+      exit();
     }
-    if (trialCnt>=maxtrial/2){
-      p = trig_prob1.get(block-5);
-    }    
+    
     i = testsubjectname;
     //left reward probability of returning true
     if (random(1) <= p) {
@@ -310,41 +330,32 @@ void draw() {
     forageDistance = forageDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
     time=millis();
 
-    if (trialCnt<11 || trialCnt > 250 && trialCnt < 261) {
-      stroke(240, 180, 0, 100);
-      //fill(0, 3, 255);
-      //ellipse(x1, y1, wrongcircleDiameter, wrongcircleDiameter);
-      fill(inside);
-      strokeWeight(0);
-      ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
+    if (trialCnt<11 && trigState==false || trialCnt > 250 && trialCnt < 261 && trigState==false) {
+     stroke(240, 180, 0, 100);
+     fill(inside);
+     strokeWeight(0);
+     ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
 
-      //left box
-      stroke(240, 180, 0, 100);
-      //stroke(0, 180, 240, 100);
-      //fill(0, 3, 255);
-      //ellipse(x2, y2, wrongcircleDiameter, wrongcircleDiameter);
-      fill(middle);
-      strokeWeight(0);
-      ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
+     //left box
+     stroke(240, 180, 0, 100);
+     fill(middle);
+     strokeWeight(0);
+     ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
     }
 
     if (leftBox == true) { //e: left trigger box
       whichTrig = 0;
       if (onwrongcircleright(x2, y2, wrongcircleDiameter)) {
-        //wrong = true;
         rightORwrong = rightORwrong -1;
         userchoiceleft = userchoiceleft-1;
       }
 
       if (onCircleLeft(x1, y1, targetcircleDiameter)) {
+        whichside = 1;
         trigState = true;
+        flickerint = 15;        
         trialState = 3; 
         trigTime = millis();
-        stroke(240, 180, 0, 100);
-        //stroke(0, 180, 240, 100);
-        fill(153, 255, 255);
-        strokeWeight(0);
-        ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
       } else {
         trigState = false;
       }
@@ -360,14 +371,11 @@ void draw() {
         rightORwrong = rightORwrong - 1;
       }
       if (onCircleRight(x2, y2, targetcircleDiameter)) {
+        whichside = 2;
         trigState = true;
+        flickerint = 15;
         trialState = 3; 
         trigTime = millis();
-        stroke(240, 180, 0, 100);
-        //stroke(0, 180, 240, 100);
-        fill(153, 255, 255);
-        strokeWeight(0);
-        ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
       } else {
         trigState = false;
       }
