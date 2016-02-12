@@ -87,6 +87,7 @@ int userchoiceleft;
 int pos;
 int rightORwrong;
 int rewardpos;
+int practiceint = 10;
 boolean pos1;
 boolean startstate = false;
 boolean onStart = false;
@@ -214,17 +215,27 @@ void draw() {
   fill(255, 255, 255, 150);
   text("Trial", (displayWidth*0.125), textY);
   text(trialCnt+1, (displayWidth*0.125), textY + 20);
-  text(testsubjectname, (displayWidth*0.125), textY + 180);
-  text("maximum points", (displayWidth*0.125), textY + 200);
-  text(maxpoints, (displayWidth*0.125), textY + 220);
-  text("Your Points", (displayWidth*0.125), textY + 240);
-  text(pointsEarned, (displayWidth*0.125), textY + 260);
+  text(testsubjectname, (x0-700), textY + 180);
+  text("maximum points", (x0-700), textY + 200);
+  text(maxpoints, (x0-700), textY + 220);
+  text("Your Points", (x0-700), textY + 240);
+  text(pointsEarned, (x0-700), textY + 260);
   //text(p, (displayWidth*0.125), textY + 280);
   //text(rewardpos, (displayWidth*0.125), textY + 300);
-
-
-
-  if (x1>0) {
+  if (practiceint>0){
+    text("Practice",x0,y0-800);
+    if (trialState < 3 && whichside == 0){
+      stroke(240, 180, 0, 100);
+      fill(inside);
+      strokeWeight(0);
+      ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
+      stroke(240, 180, 0, 100);
+      fill(middle);
+      strokeWeight(0);
+      ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
+    }
+  }
+  if (practiceint < 1) {
     paramData = int(trialCnt+1) + "," + int(blockWidth) + "," + str(time) + "," + int(pos) + "," + p + ","  
       + int(mouseX) + "," + int(mouseY) + "," + int(collectDiameter) + "," + int(targetcircleDiameter) + "," + int(x0) + "," + int(y0) + ","+ int(x1) + "," + int(y1) + "," + int(x2) + "," + int(y2) + "," +int(trialState);
     parameters.println(paramData);
@@ -295,15 +306,18 @@ void draw() {
     if ((trialCnt % blockWidth) == 0 && trialCnt>0) {
       block = block + 1;
     }
-    
-    if (block - 5 < 5){
-      if (trialCnt < maxtrial/2){
-        p = trig_prob.get(block);
+    if (practiceint<1){
+      if (block - 5 < 5){
+        if (trialCnt < maxtrial/2){
+          p = trig_prob.get(block);
+        }else{
+          p = trig_prob1.get(block-5);
+        }
       }else{
-        p = trig_prob1.get(block-5);
+        exit();
       }
     }else{
-      exit();
+        p = trig_prob.get(block);
     }
     
     i = testsubjectname;
@@ -329,19 +343,6 @@ void draw() {
     wrong = false;
     forageDistance = forageDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
     time=millis();
-
-    if (trialCnt<11 && trigState==false || trialCnt > 250 && trialCnt < 261 && trigState==false) {
-     stroke(240, 180, 0, 100);
-     fill(inside);
-     strokeWeight(0);
-     ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
-
-     //left box
-     stroke(240, 180, 0, 100);
-     fill(middle);
-     strokeWeight(0);
-     ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
-    }
 
     if (leftBox == true) { //e: left trigger box
       whichTrig = 0;
@@ -390,23 +391,28 @@ void draw() {
     if (onCollection(x0, y0, collectDiameter)) {
       collectState = true;
       trialState=1;
-      trialCnt++;
-      if (rightORwrong >0) {
-        right1wrong0 = 1;
-      } else { 
-        right1wrong0= 0;
+      if (practiceint>0){
+        practiceint--;
       }
-      if (userchoiceleft>0) {
-        userchoice12 = 1;
-      } else { 
-        userchoice12= 0;
-      }
-      maxpoints = maxpoints + 100;
-      pointsEarned = pointsEarned + 100*((optimalTotaldistance/totalDistance));
-      data = str(time)+","+ int(trialCnt)+","+ int(blockWidth) + "," + int(pos) + "," + p + ","+ right1wrong0 + ","+ int(rewardpos) +","+int(forageDistance)+","+int(collectionDistance)+"," + int(totalDistance) 
-        + "," + int(optimalTotaldistance)+"," + int(totalDifference) + "," +int(pointsEarned);
-      output.println(data);
-      output.flush();
+      if (practiceint<1){
+        trialCnt++;
+        if (rightORwrong >0) {
+          right1wrong0 = 1;
+        } else { 
+          right1wrong0= 0;
+        }
+        if (userchoiceleft>0) {
+          userchoice12 = 1;
+        } else { 
+          userchoice12= 0;
+        }
+        maxpoints = maxpoints + 100;
+        pointsEarned = pointsEarned + 100*((optimalTotaldistance/totalDistance));
+        data = str(time)+","+ int(trialCnt)+","+ int(blockWidth) + "," + int(pos) + "," + p + ","+ right1wrong0 + ","+ int(rewardpos) +","+int(forageDistance)+","+int(collectionDistance)+"," + int(totalDistance) 
+          + "," + int(optimalTotaldistance)+"," + int(totalDifference) + "," +int(pointsEarned);
+        output.println(data);
+        output.flush();
+      }      
     } else {
       collectState = false;
     }

@@ -37,6 +37,7 @@ int outguessint = 0;
 int inguessint = 0;
 int totguessint = outguessint + inguessint;
 int direc = 1;
+int maxtrials = blockwidth*3;
 float circlediameter;
 float flickerint = 10;
 float d;
@@ -82,7 +83,7 @@ void setup(){
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
+  String firstLine = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
   output.println(firstLine);
   output.flush(); 
   
@@ -123,7 +124,7 @@ void draw(){
       exit();
     }    
     paramData = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," +
-    d  + "," + int(direc) + "," + int(mouseX) + "," + int(mouseY); 
+    d  + "," + int(mouseX) + "," + int(mouseY); 
     parameters.println(paramData);
     parameters.flush();    
   }else{
@@ -181,7 +182,7 @@ void draw(){
         ringnumbers1=0;
         flickerint = 10;    
         ringnumbers = 2;
-        confirmtime=0;      
+        confirmtime=0;
       }else{
         startstate = false;
       }    
@@ -195,9 +196,9 @@ void draw(){
         ringnumbers1 = 2;
         flickerint = 10;
         trialState=2;        
-        ringnumbers = 4;                   
+        ringnumbers = 4;
         confirmtime=0;    
-      }    
+      }
       break;
     case 2:
       outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
@@ -287,7 +288,7 @@ void subjectInput(){
       }else{
         if (trialState>0){
           outguessint = outguessint + 1;
-        }        
+        }
       }
       resetint = 0;
     }
