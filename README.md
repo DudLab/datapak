@@ -33,7 +33,7 @@ First, subjects begin by using their computer mouses to move onto the start/coll
 Subjects then are prompted to move and select between the two probabalistically determined reward areas (shown above).
 
 ###STEP 3
-<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice1.png " width="400" height="250" />
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice4.png " width="400" height="250" />
 
 When subjects move onto the correct area, that and both area flashes and dissapears respectively.
 Then, subjects are prompted to move back towards the start/collection area.  This action then initiates the next trial, in which the aforementioned steps repeat. However, following the practice round, target areas are no longer visible; however, when the target moves on the correct target area, that area periodically flashes.
