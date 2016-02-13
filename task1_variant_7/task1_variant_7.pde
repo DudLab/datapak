@@ -222,7 +222,11 @@ void draw() {
   text(pointsEarned, (x0-700), textY + 260);
   //text(p, (displayWidth*0.125), textY + 280);
   //text(rewardpos, (displayWidth*0.125), textY + 300);
+  if (shiftstate==1){
+    text("halfway point, left target is further out)", (displayWidth*0.125), textY + 20);    
+  }
   if (practiceint>0){
+    textSize(32);
     text("Practice",x0,y0-800);
     if (trialState < 3 && whichside == 0){
       stroke(240, 180, 0, 100);
@@ -235,6 +239,9 @@ void draw() {
       ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
     }
   }
+  if (shiftstate==1){
+    text("halfway point, left target is further out)", (displayWidth*0.125), textY + 20);    
+  }  
   if (practiceint < 1) {
     paramData = int(trialCnt+1) + "," + int(blockWidth) + "," + str(time) + "," + int(pos) + "," + p + ","  
       + int(mouseX) + "," + int(mouseY) + "," + int(collectDiameter) + "," + int(targetcircleDiameter) + "," + int(x0) + "," + int(y0) + ","+ int(x1) + "," + int(y1) + "," + int(x2) + "," + int(y2) + "," +int(trialState);

@@ -20,10 +20,11 @@ String data = " ";
 String paramData = " ";
 String directoryName = "test";
 String testsubjectname = " ";
-FloatList circle_diameter;
+IntList circle_diameter;
 int block = 0;
-int practiceint = 1;
-int blockwidth = 20;
+int waitint = 1;
+int practiceint = 0;
+int blockwidth =2;//
 int op1;
 int confirmtime = 0;
 int startdiameter = 60;
@@ -57,7 +58,7 @@ boolean trialstate = false;
 
 
 void setup(){
-      try { 
+ try { 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
   } 
   catch (Exception e) { 
@@ -68,10 +69,11 @@ void setup(){
   if(op1s != null) i = op1s;
  
   size(displayWidth, displayHeight);
-  circle_diameter = new FloatList();
+  circle_diameter = new IntList();
+  circle_diameter.append(60);
   circle_diameter.append(90);
   circle_diameter.append(120);
-  circle_diameter.append(150);
+  
   circle_diameter.shuffle();
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
 
@@ -105,24 +107,24 @@ void draw(){
   fill(255);
   b = startdiameter + d*ringnumbers1;   
   a =  startdiameter + d*ringnumbers;
-  circlediameter = (startdiameter + (6*ringnumbers));
+  circlediameter = (startdiameter + (6*d));
   float disX = x0 - mouseX;
   float disY = y0 - mouseY;
   float cursorDistance =((sqrt(sq(disX) + sq(disY))));
   float innercircleDistance = a*.5-ringint;
   if (cursorDistance > innercircleDistance && cursorDistance < a*.5
-  && pmouseX==mouseX && pmouseY==mouseY && confirmtime == 60) {    
+  && pmouseX==mouseX && pmouseY==mouseY && confirmtime == waitint) {    
     onRing = true;
   }else{
     onRing = false;
 
   }
   if (practiceint<1){
-    if (block < 3){
-      d = circle_diameter.get(block);
-    }else{
-      exit();
-    }    
+    //if (trialCnt<maxtrials){
+    //  d = circle_diameter.get(block);
+    //}else{
+    //  exit();
+    //}    
     paramData = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," +
     d  + "," + int(mouseX) + "," + int(mouseY); 
     parameters.println(paramData);
@@ -134,7 +136,7 @@ void draw(){
     ellipse(x0, y0, innercircleDistance, innercircleDistance);
     fill(startcolor);
     ellipse(x0,y0, startdiameter, startdiameter);    
-    d = 75;
+    
   }
   if (flickerint>0){
     fill(middle);
@@ -157,7 +159,7 @@ void draw(){
     text("move outwards", (x0-500),y0+90);    
   } 
   textSize(16);
-  fill(255, 255, 255, 150);  
+  fill(255, 255, 255, 150);
   if (mousePressed==true){
     fill(middle);
     ellipse(x0,y0,a,a);
@@ -170,7 +172,7 @@ void draw(){
   text("Trialcnt:"+ trialCnt, (x0-400), y0);
   text("CursorDistance" + cursorDistance, (x0-500), y0+30);
   text("innercircledistance:" + innercircleDistance, (x0-500),y0+60);
-  text("flickerint:" + flickerint, (x0-500),y0+80);  
+  text("block:" + block, (x0-500),y0+80);  
   fill(startcolor);
   ellipse(x0,y0,startdiameter,startdiameter);
   
@@ -178,8 +180,8 @@ void draw(){
     case 0:
       if (onRing == true){
         startstate = true;
-        trialState=1;
-        ringnumbers1=0;
+        trialState = 1;
+        ringnumbers1 = 0;
         flickerint = 10;    
         ringnumbers = 2;
         confirmtime=0;
@@ -188,11 +190,20 @@ void draw(){
       }    
       break;
     case 1:
-      if ((trialCnt % blockwidth) == 0 && trialCnt>0){
-        block = block + 1;
-      }
       outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
       if (onRing == true){
+        if ((trialCnt % blockwidth) == 0 && trialCnt>0){
+          block = trialCnt/blockwidth;
+        }
+        if (practiceint<1){
+          if (trialCnt<maxtrials){
+            d = circle_diameter.get(block);
+          }else{
+            exit();
+          }    
+        }else{
+            d = circle_diameter.get(block);
+        }        
         ringnumbers1 = 2;
         flickerint = 10;
         trialState=2;        
@@ -279,10 +290,10 @@ void keyReleased() {
 void subjectInput(){
   if (confirmtime>59 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
   if (keys[UP] && pmouseX==mouseX && pmouseY==mouseY && resetint == 1){
-    if (confirmtime<60){
+    if (confirmtime<waitint){
       confirmtime++;
     }
-    if (confirmtime==60){
+    if (confirmtime==waitint){
       if (trialState>3){
         inguessint = inguessint + 1;
       }else{
