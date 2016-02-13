@@ -9,11 +9,10 @@ The following programs are designed to collect data on various elements of human
 
 Task 1 collects data on how humans' decisions in reaching-based behavioral tasks are affected by reward, reaching distance, probabalistic inferral, and precision. This task involves human subjects using a computer mouse to move between a start/collection area and two probabalistically determined circular target areas. The five used probabilities are randomly shuffled initially and changed for each block of the experiment. For the first half of trials, two target areas are horizontally and vertically equidistant from the start/collection area. For the remainder of trials however, the left target area is moved vertically further from its original position.
 
-Within this task, subjects begin by moving onto the start/collection area. Then, subjects are to choose between two reward boxes, which have set probabilities of bearing the reward.  The five probabilities, which are randomly assorted, change for each block.  Following the halfway point of 250 trials, the left reward area moves further away from the start area. 
+Within this task, subjects begin by moving onto the start/collection area. Then, subjects are to choose between two reward boxes, which have set probabilities of bearing the reward.  The five projectsbabilities, which are randomly assorted, change for each block.  Following the halfway point of 250 trials, the left reward area moves further away from the start area. 
 
 ##Task 2
-![t1practice1.png](t1practice1.png =400x250)
-
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice1.png " width="400" height="250" />
 Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward based.
 
 # Usage
