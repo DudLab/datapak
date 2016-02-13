@@ -16,7 +16,7 @@ Within this task, subjects begin by moving onto the start/collection area. Then,
 Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward based.
 
 # Usage
-![t1typename.png](t1typename1.png =400x250)
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1typename1.png " width="400" height="250" />
 
 At the beginning of each task, test subjects are prompted by the computer to provide their names.
 
@@ -38,9 +38,9 @@ Subjects then are prompted to move and select between the two probabalistically 
 When subjects move onto the correct area, that and both area flashes and dissapears respectively.
 Then, subjects are prompted to move back towards the start/collection area.  This action then initiates the next trial, in which the aforementioned steps repeat. However, following the practice round, target areas are no longer visible; however, when the target moves on the correct target area, that area periodically flashes.
 
-<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1half1.png " width="400" height="250" />
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1half.png " width="400" height="250" />
 
-Moreover, as mentioned above, for the second half of trials, the left target area moves vertically further from its original position.
+Moreover, as mentioned earlier, for the second half of trials, the left target area moves vertically further from its original position.
 
 
 ##Preview Usage
