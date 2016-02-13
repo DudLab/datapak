@@ -12,7 +12,7 @@ Task 1 collects data on how humans' decisions in reaching-based behavioral tasks
 Within this task, subjects begin by moving onto the start/collection area. Then, subjects are to choose between two reward boxes, which have set probabilities of bearing the reward.  The five projectsbabilities, which are randomly assorted, change for each block.  Following the halfway point of 250 trials, the left reward area moves further away from the start area. 
 
 ##Task 2
-<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice1.png " width="400" height="250" />
+
 Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward based.
 
 # Usage
@@ -23,17 +23,22 @@ At the beginning of each task, test subjects are prompted by the computer to pro
 ##Task 1
 
 ###STEP 1
-![t1practice1.png](t1practice1.png =400x250)
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice1.png " width="400" height="250" />
 
 First, subjects begin by using their computer mouses to move onto the start/collection area, which initiates a practice round in which two target areas are shown.
 
-![t1practice2.png](t1practice1.png =400x250)
+###STEP 2
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice2.png " width="400" height="250" />
+
 Subjects then are prompted to move and select between the two probabalistically determined reward areas (shown above).
 
-When subjects move onto the correct area, that and both area flashes and dissapears respectively.
-Then, subjects are prompted to move back towards the start/collection area.  This action then initiates the next trial, in which the aforementioned steps repeat.
+###STEP 3
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice1.png " width="400" height="250" />
 
-However, following the practice round, target areas are no longer visible; however, when the target moves on the correct target area, that area periodically flashes.
+When subjects move onto the correct area, that and both area flashes and dissapears respectively.
+Then, subjects are prompted to move back towards the start/collection area.  This action then initiates the next trial, in which the aforementioned steps repeat. However, following the practice round, target areas are no longer visible; however, when the target moves on the correct target area, that area periodically flashes.
+
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1half1.png " width="400" height="250" />
 
 Moreover, as mentioned above, for the second half of trials, the left target area moves vertically further from its original position.
 
