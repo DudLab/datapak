@@ -172,7 +172,7 @@ public void setup() {
 
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
 
-  output = createWriter("DataBuffer/" + fileName+".csv");
+  output = createWriter("DataBuffer/trialdata/" + fileName+".csv");
 
   // header information for the file- contains the file name
   String header = str(year())+","+str(month())+","+str(day())+","+str(hour())+","+str(minute());
@@ -186,7 +186,7 @@ public void setup() {
 
   //position per millisecond
   fileName =  i + "," + "position" + "v"+str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());    
-  parameters = createWriter("DataBuffer/" + fileName+"_p.csv");
+  parameters = createWriter("DataBuffer/positiondata/" + fileName+"_p.csv");
 
 
   //information about what is in each column

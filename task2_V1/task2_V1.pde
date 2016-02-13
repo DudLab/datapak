@@ -22,9 +22,9 @@ String directoryName = "test";
 String testsubjectname = " ";
 IntList circle_diameter;
 int block = 0;
-int waitint = 1;
+int waitint = 45;
 int practiceint = 0;
-int blockwidth =2;//
+int blockwidth = 20;//
 int op1;
 int confirmtime = 0;
 int startdiameter = 60;
@@ -36,8 +36,9 @@ int trialCnt = 0;
 int resetint = 0;
 int outguessint = 0;
 int inguessint = 0;
-int totguessint = outguessint + inguessint;
+int totguessint = 0;
 int direc = 1;
+int moveint = 0;
 int maxtrials = blockwidth*3;
 float circlediameter;
 float flickerint = 10;
@@ -56,7 +57,6 @@ boolean ringstate = false;
 boolean startstate = false;
 boolean trialstate = false;
 
-
 void setup(){
  try { 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -67,7 +67,18 @@ void setup(){
   String preset="Type your name here";
   String op1s = JOptionPane.showInputDialog(frame, "Name", preset);
   if(op1s != null) i = op1s;
- 
+  int d = day(); 
+  if (d<10) {
+    dS = '0'+str(d);
+  } else {
+    dS = str(d);
+  }
+  int m = month();
+  if (m<10) {
+    mS = "0"+str(m);
+  } else {
+    mS = str(m);
+  } 
   size(displayWidth, displayHeight);
   circle_diameter = new IntList();
   circle_diameter.append(60);
@@ -77,7 +88,7 @@ void setup(){
   circle_diameter.shuffle();
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
 
-  output = createWriter("DataBuffer/" + fileName+".csv");
+  output = createWriter("DataBuffer/trialdata/" + fileName+".csv");
 
   // header information for the file- contains the file name
   String header = str(year())+","+str(month())+","+str(day())+","+str(hour())+","+str(minute());
@@ -85,13 +96,13 @@ void setup(){
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
+  String firstLine = "timestamp, trialCnt, blockWidth, diameter, ringdist, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
   output.println(firstLine);
   output.flush(); 
   
   //position per millisecond
   fileName =  i + "," + "position" + "v"+str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());    
-  parameters = createWriter("DataBuffer/" + fileName+"_p.csv");
+  parameters = createWriter("DataBuffer/positiondata/" + fileName+"_p.csv");
 
   String firstLineParam = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, mousex, mousey";
   parameters.println(firstLineParam);
@@ -119,21 +130,17 @@ void draw(){
     onRing = false;
 
   }
-  if (practiceint<1){
-    //if (trialCnt<maxtrials){
-    //  d = circle_diameter.get(block);
-    //}else{
-    //  exit();
-    //}    
+  if (practiceint<1){  
     paramData = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," +
     d  + "," + int(mouseX) + "," + int(mouseY); 
     parameters.println(paramData);
     parameters.flush();    
   }else{
+    text("Practice",x0-500,y0+120);
     fill(middle);
     ellipse(x0,y0,a,a);
     fill(0);
-    ellipse(x0, y0, innercircleDistance, innercircleDistance);
+    ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
     fill(startcolor);
     ellipse(x0,y0, startdiameter, startdiameter);    
     
@@ -160,19 +167,23 @@ void draw(){
   } 
   textSize(16);
   fill(255, 255, 255, 150);
-  if (mousePressed==true){
-    fill(middle);
-    ellipse(x0,y0,a,a);
-    fill(0);
-    ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
-    fill(startcolor);
-    ellipse(x0,y0, startdiameter, startdiameter);
-  }
+  //if (mousePressed==true){
+  //  fill(0,255,255);    
+  //  rect(x0-400,y0-400,30,confirmtime+30);    
+  //  fill(middle);
+  //  ellipse(x0,y0,a,a);
+  //  fill(0);
+  //  ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
+  //  fill(startcolor);
+  //  ellipse(x0,y0, startdiameter, startdiameter);
+  //}
   text("hold the UP key over the correct ring staying still", (displayWidth*0.125), 120);  
   text("Trialcnt:"+ trialCnt, (x0-400), y0);
-  text("CursorDistance" + cursorDistance, (x0-500), y0+30);
-  text("innercircledistance:" + innercircleDistance, (x0-500),y0+60);
-  text("block:" + block, (x0-500),y0+80);  
+  //text("CursorDistance" + cursorDistance, (x0-500), y0+30);
+  //text("resetint" + resetint, (x0-500),y0+60);
+  text("block:" + block, (x0-500),y0+80);
+  //text("outguessint:" + outguessint, (x0-500),y0+100);
+  //text("inguessint:" + inguessint, (x0-500),y0+120);    
   fill(startcolor);
   ellipse(x0,y0,startdiameter,startdiameter);
   
@@ -263,13 +274,17 @@ void draw(){
         practiceint--;
         if (practiceint<1){
         trialCnt++;
-        data =str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," + d  
-        + "," + int(direc) + "," + int(outguessint) + "," + int(inguessint) + "," + int(totguessint) + "," + int(outdist) + "," + int(indist) + "," + int(totdist);
+        totdist = indist + outdist;
+        totguessint = outguessint + inguessint;
+        data =str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + circlediameter  + "," + d  
+        + "," + int(outguessint) + "," + int(inguessint) + "," + int(totguessint) + "," + int(outdist) + "," + int(indist) + "," + int(totdist);
         output.println(data);
         output.flush();
         }     
         outdist = 0;
-        indist = 0;     
+        indist = 0;
+        totdist = 0;
+        confirmtime=0;
       }
       break;
       }
@@ -288,20 +303,23 @@ void keyReleased() {
   resetint = 1;
 };
 void subjectInput(){
-  if (confirmtime>59 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
-  if (keys[UP] && pmouseX==mouseX && pmouseY==mouseY && resetint == 1){
+  if (confirmtime==waitint) moveint = 0;
+  if (confirmtime>waitint-1 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
+  if (pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) moveint = 1;
+
+  if (keys[UP]==true && pmouseX==mouseX && pmouseY==mouseY && resetint == 1 && moveint==1){   
     if (confirmtime<waitint){
       confirmtime++;
-    }
-    if (confirmtime==waitint){
-      if (trialState>3){
-        inguessint = inguessint + 1;
-      }else{
-        if (trialState>0){
-          outguessint = outguessint + 1;
+    } 
+    if (practiceint<1){
+      if (confirmtime==waitint){
+        if (trialState>3){
+          inguessint = inguessint + 1;
+        }else{
+            outguessint = outguessint + 1;
         }
       }
-      resetint = 0;
     }
+    
   }
 }
