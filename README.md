@@ -16,7 +16,7 @@ Within this task, subjects begin by moving onto the start/collection area. Then,
 Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward based.
 
 # Usage
-<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1typename1.png " width="400" height="250" />
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1typename.png " width="400" height="250" />
 
 At the beginning of each task, test subjects are prompted by the computer to provide their names.
 
