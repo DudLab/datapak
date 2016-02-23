@@ -5,15 +5,13 @@ import processing.serial.*;
 import javax.swing.*; 
 import java.io.*;
 import java.io.File;
-import org.gicentre.utils.multisketch.*;
+import java.util.Iterator;
+import java.util.Arrays;
+import java.util.Comparator;
 import org.gicentre.utils.stat.*;
 import org.gicentre.utils.colour.*;
 
-XYChart lineChart;
-XYChart lineChart2;
-XYChart lineChart1a;
-XYChart lineChart2a;
-XYChart scatterplot;
+ArrayList <datum> data = new ArrayList<datum>();
 Table table1;
 Table table;
 int switchkey=1;
@@ -24,20 +22,6 @@ float z;
 int colorincrement;
 int block1;
 int trial;
-int sum1;
-int increment;
-int minincrement;
-int value;
-float left01;
-float left025;
-float left05;
-float left075;
-float left09;
-float ratioleft01;
-float ratioleft025;
-float ratioleft05;
-float ratioleft075;
-float ratioleft09;
 float sum01;
 float sum025;
 float sum05;
@@ -68,383 +52,207 @@ float ratio025a;
 float ratio05a;
 float ratio075a;
 float ratio09a;
-float inc;
 float j;
-float c;
-float l;
-float prob;
-String n;
-int osub;
-int diff1;
-int g;
-int f;
-int rp;
-int op1s;
-int op2s;
-int op3s;
+float trials[];
 int sessioncount;
 int filecount=1;
 int maxdirectory;
+int sknamesize;
+int skpathsize;
+String skname;
+String filepath;
+String skpath;
+Table tt;
+
 ColourTable colourtable1; 
 ColourTable colourtable01;
 ColourTable colourtable025;
 ColourTable colourtable05;
 ColourTable colourtable075;
 ColourTable colourtable09;
-
-
+ColourTable ct1;
+XYChart l1;
+XYChart l2;
+XYChart l3;
+XYChart l4;
+XYChart l5;
+XYChart l6;
+XYChart l7;
+XYChart l8;
+XYChart l9;
 
 
 void setup(){
-  i=0;
-  c=0;
-  j=0;
-  z=0;
-  diff1=0;
-  left01=0;
-  left025=0;
-  left05=0;
-  left075=0;
-  left09=0;
-  ratioleft01=0;
-  ratioleft025=0;
-  ratioleft05=0;
-  ratioleft075=0;
-  ratioleft09=0;
-  sum01=0;
-  sum025=0;
-  sum05=0;
-  sum075=0;
-  sum09=0;
-  ratio01=0;
-  ratio025=0;
-  ratio05=0;
-  ratio075=0;
-  ratio09=0;
-  left01a=0;
-  left025a=0;
-  left05a=0;
-  left075a=0;
-  left09a=0;
-  ratioleft01a=0;
-  ratioleft025a=0;
-  ratioleft05a=0;
-  ratioleft075a=0;
-  ratioleft09a=0;
-  sum01a=0;
-  sum025a=0;
-  sum05a=0;
-  sum075a=0;
-  sum09a=0;
-  ratio01a=0;
-  ratio025a=0;
-  ratio05a=0;
-  ratio075a=0;
-  ratio09a=0;
-  
-   op1s=filecount; 
-   op2s=g;
-   op3s=f;
 
-  n= "merged1.csv";
-  table = loadTable(n, "header");
-  String [] rowsn = loadStrings(n);
-  osub = rowsn.length/250;
-  sessioncount = rowsn.length/250;  
-  
-  size(1200,600);
+  skname = getClass().getSimpleName();
+  sknamesize = skname.length();
+  skpath = sketchPath("");
+  skpathsize = skpath.length();
+  filepath = skpath.substring(0, skpathsize-sknamesize-1) + "task1_variant_7/DataBuffer/trialdata/";
+  //println(filepath);
+  File dir = new File(dataPath("")+"/trialdata/");
+  File dir1 = new File(dataPath("")+"/positiondata/");
+  File [] directoryListing = dir.listFiles();
+  File [] directoryListing1 = dir1.listFiles();
+  if (directoryListing != null) {
+    for (File fl : directoryListing) {
+      for (int i=0; i< directoryListing.length; i++){
+        datum d = new datum(""+directoryListing[i]+"");
+        print(directoryListing[0]);
+        data.add(d);
+      }
+    }
+  }
+  if (directoryListing1 != null) {
+    for (File fl : directoryListing1) {
+      for (int i=0; i< directoryListing1.length; i++){
+        datum d = new datum(""+directoryListing1[i]+"");
+        print(directoryListing1[0]);
+        data.add(d);
+      }
+    }
+  }  
+  size(1200,800);
   colourtable1 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
   colourtable01 = ColourTable.getPresetColourTable(ColourTable.PURPLES,0,1);
   colourtable025 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
   colourtable05 = ColourTable.getPresetColourTable(ColourTable.GREENS,0,1);
   colourtable075 = ColourTable.getPresetColourTable(ColourTable.ORANGES,0,1);
   colourtable09= ColourTable.getPresetColourTable(ColourTable.REDS,0,1);
-  increment = rowsn.length;
-  minincrement =0;
-  float trialcnt [] = new float[rowsn.length];
-  float trials [] = new float[rowsn.length];
-  float prob [] = new float[rowsn.length];
-  float rightorwrong[] = new float[rowsn.length];
-  float colordata [] = new float [rowsn.length];
-  float sizedata [] = new float [rowsn.length];
-  float data01 [] = new float [rowsn.length];
-  float data025 [] = new float [rowsn.length];
-  float data05 [] = new float [rowsn.length];
-  float data075 [] = new float [rowsn.length];
-  float data09 [] = new float [rowsn.length];
-  float time [] = new float [rowsn.length];
+  ct1 = ColourTable.getPresetColourTable(ColourTable.OR_RD,0,1);
+  l1 = new XYChart(this);
+  l2 = new XYChart(this);
+  l3 = new XYChart(this);
+  l4 = new XYChart(this);
+  l5 = new XYChart(this);
+  l6 = new XYChart(this);
+  l7 = new XYChart(this);
+  l8 = new XYChart(this);
+  l9 = new XYChart(this);
+
   
-  for (TableRow row : table.rows()){
-      while (i<rowsn.length-1){
 
-        inc = 1/(increment);
-        j = (rowsn.length/250)*50;
-        float k = (j/2);
-        ratioleft01 = (left01/j);
-        ratioleft025 = (left025/j);
-        ratioleft05 = (left05/j);
-        ratioleft075 = (left075/j);
-        ratioleft09 = (left09/j);
-        ratio01 = (sum01/j);
-        ratio025 = (sum025/j);
-        ratio05 = sum05/j;
-        ratio075 = sum075/j;
-        ratio09 = sum09/j;
-        
-        ratioleft01a = (left01a/k);
-        ratioleft025a = (left025a/k);
-        ratioleft05a = (left05a/k);
-        ratioleft075a = (left075a/k);
-        ratioleft09a = (left09a/k);
-        ratio01a = (sum01a/k);
-        ratio025a = (sum025a/k);
-        ratio05a = sum05a/k;
-        ratio075a = sum075a/k;
-        ratio09a = sum09a/k;
-        
-        String [] thisRow = split(rowsn[i], ",");
-        float sortprob = table.getFloat(i,4);
-        int sortint = table.getInt(i,5);
-        int trialint = table.getInt(i,1);
-        int lr = table.getInt(i,6);
-        trialcnt [i]= z/(rowsn.length);
-        sizedata [i]= (10/((rowsn.length)/250))*i;
-        colordata [i]= colourtable1.findColour(sortprob);
-        time [i] = Float.parseFloat(thisRow[0]);
-        prob [i] = Float.parseFloat(thisRow[4]);
-        rightorwrong [i] = Float.parseFloat(thisRow[5]);
-        trials[i] = Float.parseFloat(thisRow[13]);
 
-        if(trialint>25){
-          if (sortprob==0.1){
-            sum01a += sortint;          
-            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-              left01a = left01a +1;
-            }
-          }
-          if (sortprob==0.25){
-            sum025a += sortint;
-            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-              left025a = left025a +1;
-            }         
-          }
-          if (sortprob==0.5){
-            sum05a += sortint;
-            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-              left05a = left05a +1;
-            }        
-          }
-          if (sortprob==0.75){
-            sum075a += sortint;
-            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-              left075a = left075a +1;
-            }
-          }
-          
-        if (sortprob==0.9){
-            sum09a += sortint;
-            if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-              left09a = left09a +1;
-            }        
-          }
-        }
-          
-        if (sortprob==0.1){
-          sum01 += sortint;
-
-          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-            left01 = left01 +1;
-          }
-        }
-        if (sortprob==0.25){
-          sum025 += sortint;
-          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-            left025 = left025 +1;
-          }    
-        }
-        if (sortprob==0.5){
-          sum05 += sortint;
-          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-            left05 = left05 +1;
-          }       
-        }
-        if (sortprob==0.75){
-          sum075 += sortint;
-          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-            left075 = left075 +1;
-          }
-        }
-        if (sortprob==0.9){
-          sum09 += sortint;
-          if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
-            left09 = left09 +1;
-          }         
-        }
-      i++;
-      c=+inc;
-      z++;
-    }
-    
-    lineChart2 = new XYChart(this);
-    lineChart2.setData(new float[] {0.1, 0.25, 0.5, 0.75, 0.9},
-                      new float[] {ratio01, ratio025, ratio05, ratio075, ratio09});
-    lineChart2.showXAxis(true);
-    lineChart2.showYAxis(true);
-    lineChart2.setMinY(0);
-    
-    lineChart2.setXAxisLabel("Left Trigger Probability");
-    lineChart2.setYAxisLabel("Test subject Left Trigger Probability");
-    lineChart2.setPointColour(color (140, 140, 255));
-    lineChart2.setPointSize(5);
-    lineChart2.setLineWidth(2);
-    lineChart2.getRightSpacing();
-    
-    lineChart = new XYChart(this);
-    lineChart.setData(new float[] {0.1, 0.25, 0.5, 0.75, 0.9},
-                      new float[] {ratioleft01, ratioleft025, ratioleft05, ratioleft075, ratioleft09});
-    lineChart.showXAxis(true);
-    lineChart.showYAxis(true);
-    lineChart.setMinY(0);
-    lineChart.setXAxisLabel("Left Trigger Probability");
-    lineChart.setYAxisLabel("Test subject Left Trigger Probability");
-    lineChart.setPointColour(color (140, 140, 255));
-    lineChart.setPointSize(5);
-    lineChart.setLineWidth(2);
-    lineChart.getRightSpacing();
-    
-    scatterplot = new XYChart(this);
-    scatterplot.setData(trials,rightorwrong);
-    scatterplot.showXAxis(true);
-    scatterplot.showYAxis(true);
-    scatterplot.setMinY(-1);
-    scatterplot.setMaxY(2);
-    scatterplot.setXAxisLabel("Trials");
-    scatterplot.setYAxisLabel("Test subject Correct Inference");
-    scatterplot.setPointColour(trialcnt, colourtable1);
-    scatterplot.setPointSize(sizedata, 10);
-    scatterplot.setLineWidth(2); 
-    scatterplot.getRightSpacing();
-    
-    
-    lineChart2a = new XYChart(this);
-    lineChart2a.setData(new float[] {0.1, 0.25, 0.5, 0.75, 0.9},
-                      new float[] {ratio01a, ratio025a, ratio05a, ratio075a, ratio09a});
-    lineChart2a.showXAxis(true);
-    lineChart2a.showYAxis(true);
-    lineChart2a.setMinY(0);
-    
-    lineChart2a.setXAxisLabel("Left Trigger Probability");
-    lineChart2a.setYAxisLabel("Test subject Left Trigger Probability");
-    lineChart2a.setPointColour(color (140, 140, 255));
-    lineChart2a.setPointSize(5);
-    lineChart2a.setLineWidth(2);
-    lineChart2a.getRightSpacing();
-    
-    lineChart1a = new XYChart(this);
-    lineChart1a.setData(new float[] {0.1, 0.25, 0.5, 0.75, 0.9},
-                      new float[] {ratioleft01a, ratioleft025a, ratioleft05a, ratioleft075a, ratioleft09a});
-    lineChart1a.showXAxis(true);
-    lineChart1a.showYAxis(true);
-    lineChart1a.setMinY(0);
-    lineChart1a.setXAxisLabel("Left Trigger Probability");
-    lineChart1a.setYAxisLabel("Test subject Left Trigger Probability");
-    lineChart1a.setPointColour(color (140, 140, 255));
-    lineChart1a.setPointSize(5);
-    lineChart1a.setLineWidth(2);
-    lineChart1a.getRightSpacing();
-  }
-  print (rowsn.length);
 }
  
  
 void draw(){
   background(0);
-  text(f+"max session",width/2,20);
-  //text(g+"min session",width/2,30);
-  //String ra1 = nf(ratioleft01,1,10);
-  //text(ra1+"ratio01",width/2,40);
-  text(ratio01a+"ratio01",width/2,40);
-  text(filecount+"filecount",width/2,30);
-  if (switchkey==1){
-    lineChart.draw(15,15,width-30,height-30);
-    fill(255);
-    textSize(15);
-    text("Test Subject percentage of chosing left", CENTER, height-(height-15));
+  displayall();
+   }
+
+
+class datum{
+  
+  float left01;
+  float left025;
+  float left05;
+  float left075;
+  float left09;
+  float ratioleft01;
+  float ratioleft025;
+  float ratioleft05;
+  float ratioleft075;
+  float ratioleft09;  
+  String fname;
+  float time []= new float[500];
+  float trials[] = new float[500];  
+  float trials1 [] = new float[500];
+  float trials2 [] = new float[500];  
+  float pos [] = new float[500];
+  float prob [] = new float[500];
+  float rightorwrong[] = new float[500];
+  float lr [] = new float[500];
+  //forage d 
+  //collect d
+  //optimal
+  //tot
+  float colordata [] = new float [500];
+  float sizedata [] = new float [500];
+  float probrightwrong1[][] = new float [500][500];
+  float sortpr1[] = new float [500];
+  float sortwr1[] = new float [500];
+  float probrightwrong2[][] = new float [500][500];
+  float sortpr2[] = new float [500];
+  float sortwr2[] = new float [500];  
+  datum(String ffff){
+  fname = ffff;
   }
-    
-  if (switchkey==2){
-    lineChart2.draw(15,15,width-30,height-30);
-    text("Test Subject percentage of determining correct reward", CENTER, height-(height-15));
-  }
-    
-  if (switchkey==3){
-    scatterplot.draw(15,15,width-30,height-30);
-    text("Test Subject percentage of determining correct reward", CENTER, height-(height-15));
-  }
+  void load(){
+    tt = loadTable(""+fname+"", ""+"header"+"");
+    for (int k = 1; k<500; k++){
+      //trials[k]= k;
+      time[k] = tt.getFloat(k,0);
+      trials[k] = tt.getFloat(k,1);
+      pos[k] = tt.getFloat(k,3);
+      prob[k] = tt.getFloat(k,4);
+      lr[k] = tt.getFloat(k,5);
+      if (k<250){
+        trials1[k] = tt.getFloat(k,1);
+        probrightwrong1[k][0] = tt.getFloat(k,4);
+        probrightwrong1[k][1] = tt.getFloat(k,3);
+        probrightwrong1[k][2] = tt.getFloat(k,5);       
+      }else{
+        trials2[k-250] = tt.getFloat(k,1)-250;        
+        probrightwrong2[k-250][0] = tt.getFloat(k,4);
+        probrightwrong2[k-250][1] = tt.getFloat(k,3);
+        probrightwrong2[k-250][2] = tt.getFloat(k,5);
+      }
+      Arrays.sort(probrightwrong1, new Comparator<float[]>(){
+        public int compare(float[] pp1, float[] pp2){
+          return Float.compare(pp1[0], pp2[0]);
+        }
+      });
+      Arrays.sort(probrightwrong2, new Comparator<float[]>(){
+        public int compare(float[] pp1, float[] pp2){
+          return Float.compare(pp1[0], pp2[0]);
+        }
+      });       
+    }
+    for (int u = 0; u<250; u++){
+      sortpr1[u] = probrightwrong1[u][0];
+      sortwr1 [u] = probrightwrong1[u][2];
+      sortpr2[u] = probrightwrong2[u][0];
+      sortwr2 [u] = probrightwrong2[u][2];      
+    }
    
-  if (switchkey==4){
-    lineChart1a.draw(15,15,width-30,height-30);
-    text("Test Subject % choosing left (2nd half of trials/block)", CENTER, height-(height-15));
-  }
-   
-  if (switchkey==5){
-    lineChart2a.draw(15,15,width-30,height-30);
-    text("Test Subject percentage of determining correct reward (2nd half of trials/block)", CENTER, height-(height-15));
+    //print(lr[1]);
+    l1.showXAxis(true);
+    l1.showYAxis(true);
+    l1.setData(trials, lr);    
+    l1.setXAxisLabel("probability");
+    l1.setYAxisLabel("right or wrong 1st half");
+    l1.setPointColour(color (140, 140, 255));
+    l1.setPointSize(5);
+    l1.setLineWidth(2);
+    
+    l2.showXAxis(true);
+    l2.showYAxis(true);
+    l2.setData(trials1, sortwr1);
+    l2.setXAxisLabel("trials");
+    l2.setYAxisLabel("right or wrong 1st half");
+    l2.setPointColour(sortpr1,ct1);
+    l2.setPointSize(5);
+    l2.setLineWidth(2);
+    
+    l3.showXAxis(true);
+    l3.showYAxis(true);
+    l3.setData(trials2, sortwr2);
+    l3.setXAxisLabel("trials");
+    l3.setYAxisLabel("right or wrong 2nd half");
+    l3.setPointColour(sortpr1,ct1);
+    l3.setPointSize(5);
+    l3.setLineWidth(2);
+
+  } 
+  void draw(){
+    l2.draw(50,50,500,500);
+    l3.draw(550,50,500,500);    
   }
 }
-
- void keyPressed(){
-   //if (key==CODED){
-     if (key=='1'){
-       switchkey=1;
-       loop();
-     }
-     if (key=='2'){
-       switchkey=2;
-       loop();
-     }
-     if (key=='3'){
-       switchkey=3;
-      
-     loop();
-     }
-     if (key=='4'){
-       switchkey=4;
-      
-     loop();
-     }
-     if (key=='5'){
-       switchkey=5;
-      
-     loop();
-     }
-     if (key=='6'){
-       switchkey=6;
-      
-     loop();
-     }
-     if (key=='r'){
-       rp++;
-       setup();      
-     }
-     
-     if (keyCode==UP&&(f<sessioncount)){
-          f++;
-     }
-     if (keyCode==DOWN&&(f>0)){
-          f--;
-     }
-     //if (keyCode==RIGHT&&(g<=f)){
-     //     g++;
-     //}
-     //if (keyCode==LEFT&&(g>0)){
-     //     g--;
-     //}
-     if (keyCode=='='&&(filecount<maxdirectory-1)){
-          filecount++;
-     }
-     if (keyCode=='-'&&(filecount>1)){
-          filecount--;
-     }
-   }
-   
+void displayall(){
+    for (datum dt : data){
+      dt.load();
+      dt.draw();
+    }
+}

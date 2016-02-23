@@ -1,301 +1,302 @@
-import java.applet.Applet;
-import org.gicentre.utils.stat.*;   
-import org.gicentre.utils.colour.*;    
-import java.awt.Color;                 
 import java.awt.*;
 import java.util.*;
 import processing.net.*; 
 import processing.serial.*;
 import javax.swing.*; 
 import java.io.*;
+import java.io.File;
+import java.util.Iterator;
+import java.util.Arrays;
+import java.util.Comparator;
+import org.gicentre.utils.stat.*;
+import org.gicentre.utils.colour.*;
 
-HScrollbar hs1, hs2;  // Two scrollbars     
-ArrayList<pts> points;
-String n = " ";
-float zpos;
-float x1;
-float y1;
-float x2;
-float y2;
-int op1;
-float k;
- 
+ArrayList <datum> data = new ArrayList<datum>();
+ArrayList <datum1> data1 = new ArrayList<datum1>();
+Table table1;
+Table table;
+int switchkey=1;
+float o;
+int i = 0;
+int p = 0;
+float z;
+int colorincrement;
+int block1;
+int trial;
+float sum01;
+float sum025;
+float sum05;
+float sum075;
+float sum09;
+float ratio01;
+float ratio025;
+float ratio05;
+float ratio075;
+float ratio09;
+float left01a;
+float left025a;
+float left05a;
+float left075a;
+float left09a;
+float ratioleft01a;
+float ratioleft025a;
+float ratioleft05a;
+float ratioleft075a;
+float ratioleft09a;
+float sum01a;
+float sum025a;
+float sum05a;
+float sum075a;
+float sum09a;
+float ratio01a;
+float ratio025a;
+float ratio05a;
+float ratio075a;
+float ratio09a;
+float j;
+float trials[];
+int sessioncount;
+int filecount=1;
+int maxdirectory;
+Table tt;
+
+ColourTable colourtable1; 
+ColourTable colourtable01;
+ColourTable colourtable025;
+ColourTable colourtable05;
+ColourTable colourtable075;
+ColourTable colourtable09;
+ColourTable ct1;
+XYChart l1;
+XYChart l2;
+XYChart l3;
+XYChart l4;
+XYChart l5;
+XYChart l6;
+XYChart l7;
+XYChart l8;
+XYChart l9;
+XYChart l1a;
+XYChart l2a;
+XYChart l3a;
+XYChart l4a;
+XYChart l5a;
+XYChart l6a;
+XYChart l7a;
+XYChart l8a;
+XYChart l9a;
+
 void setup(){
-  
-  try { 
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-  } 
-  catch (Exception e) { 
-    e.printStackTrace();
-  } 
-  String preset="Bailey Hwa,positionv2015_11_06_18_37_p.csv";
-  String op1s = JOptionPane.showInputDialog(frame, "position_filename.csv", preset);
-  if(op1s != null) n = op1s;
-  size(displayWidth, displayHeight,P3D);
-  hs1 = new HScrollbar(0, (displayHeight*0.5+200)-8, width, 16, 16);
-  hs2 = new HScrollbar(0, (displayHeight*0.5+300)+8, width, 16, 16);     
-    }
-    
-    void loadData(){
-      String [] rows = loadStrings(n);
-      float bar1Pos = 7.5*(hs1.getPos());    
-      points = new ArrayList<pts>();
-      if (keyPressed==true){
-        if ((keyCode==UP) && (k<rows.length)){
-          k++;
-        }else if ((keyCode==DOWN) &&( k >0)){
-          k--;
-        }
+
+  File dir = new File(dataPath("")+"/task1/trialdata/");
+  //File dir1 = new File(dataPath("")+"task1/positiondata/");
+  File dir2 = new File(dataPath("")+"/task2/trialdata/");
+  File dir3 = new File(dataPath("")+"task2/positiondata/");  
+  File [] directoryListing = dir.listFiles();
+  File [] directoryListing2 = dir2.listFiles();
+  if (directoryListing != null) {
+    for (File fl : directoryListing) {
+      for (int i=0; i< directoryListing.length; i++){
+        datum d = new datum(""+directoryListing[i]+"");
+        print(directoryListing[0]);
+        data.add(d);
       }
-      for(int i = 1; i<k+bar1Pos; i++){
-        if (i<rows.length){
-          //split data
-          String [] thisRow = split(rows[i], ",");
-   
-          // determine x, y, and milliseconds
-          float newtrial = float(thisRow[0]);
-          float newm = float(thisRow[2]);
-          float newx = float(thisRow[5]);
-          float newy = float(thisRow[6]);
-          float newSdia = float(thisRow[7]);
-          float newCdia = float(thisRow[8]);
-          float newcirclex0 = float(thisRow[9]);
-          float newcircley0 = float(thisRow[10]);
-          float newcirclex1 = float(thisRow[11]);
-          float newcircley1 = float(thisRow[12]);
-          float newcirclex2 = float(thisRow[13]);
-          float newcircley2 = float(thisRow[14]);
-          pts b = new pts(newtrial, newx, newy, newm, newSdia, newCdia, newcirclex0, newcircley0, newcirclex1, newcircley1, newcirclex2, newcircley2);
-          points.add(b);
-        }
-          
-       
-
-       
-        }
     }
- 
-void draw(){
-
-  background(0);
-    loadData();
-  float bar1Pos = hs1.getPos()-width/2;
-      //float bar2Pos = hs1.getPos()-width/2;
-  float dis = 100-sqrt(sq(bar1Pos-displayWidth*0.5));
-  textAlign(CENTER);
-  text("Movement Path", width/2, 100);
-  text(bar1Pos, 100, 500);
-  text(dis, 100, 520);
-  hs1.update();
-  hs2.update();
-  hs1.display1();
-  hs2.display1();
-  for(pts thepoints: points)
-  {
-    thepoints.display();
   }
-  for(int i = 0; i<points.size()-1; i++){
-    
-    pts thepoints = points.get(i);
-    thepoints.display();
-               
-    pts thepoints2 = points.get(i+1);
-    thepoints2.display();
-    float d = i*0.017;
-    float redcolor = 204-d;
-    float greencolor = 204-d;
-    float bluecolor;
-    if (greencolor <= 0){
-    bluecolor = 255-d;
-    }else{
-     bluecolor = 255;
+  if (directoryListing2 != null) {
+    for (File fl : directoryListing2) {
+      for (int i=0; i< directoryListing2.length; i++){
+        datum1 d = new datum1(""+directoryListing2[i]+"");
+        print(directoryListing2[0]);
+        data1.add(d);
+      }
     }
-    stroke(redcolor, greencolor, bluecolor, 150);
-    //stroke(204-i, 204-i, 255, 150);
-    line(thepoints.x1x, thepoints.y1y, 
-    thepoints2.x1x, thepoints2.y1y);
-    //if (keyPressed==true){
-    // stroke(204);
-    // fill(102); 
-    // ellipse( thepoints.x0a, thepoints.y0a, thepoints.Sdia1, thepoints.Sdia1);
-    // fill(0, 3, 255);
-    // ellipse( thepoints.x1a, thepoints.y1a, thepoints.Cdia1, thepoints.Cdia1);
-    // fill(204, 153, 0);
-    // ellipse( thepoints.x2a, thepoints.y2a, thepoints.Cdia1, thepoints.Cdia1);
-    //}
+  }  
+  size(1200,800);
+  colourtable1 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
+  colourtable01 = ColourTable.getPresetColourTable(ColourTable.PURPLES,0,1);
+  colourtable025 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
+  colourtable05 = ColourTable.getPresetColourTable(ColourTable.GREENS,0,1);
+  colourtable075 = ColourTable.getPresetColourTable(ColourTable.ORANGES,0,1);
+  colourtable09= ColourTable.getPresetColourTable(ColourTable.REDS,0,1);
+  ct1 = ColourTable.getPresetColourTable(ColourTable.OR_RD,0,1);
+  l1 = new XYChart(this);
+  l2 = new XYChart(this);
+  l3 = new XYChart(this);
+  l4 = new XYChart(this);
+  l5 = new XYChart(this);
+  l6 = new XYChart(this);
+  l7 = new XYChart(this);
+  l8 = new XYChart(this);
+  l9 = new XYChart(this);
 
-    float disX = thepoints.x1x-mouseX;
-    float disY = thepoints.y1y-mouseY;
-    float disC = (sqrt(sq(disX) + sq(disY)));
-    if (disC < 10){
-      textSize(16);
-      fill(255);
-      text(thepoints.x1x, 100,120);
-      text(thepoints.y1y, 100,140);
-      text(thepoints.m1m, 100,160);
-   
-    }
-    //if (keyPressed=true){
-    //  loadData();
-    //}
-  }
+  
+
+
 }
  
-class pts
-{
  
-  ArrayList <Float> n, x, y, m, Sdia, Cdia, x0, y0, x1, y1, x2, y2;
-  float newtrial1newtrial;
-  float x1x;
-  float y1y;
-  float m1m;
-  float Sdia1;
-  float Cdia1;
-  float x0a;
-  float y0a;
-  float x1a;
-  float y1a;
-  float x2a;
-  float y2a;
-  
-  
-  pts(float newtrialin, float xin, float yin, float min, float Sdia2, float Cdia2, float x0in, float y0in, float x1in, float y1in, float x2in, float y2in)
-  {
-    n = new ArrayList<Float>();
-    m = new ArrayList<Float>();
-    x = new ArrayList<Float>();
-    y = new ArrayList<Float>();
-    Sdia = new ArrayList<Float>();
-    Cdia = new ArrayList<Float>();
-    x0 = new ArrayList<Float>();
-    y0 = new ArrayList<Float>();
-    x1= new ArrayList<Float>();
-    y1 =  new ArrayList<Float>();
-    x2 = new ArrayList<Float>();
-    y2 = new ArrayList<Float>();
-    
-    n.add(newtrialin);
-    m.add(min);
-    x.add(xin);
-    y.add(yin);
-    Sdia.add(Sdia2);
-    Cdia.add(Cdia2);
-    x0.add(x0in);
-    y0.add(y0in);
-    x1.add(x1in);
-    y1.add(y1in);
-    x2.add(x2in);
-    y2.add(y2in);
+void draw(){
+  background(0);
+  displayall();
+   }
 
- 
+
+class datum{
+  
+  float left01;
+  float left025;
+  float left05;
+  float left075;
+  float left09;
+  float ratioleft01;
+  float ratioleft025;
+  float ratioleft05;
+  float ratioleft075;
+  float ratioleft09;  
+  String fname;
+  float time []= new float[500];
+  float trials[] = new float[500];  
+  float trials1 [] = new float[500];
+  float trials2 [] = new float[500];  
+  float pos [] = new float[500];
+  float prob [] = new float[500];
+  float rightorwrong[] = new float[500];
+  float lr [] = new float[500];
+  //forage d 
+  //collect d
+  //optimal
+  //tot
+  float colordata [] = new float [500];
+  float sizedata [] = new float [500];
+  float probrightwrong1[][] = new float [500][500];
+  float sortpr1[] = new float [500];
+  float sortwr1[] = new float [500];
+  float probrightwrong2[][] = new float [500][500];
+  float sortpr2[] = new float [500];
+  float sortwr2[] = new float [500];  
+  datum(String ffff){
+  fname = ffff;
   }
- 
-  void display()
-  {
-
- //draw line to connect points
-      beginShape();  
-      //fill(255);
-      //stroke(255);
- 
-      for (int i =0; i<(x.size()); i++) {
-        x1x= x.get(i);
-        y1y=y.get(i);
-        m1m=m.get(i);
-        Sdia1= Sdia.get(i);
-        Cdia1= Cdia.get(i);
-        x0a=x0.get(i);
-        y0a=y0.get(i);
-        x1a=x1.get(i);
-        y1a=y1.get(i);
-        x2a=x2.get(i);
-        y2a=y2.get(i);
-        //stroke(204,204,255);
-        strokeWeight(2);
-        //fill(255);
-        
-        vertex(x1x,y1y);
+  void load(){
+    tt = loadTable(""+fname+"", ""+"header"+"");
+    for (int k = 1; k<500; k++){
+      //trials[k]= k;
+      time[k] = tt.getFloat(k,0);
+      trials[k] = tt.getFloat(k,1);
+      pos[k] = tt.getFloat(k,3);
+      prob[k] = tt.getFloat(k,4);
+      lr[k] = tt.getFloat(k,5);
+      if (k<250){
+        trials1[k] = tt.getFloat(k,1);
+        probrightwrong1[k][0] = tt.getFloat(k,4);
+        probrightwrong1[k][1] = tt.getFloat(k,3);
+        probrightwrong1[k][2] = tt.getFloat(k,5);       
+      }else{
+        trials2[k-250] = tt.getFloat(k,1)-250;        
+        probrightwrong2[k-250][0] = tt.getFloat(k,4);
+        probrightwrong2[k-250][1] = tt.getFloat(k,3);
+        probrightwrong2[k-250][2] = tt.getFloat(k,5);
       }
-      endShape(CLOSE);
+      Arrays.sort(probrightwrong1, new Comparator<float[]>(){
+        public int compare(float[] pp1, float[] pp2){
+          return Float.compare(pp1[0], pp2[0]);
+        }
+      });
+      Arrays.sort(probrightwrong2, new Comparator<float[]>(){
+        public int compare(float[] pp1, float[] pp2){
+          return Float.compare(pp1[0], pp2[0]);
+        }
+      });       
     }
-  }
-
-
-class HScrollbar {
-  String [] rows = loadStrings(n);
-  int swidth, sheight;    
-  float xpos, ypos;       
-  float spos, newspos;    
-  float sposMin, sposMax; 
-  int loose;            
-  boolean over;   
-  boolean locked;
-  float ratio;
-
-  HScrollbar (float xp, float yp, int sw, int sh, int l) {
-    swidth = sw;
-    sheight = sh;
-    int widthtoheight = sw - sh;
-    ratio = (float)sw / (float)widthtoheight;
-    xpos = xp;
-    ypos = yp-sheight/2;
-    //spos = xpos + swidth/2 - sheight/2;
-    spos = 0;
-    newspos = spos;
-    sposMin = xpos;
-    //sposMax = xpos + swidth - sheight;
-    sposMax = rows.length -1;
-    loose = l;
-
-  }
-
-void update() {
-    if (overEvent()) {
-      over = true;
-    } else {
-      over = false;
+    for (int u = 0; u<250; u++){
+      sortpr1[u] = probrightwrong1[u][0];
+      sortwr1 [u] = probrightwrong1[u][2];
+      sortpr2[u] = probrightwrong2[u][0];
+      sortwr2 [u] = probrightwrong2[u][2];      
     }
-    if (mousePressed && over) {
-      locked = true;
-    }
-    if (!mousePressed) {
-      locked = false;
-    }
+   
+    //print(lr[1]);
+    l1.showXAxis(true);
+    l1.showYAxis(true);
+    l1.setData(trials, lr);    
+    l1.setXAxisLabel("probability");
+    l1.setYAxisLabel("right or wrong 1st half");
+    l1.setPointColour(color (140, 140, 255));
+    l1.setPointSize(5);
+    l1.setLineWidth(2);
     
-    if (locked) {
-      newspos = constrain(mouseX-sheight/2, sposMin, sposMax);
+    l2.showXAxis(true);
+    l2.showYAxis(true);
+    l2.setData(trials1, sortwr1);
+    l2.setXAxisLabel("trials");
+    l2.setYAxisLabel("right or wrong 1st half");
+    l2.setPointColour(sortpr1,ct1);
+    l2.setPointSize(5);
+    l2.setLineWidth(2);
+    
+    l3.showXAxis(true);
+    l3.showYAxis(true);
+    l3.setData(trials2, sortwr2);
+    l3.setXAxisLabel("trials");
+    l3.setYAxisLabel("right or wrong 2nd half");
+    l3.setPointColour(sortpr1,ct1);
+    l3.setPointSize(5);
+    l3.setLineWidth(2);
+
+  } 
+  void draw(){
+    l2.draw(50,50,500,500);
+    l3.draw(550,50,500,500);    
+  }
+}
+class datum1{
+  String fname;
+  float time []= new float[500];
+  float trials[] = new float[500]; 
+  float pos [] = new float[500];
+  float prob [] = new float[500];
+  float rightorwrong[] = new float[500];
+  float lr [] = new float[500];
+  //forage d 
+  //collect d
+  //optimal
+  //tot
+  float colordata [] = new float [500];
+  float sizedata [] = new float [500];
+  datum1(String ffff){
+  fname = ffff;
+  }
+  void load(){
+    tt = loadTable(""+fname+"", ""+"header"+"");
+    for (int k = 1; k<60; k++){
+      time[k] = tt.getFloat(k,0);
+      trials[k] = tt.getFloat(k,1);
+      pos[k] = tt.getFloat(k,3);
+      prob[k] = tt.getFloat(k,4);
+      lr[k] = tt.getFloat(k,5);
+      
+      //Arrays.sort(probrightwrong1, new Comparator<float[]>(){
+      //  public int compare(float[] pp1, float[] pp2){
+      //    return Float.compare(pp1[0], pp2[0]);
+      //  }
+      //});       
     }
-    if (abs(newspos - spos) > 1) {
-      spos = spos + (newspos-spos)/loose;
+    for (int u = 0; u<250; u++){
+      //sortpr1[u] = probrightwrong1[u][0];
+      //sortwr1 [u] = probrightwrong1[u][2];
+      //sortpr2[u] = probrightwrong2[u][0];
+      //sortwr2 [u] = probrightwrong2[u][2];      
     }
+   
+
+  } 
+  void draw(){
   }
-  
-   float constrain(float val, float minv, float maxv) {
-   return min(max(val, minv), maxv);
-  }
-  
-  boolean overEvent() {
-    if (mouseX > xpos && mouseX < xpos+swidth &&
-       mouseY > ypos && mouseY < ypos+sheight) {
-      return true;
-    } else {
-      return false;
+}
+void displayall(){
+    for (datum dt : data){
+      dt.load();
+      dt.draw();
     }
-  }
-   void display1() {
-    noStroke();
-    fill(204);
-    rect(xpos, ypos, swidth, sheight);
-    if (over || locked) {
-      fill(0, 0, 0);
-    } else {
-      fill(102, 102, 102);
-    }
-    rect(spos, ypos, sheight, sheight);
-  }
-  float getPos() {
-    // Convert spos to be values between
-    // 0 and the total width of the scrollbar
-    return spos * ratio;
-  }
 }

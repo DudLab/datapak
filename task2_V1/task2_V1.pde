@@ -81,9 +81,9 @@ void setup(){
   } 
   size(displayWidth, displayHeight);
   circle_diameter = new IntList();
-  circle_diameter.append(60);
   circle_diameter.append(90);
   circle_diameter.append(120);
+  circle_diameter.append(150);
   
   circle_diameter.shuffle();
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
@@ -160,9 +160,11 @@ void draw(){
     direc = 1; 
   }
   if (direc == -1){
+    textSize(32);
     text("move inwards", (x0-500),y0+90);    
   }
   if (direc == 1){
+    textSize(32);    
     text("move outwards", (x0-500),y0+90);    
   } 
   textSize(16);
@@ -276,7 +278,7 @@ void draw(){
         trialCnt++;
         totdist = indist + outdist;
         totguessint = outguessint + inguessint;
-        data =str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + circlediameter  + "," + d  
+        data = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + circlediameter  + "," + d  
         + "," + int(outguessint) + "," + int(inguessint) + "," + int(totguessint) + "," + int(outdist) + "," + int(indist) + "," + int(totdist);
         output.println(data);
         output.flush();

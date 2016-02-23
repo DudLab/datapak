@@ -285,6 +285,9 @@ void draw() {
     break;
 
   case 1:
+    collectionDistance=0;
+    optimalTotaldistance=0;
+    collectionDistance = 0;  
     trigState = false;
     whichside = 0;
     rightORwrong = 1;
