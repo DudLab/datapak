@@ -10,8 +10,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import org.gicentre.utils.stat.*;
 import org.gicentre.utils.colour.*;
-
 ArrayList <datum> data = new ArrayList<datum>();
+ArrayList <datum1> data1 = new ArrayList<datum1>();
 Table table1;
 Table table;
 int switchkey=1;
@@ -80,7 +80,15 @@ XYChart l6;
 XYChart l7;
 XYChart l8;
 XYChart l9;
-
+XYChart l1a;
+XYChart l2a;
+XYChart l3a;
+XYChart l4a;
+XYChart l5a;
+XYChart l6a;
+XYChart l7a;
+XYChart l8a;
+XYChart l9a;
 
 void setup(){
 
@@ -90,8 +98,8 @@ void setup(){
   skpathsize = skpath.length();
   filepath = skpath.substring(0, skpathsize-sknamesize-1) + "task1_variant_7/DataBuffer/trialdata/";
   //println(filepath);
-  File dir = new File(dataPath("")+"/trialdata/");
-  File dir1 = new File(dataPath("")+"/positiondata/");
+  File dir = new File(dataPath("")+"/task1/trialdata/");
+  File dir1 = new File(dataPath("")+"/task1/trialdata/");
   File [] directoryListing = dir.listFiles();
   File [] directoryListing1 = dir1.listFiles();
   if (directoryListing != null) {
@@ -106,13 +114,13 @@ void setup(){
   if (directoryListing1 != null) {
     for (File fl : directoryListing1) {
       for (int i=0; i< directoryListing1.length; i++){
-        datum d = new datum(""+directoryListing1[i]+"");
+        datum1 d = new datum1(""+directoryListing1[i]+"");
         print(directoryListing1[0]);
-        data.add(d);
+        data1.add(d);
       }
     }
   }  
-  size(1200,800);
+  size(1200,1200);
   colourtable1 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
   colourtable01 = ColourTable.getPresetColourTable(ColourTable.PURPLES,0,1);
   colourtable025 = ColourTable.getPresetColourTable(ColourTable.BLUES,0,1);
@@ -129,7 +137,15 @@ void setup(){
   l7 = new XYChart(this);
   l8 = new XYChart(this);
   l9 = new XYChart(this);
-
+  l1a = new XYChart(this);
+  l2a = new XYChart(this);
+  l3a = new XYChart(this);
+  l4a = new XYChart(this);
+  l5a = new XYChart(this);
+  l6a = new XYChart(this);
+  l7a = new XYChart(this);
+  l8a = new XYChart(this);
+  l9a = new XYChart(this);
   
 
 
@@ -250,9 +266,108 @@ class datum{
     l3.draw(550,50,500,500);    
   }
 }
+class datum1{
+  String fname;
+  float time []= new float[60];
+  float trials[] = new float[60];
+  float diff [] = new float[60];
+  float diff1 [] = new float[60];
+  float diff2 [] = new float[60];
+  float diff3 [] = new float[60];
+  float ringwidth [] = new float[60];
+  float outg [] = new float[60];
+  float ing []  = new float[60];
+  float rngouin[][] = new float[60][60];
+  float rngouin1[][] = new float[60][60];
+  float rngouin2[][] = new float[60][60];
+  float rngouin3[][] = new float[60][60];  
+  float colordata [] = new float [60];
+  float sortwout [] = new float[60];
+  float sortwin [] = new float[60];
+  float sortwout1 [] = new float[60];
+  float sortwin1[] = new float[60];
+  float sortwout2 [] = new float[60];
+  float sortwin2 [] = new float[60];  
+  float sortwout3 [] = new float[60];
+  float sortwin3 [] = new float[60];
+  float sizedata [] = new float [500];
+  datum1(String ffff){
+  fname = ffff;
+  }
+  void load(){
+    tt = loadTable(""+fname+"", ""+"header"+"");
+    for (int k = 1; k<60; k++){
+      time[k] = tt.getFloat(k,0);
+      trials[k] = tt.getFloat(k,1);
+      outg[k] = tt.getFloat(k,5);
+      ing[k] = tt.getFloat(k,6);
+      rngouin[k][0] = tt.getFloat(k,4);
+      rngouin[k][1] = tt.getFloat(k,5);        
+      rngouin[k][2] = tt.getFloat(k,6);          
+      if (k<=20){
+        colordata[k] = 0;  
+        rngouin1[k][0] = tt.getFloat(k,4);
+        rngouin1[k][1] = tt.getFloat(k,5);        
+        rngouin1[k][2] = tt.getFloat(k,6);         
+      }
+      if (k>20 && k<=40){
+        colordata[k] = 0.5;         
+        rngouin2[k][0] = tt.getFloat(k,4);
+        rngouin2[k][1] = tt.getFloat(k,5);        
+        rngouin2[k][2] = tt.getFloat(k,6);        
+      }
+      if (k>40){
+        colordata[k] = 1;         
+        rngouin3[k][0] = tt.getFloat(k,4);
+        rngouin3[k][1] = tt.getFloat(k,5);        
+        rngouin3[k][2] = tt.getFloat(k,6);         
+      }
+      Arrays.sort(rngouin, new Comparator<float[]>(){
+       public int compare(float[] pp1, float[] pp2){
+         return Float.compare(pp1[0], pp2[0]);
+       }
+      });   
+    }
+    for (int u = 0; u<60; u++){
+      sortwout[u] = rngouin[u][1];
+      sortwin[u] = rngouin[u][2];
+      //sortwout1[u] = rngouin1[u][1];
+      //sortwin1[u] = rngouin1[u][2];
+      //sortwout2[u] = rngouin2[u][1];
+      //sortwin2[u] = rngouin2[u][2];
+      //sortwout3[u] = rngouin3[u][1];
+      //sortwin3[u] = rngouin3[u][2];
+    }
+    l1a.showXAxis(true);
+    l1a.showYAxis(true);
+    l1a.setData(trials,sortwout);    
+    l1a.setXAxisLabel("trials");
+    l1a.setYAxisLabel("guesses out");
+    l1a.setPointColour(colordata,colourtable01);
+    l1a.setPointSize(5);
+    l1a.setLineWidth(2);
+
+    l2a.showXAxis(true);
+    l2a.showYAxis(true);
+    l2a.setData(trials,sortwin);    
+    l2a.setXAxisLabel("trials");
+    l2a.setYAxisLabel("guesses inward");
+    l2a.setPointColour(colordata,colourtable01);
+    l2a.setPointSize(5);
+    l2a.setLineWidth(2);    
+  } 
+  void draw(){
+    l1a.draw(50,550,500,500);
+    l2a.draw(550,550,500,500); 
+  }
+}
 void displayall(){
     for (datum dt : data){
       dt.load();
       dt.draw();
     }
+    for (datum1 dt : data1){
+      dt.load();
+      dt.draw();
+    }    
 }
