@@ -22,6 +22,7 @@ float z;
 int colorincrement;
 int block1;
 int trial;
+int dispint=0;
 float sum01;
 float sum025;
 float sum05;
@@ -89,7 +90,9 @@ XYChart l6a;
 XYChart l7a;
 XYChart l8a;
 XYChart l9a;
-
+XYChart l10a;
+XYChart l11a;
+XYChart l12a;
 void setup(){
 
   skname = getClass().getSimpleName();
@@ -146,7 +149,10 @@ void setup(){
   l7a = new XYChart(this);
   l8a = new XYChart(this);
   l9a = new XYChart(this);
-  
+  l10a = new XYChart(this);
+  l11a = new XYChart(this);
+  l12a = new XYChart(this);
+   
 
 
 }
@@ -262,18 +268,24 @@ class datum{
 
   } 
   void draw(){
+    if (dispint==0){
     l2.draw(50,50,500,500);
-    l3.draw(550,50,500,500);    
+    l3.draw(550,50,500,500);
+    }
   }
 }
 class datum1{
   String fname;
   float time []= new float[60];
   float trials[] = new float[60];
+  float trials1[] = new float[60];  
   float diff [] = new float[60];
-  float diff1 [] = new float[60];
-  float diff2 [] = new float[60];
-  float diff3 [] = new float[60];
+  float diff1o [] = new float[60];
+  float diff2o [] = new float[60];
+  float diff3o [] = new float[60];
+  float diff1i [] = new float[60];
+  float diff2i [] = new float[60];
+  float diff3i [] = new float[60];  
   float ringwidth [] = new float[60];
   float outg [] = new float[60];
   float ing []  = new float[60];
@@ -305,6 +317,7 @@ class datum1{
       rngouin[k][1] = tt.getFloat(k,5);        
       rngouin[k][2] = tt.getFloat(k,6);          
       if (k<=20){
+        trials1[k]=k;
         colordata[k] = 0;  
         rngouin1[k][0] = tt.getFloat(k,4);
         rngouin1[k][1] = tt.getFloat(k,5);        
@@ -317,7 +330,7 @@ class datum1{
         rngouin2[k][2] = tt.getFloat(k,6);        
       }
       if (k>40){
-        colordata[k] = 1;         
+        colordata[k] = 1;
         rngouin3[k][0] = tt.getFloat(k,4);
         rngouin3[k][1] = tt.getFloat(k,5);        
         rngouin3[k][2] = tt.getFloat(k,6);         
@@ -331,34 +344,149 @@ class datum1{
     for (int u = 0; u<60; u++){
       sortwout[u] = rngouin[u][1];
       sortwin[u] = rngouin[u][2];
-      //sortwout1[u] = rngouin1[u][1];
-      //sortwin1[u] = rngouin1[u][2];
-      //sortwout2[u] = rngouin2[u][1];
-      //sortwin2[u] = rngouin2[u][2];
-      //sortwout3[u] = rngouin3[u][1];
-      //sortwin3[u] = rngouin3[u][2];
+      if (u<20){
+        
+        sortwout1[u] = rngouin1[u][1];
+        sortwin1[u] = rngouin1[u][2];
+        sortwout2[u] = rngouin2[u][1];
+        sortwin2[u] = rngouin2[u][2];
+        sortwout3[u] = rngouin3[u][1];
+        sortwin3[u] = rngouin3[u][2];
+        diff1o[0] = diff1o[1];
+        diff2o[0] = diff2o[1];
+        diff3o[0] = diff3o[1];
+        diff1i[0] = diff1i[1];
+        diff2i[0] = diff2i[1];
+        diff3i[0] = diff3i[1];
+        if(u-1>=0){
+        diff1o[u] = sortwout1[u]-sortwout1[u-1];
+        diff2o[u] = sortwout2[u]-sortwout2[u-1];
+        diff3o[u] = sortwout3[u]-sortwout3[u-1];
+        }
+        
+      }
     }
     l1a.showXAxis(true);
     l1a.showYAxis(true);
-    l1a.setData(trials,sortwout);    
-    l1a.setXAxisLabel("trials");
-    l1a.setYAxisLabel("guesses out");
+    l1a.setData(trials1,sortwout1);    
+    l1a.setXAxisLabel("trials d=90");
+    l1a.setYAxisLabel("guesses outward");
     l1a.setPointColour(colordata,colourtable01);
     l1a.setPointSize(5);
     l1a.setLineWidth(2);
 
     l2a.showXAxis(true);
     l2a.showYAxis(true);
-    l2a.setData(trials,sortwin);    
-    l2a.setXAxisLabel("trials");
-    l2a.setYAxisLabel("guesses inward");
+    l2a.setData(trials1,sortwout2);    
+    l2a.setXAxisLabel("trials d=120");
+    l2a.setYAxisLabel("guesses outward");
     l2a.setPointColour(colordata,colourtable01);
     l2a.setPointSize(5);
-    l2a.setLineWidth(2);    
+    l2a.setLineWidth(2);
+    
+    l3a.showXAxis(true);
+    l3a.showYAxis(true);
+    l3a.setData(trials1,sortwout3);    
+    l3a.setXAxisLabel("trials d=150");
+    l3a.setYAxisLabel("guesses outward");
+    l3a.setPointColour(colordata,colourtable01);
+    l3a.setPointSize(5);
+    l3a.setLineWidth(2);
+
+    l4a.showXAxis(true);
+    l4a.showYAxis(true);
+    l4a.setData(trials1,sortwin1);    
+    l4a.setXAxisLabel("trials d=90");
+    l4a.setYAxisLabel("guesses inward");
+    l4a.setPointColour(colordata,colourtable01);
+    l4a.setPointSize(5);
+    l4a.setLineWidth(2);
+
+    l5a.showXAxis(true);
+    l5a.showYAxis(true);
+    l5a.setData(trials1,sortwin2);    
+    l5a.setXAxisLabel("trials d=120");
+    l5a.setYAxisLabel("guesses inward");
+    l5a.setPointColour(colordata,colourtable01);
+    l5a.setPointSize(5);
+    l5a.setLineWidth(2);
+    
+    l6a.showXAxis(true);
+    l6a.showYAxis(true);
+    l6a.setData(trials1,sortwin3);    
+    l6a.setXAxisLabel("trials d=150");
+    l6a.setYAxisLabel("guesses inward");
+    l6a.setPointColour(colordata,colourtable01);
+    l6a.setPointSize(5);
+    l6a.setLineWidth(2);
+
+
+    l7a.showXAxis(true);
+    l7a.showYAxis(true);
+    l7a.setData(trials1,diff1o);    
+    l7a.setXAxisLabel("trials d=90");
+    l7a.setYAxisLabel("diff out");
+    l7a.setPointColour(colordata,colourtable01);
+    l7a.setPointSize(5);
+    l7a.setLineWidth(2);
+    
+    l8a.showXAxis(true);
+    l8a.showYAxis(true);
+    l8a.setData(trials1,diff2o);    
+    l8a.setXAxisLabel("trials d=120");
+    l8a.setYAxisLabel("diff out");
+    l8a.setPointColour(colordata,colourtable01);
+    l8a.setPointSize(5);
+    l8a.setLineWidth(2);
+    
+    l9a.showXAxis(true);
+    l9a.showYAxis(true);
+    l9a.setData(trials1,diff3o);    
+    l9a.setXAxisLabel("trials d=150");
+    l9a.setYAxisLabel("guesses inward");
+    l9a.setPointColour(colordata,colourtable01);
+    l9a.setPointSize(5);
+    l9a.setLineWidth(2);
+
+
+    l10a.showXAxis(true);
+    l10a.showYAxis(true);
+    l10a.setData(trials1,diff1i);    
+    l10a.setXAxisLabel("trials d=90");
+    l10a.setYAxisLabel("diff in");
+    l10a.setPointColour(colordata,colourtable01);
+    l10a.setPointSize(5);
+    l10a.setLineWidth(2);
+    
+    l11a.showXAxis(true);
+    l11a.showYAxis(true);
+    l11a.setData(trials1,diff2i);    
+    l11a.setXAxisLabel("trials d=120");
+    l11a.setYAxisLabel("diff in");
+    l11a.setPointColour(colordata,colourtable01);
+    l11a.setPointSize(5);
+    l11a.setLineWidth(2);
+    
+    l12a.showXAxis(true);
+    l12a.showYAxis(true);
+    l12a.setData(trials1,diff3i);    
+    l12a.setXAxisLabel("trials d=150");
+    l12a.setYAxisLabel("diff in");
+    l12a.setPointColour(colordata,colourtable01);
+    l12a.setPointSize(5);
+    l12a.setLineWidth(2);    
   } 
   void draw(){
-    l1a.draw(50,550,500,500);
-    l2a.draw(550,550,500,500); 
+    if (dispint==1){
+    l1a.draw(50,50,400,400);
+    l2a.draw(450,50,400,400);
+    l3a.draw(900,50,400,400);
+    l4a.draw(50,450,400,400);
+    l5a.draw(450,450,400,400);
+    l6a.draw(900,450,400,400);    
+    }
+    if (dispint==1){
+  }
   }
 }
 void displayall(){
@@ -370,4 +498,10 @@ void displayall(){
       dt.load();
       dt.draw();
     }    
+}
+void keyPressed(){
+  if (keyCode=='0') dispint=0;
+  if (keyCode=='1') dispint=1;
+  if (keyCode=='2') dispint=2;
+  if (keyCode=='3') dispint=3;  
 }
