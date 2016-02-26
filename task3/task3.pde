@@ -82,7 +82,7 @@ void setup() {
 
   controlP5 = new ControlP5(this);
   fileLabelP = controlP5.addTextfield("USER",1000,10,100,25);
-  fileLabelP.setText("user"+str(int(random(1,1000))));
+  fileLabelP.setText(i);
   
   TimeRemaining = controlP5.addNumberbox("Time Remaining",30.000,1000,65,100,25);
   SessIncome = controlP5.addNumberbox("Session Income",30.000,1000,105,100,25);
@@ -105,7 +105,7 @@ void draw() {
   
   fill(125);
   text("Press space bar as quickly as possible after trial end to maximize your profit. Press 's' to start the session. Press 't' to train.",5,25);
-
+  text("press x to start a new trial", 5,30);
   fill(0,100,175);
   text("Current trial PROFIT: ",150,45);
   fill(175,0,0);

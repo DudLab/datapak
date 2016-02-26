@@ -2,7 +2,7 @@
 // Task 1; human ability to probabalistically infer, based on reward. HumanTrack code:
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-
+import controlP5.*;
 import java.applet.Applet;
 import java.awt.*;
 import java.util.*;
@@ -102,8 +102,10 @@ boolean wrong = false;
 long trigTime = 0;
 long time = 0;
 String i = " ";
-
-
+ControlP5 controlP5;
+Numberbox TimeRemaining;
+Numberbox SessIncome;
+Textfield usr;
 
 
 
@@ -161,7 +163,8 @@ public void setup() {
   trig_prob1.append(0.75);
   trig_prob1.append(0.9);
   trig_prob1.shuffle();
-
+  controlP5 = new ControlP5(this);
+  usr = controlP5.addTextfield("USER",1000,10,100,25);
 
 
 
