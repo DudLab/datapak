@@ -2,7 +2,7 @@ import controlP5.*;
 import java.applet.Applet;
 import java.awt.*;
 import java.util.*;
-import processing.net.*; 
+import processing.net.*;
 import processing.serial.*;
 import javax.swing.*; 
 // Human version of the OpSig task
@@ -133,7 +133,7 @@ TimeRemaining.setValue(timeLeft);
   ellipse(20,60,10,10);
   text(" = trial end.",25,65);
   
-  if(primed) {    
+  if(primed) {
     println("primed.");
     inTrial = true;
     trialStart = time;
