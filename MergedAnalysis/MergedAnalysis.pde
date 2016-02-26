@@ -166,17 +166,18 @@ void draw(){
 
 class datum{
   
-  float left01;
-  float left025;
-  float left05;
-  float left075;
-  float left09;
+
   float ratioleft01;
   float ratioleft025;
   float ratioleft05;
   float ratioleft075;
   float ratioleft09;  
   String fname;
+  float l01[];
+  float l025[];
+  float l05[];
+  float l075[];
+  float l09[];
   float time []= new float[500];
   float trials[] = new float[500];  
   float trials1 [] = new float[500];
@@ -196,7 +197,7 @@ class datum{
   float sortwr1[] = new float [500];
   float probrightwrong2[][] = new float [500][500];
   float sortpr2[] = new float [500];
-  float sortwr2[] = new float [500];  
+  float sortwr2[] = new float [500];
   datum(String ffff){
   fname = ffff;
   }
@@ -237,6 +238,8 @@ class datum{
       sortpr2[u] = probrightwrong2[u][0];
       sortwr2 [u] = probrightwrong2[u][2];      
     }
+    //task1
+    //int s1= IntStream.of(
    
     //print(lr[1]);
     l1.showXAxis(true);
@@ -320,7 +323,7 @@ class datum1{
         trials1[k]=k;
         colordata[k] = 0;  
         rngouin1[k][0] = tt.getFloat(k,4);
-        rngouin1[k][1] = tt.getFloat(k,5);        
+        rngouin1[k][1] = tt.getFloat(k,5);
         rngouin1[k][2] = tt.getFloat(k,6);         
       }
       if (k>20 && k<=40){
