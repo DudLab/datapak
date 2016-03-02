@@ -56,6 +56,7 @@ boolean onRing=false;
 boolean ringstate = false;
 boolean startstate = false;
 boolean trialstate = false;
+boolean graphics;
 
 void setup(){
  try { 
