@@ -508,3 +508,36 @@ void keyPressed(){
   if (keyCode=='2') dispint=2;
   if (keyCode=='3') dispint=3;  
 }
+      //if(trialint>25){
+      //    if (sortprob==0.1){
+      //      sum01a += sortint;          
+      //      if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+      //        left01a = left01a +1;
+      //      }
+      //    }
+      //    if (sortprob==0.25){
+      //      sum025a += sortint;
+      //      if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+      //        left025a = left025a +1;
+      //      }         
+      //    }
+      //    if (sortprob==0.5){
+      //      sum05a += sortint;
+      //      if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+      //        left05a = left05a +1;
+      //      }        
+      //    }
+      //    if (sortprob==0.75){
+      //      sum075a += sortint;
+      //      if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+      //        left075a = left075a +1;
+      //      }
+      //    }
+          
+      //  if (sortprob==0.9){
+      //      sum09a += sortint;
+      //      if ((lr==1 && sortint==1) || (lr==2 && sortint==0)){
+      //        left09a = left09a +1;
+      //      }        
+      //    }
+      //  }
