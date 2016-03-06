@@ -185,16 +185,16 @@ void draw(){
   } 
   textSize(16);
   fill(255, 255, 255, 150);
-  if (mousePressed==true){
-  fill(0,255,255);    
-  rect(x0-400,y0-400,30,confirmtime+30);    
-  fill(middle);
-  ellipse(x0,y0,a,a);
-  fill(0);
-  ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
-  fill(startcolor);
-  ellipse(x0,y0, startdiameter, startdiameter);
-  }
+  //if (mousePressed==true){
+  //fill(0,255,255);    
+  //rect(x0-400,y0-400,30,confirmtime+30);    
+  //fill(middle);
+  //ellipse(x0,y0,a,a);
+  //fill(0);
+  //ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
+  //fill(startcolor);
+  //ellipse(x0,y0, startdiameter, startdiameter);
+  //}
   text("hold the UP key over the correct ring staying still", (displayWidth*0.125), 120);  
   text("Trialcnt:"+ trialCnt, (x0-400), y0);
   //text("CursorDistance" + cursorDistance, (x0-500), y0+30);
