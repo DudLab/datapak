@@ -7,9 +7,9 @@ import java.util.*;
 import processing.net.*; 
 import processing.serial.*;
 import javax.swing.*; 
-
 PrintWriter output;
 PrintWriter parameters;
+PrintWriter guesspos;
 color startcolor = color(204, 153, 0);
 color middle = color(204, 204, 255);
 String inStr; 
@@ -18,6 +18,7 @@ String mS = " ";
 String dS = " ";
 String data = " ";
 String paramData = " ";
+String guessdata = " ";
 String directoryName = "test";
 String testsubjectname = " ";
 IntList circle_diameter;
@@ -79,35 +80,42 @@ void setup(){
     mS = "0"+str(m);
   } else {
     mS = str(m);
-  } 
+  }
+  
   size(displayWidth, displayHeight);
   circle_diameter = new IntList();
   circle_diameter.append(90);
   circle_diameter.append(120);
-  circle_diameter.append(150);
-  
+  circle_diameter.append(150);  
   circle_diameter.shuffle();
+ //TRIALDATA===================================================================================== 
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
-
   output = createWriter("DataBuffer/trialdata/" + fileName+".csv");
-
-  // header information for the file- contains the file name
   String header = str(year())+","+str(month())+","+str(day())+","+str(hour())+","+str(minute());
   output.println(header);
   output.flush();
-
-  // information about what is in each column
   String firstLine = "timestamp, trialCnt, blockWidth, diameter, ringdist, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
   output.println(firstLine);
   output.flush(); 
   
+  //POSDATA=========================================================================================  
   //position per millisecond
   fileName =  i + "," + "position" + "v"+str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());    
   parameters = createWriter("DataBuffer/positiondata/" + fileName+"_p.csv");
-
+  parameters.println(header);
+  parameters.flush();
   String firstLineParam = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, mousex, mousey";
   parameters.println(firstLineParam);
-  parameters.flush();  
+  parameters.flush();
+  
+  //GUESSPOSDATA==================================================================================
+  fileName =  i + "," + "guessloc" +str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());
+  guesspos = createWriter("DataBuffer/guessdata/" + fileName+"_g.csv");
+  guesspos.println(header);
+  guesspos.flush();
+  String flg = "timestamp, trialCnt, blockWidth, trialstate, x0,y0, ringnumbers ,diameter, ringdist, direc, mousex, mousey";
+  guesspos.println(flg);
+  guesspos.flush();
 }
 void draw(){
   time=millis();
@@ -131,9 +139,10 @@ void draw(){
     onRing = false;
 
   }
-  if (practiceint<1){  
-    paramData = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + int(trialstate) + "," + circlediameter  + "," +
-    d  + "," + int(mouseX) + "," + int(mouseY); 
+  if (practiceint<1){
+    //"timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, mousex, mousey";
+    paramData = str(time) + "," + int(trialCnt+1) + "," + int(blockwidth) + "," + int(trialState) + "," + circlediameter  + "," +
+    direc  + "," + int(mouseX) + "," + int(mouseY); 
     parameters.println(paramData);
     parameters.flush();    
   }else{
@@ -170,16 +179,16 @@ void draw(){
   } 
   textSize(16);
   fill(255, 255, 255, 150);
-  //if (mousePressed==true){
-  // fill(0,255,255);    
-  // rect(x0-400,y0-400,30,confirmtime+30);    
-  // fill(middle);
-  // ellipse(x0,y0,a,a);
-  // fill(0);
-  // ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
-  // fill(startcolor);
-  // ellipse(x0,y0, startdiameter, startdiameter);
-  //}
+  if (mousePressed==true){
+  fill(0,255,255);    
+  rect(x0-400,y0-400,30,confirmtime+30);    
+  fill(middle);
+  ellipse(x0,y0,a,a);
+  fill(0);
+  ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
+  fill(startcolor);
+  ellipse(x0,y0, startdiameter, startdiameter);
+  }
   text("hold the UP key over the correct ring staying still", (displayWidth*0.125), 120);  
   text("Trialcnt:"+ trialCnt, (x0-400), y0);
   //text("CursorDistance" + cursorDistance, (x0-500), y0+30);
@@ -309,7 +318,15 @@ void keyReleased() {
   resetint = 1;
 };
 void subjectInput(){
+  
   if (confirmtime==waitint) moveint = 0;
+  if (confirmtime==waitint){
+    //"timestamp, trialCnt, blockWidth, trialstate, x0,y0, ringnumbers ,diameter, direc, mousex, mousey";
+    guessdata = str(time) + "," + int(trialCnt+1) + "," + int(blockwidth) + "," + trialState +"," + x0 + "," + y0 + "," +
+    ringnumbers+"," + circlediameter  + "," + direc  + "," + int(mouseX) + "," + int(mouseY); 
+    guesspos.println(guessdata);
+    guesspos.flush();    
+  }
   if (confirmtime>waitint-1 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
   if (pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) moveint = 1;
 
