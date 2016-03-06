@@ -133,8 +133,14 @@ void draw(){
   float cursorDistance =((sqrt(sq(disX) + sq(disY))));
   float innercircleDistance = a*.5-ringint;
   if (cursorDistance > innercircleDistance && cursorDistance < a*.5
-  && pmouseX==mouseX && pmouseY==mouseY && confirmtime == waitint) {    
-    onRing = true;
+  && pmouseX==mouseX && pmouseY==mouseY && confirmtime == waitint) {
+    //"timestamp, trialCnt, blockWidth, trialstate, x0,y0, ringnumbers ,diameter, direc, mousex, mousey";
+    guessdata = str(time) + "," + int(trialCnt+1) + "," + int(blockwidth) + "," + trialState +"," + x0 + "," + y0 + "," +
+    ringnumbers+"," + circlediameter  + "," + direc  + "," + int(mouseX) + "," + int(mouseY); 
+    guesspos.println(guessdata);
+    guesspos.flush();    
+    onRing = true;    
+    
   }else{
     onRing = false;
 
@@ -320,12 +326,7 @@ void keyReleased() {
 void subjectInput(){
   
   if (confirmtime==waitint) moveint = 0;
-  if (confirmtime==waitint){
-    //"timestamp, trialCnt, blockWidth, trialstate, x0,y0, ringnumbers ,diameter, direc, mousex, mousey";
-    guessdata = str(time) + "," + int(trialCnt+1) + "," + int(blockwidth) + "," + trialState +"," + x0 + "," + y0 + "," +
-    ringnumbers+"," + circlediameter  + "," + direc  + "," + int(mouseX) + "," + int(mouseY); 
-    guesspos.println(guessdata);
-    guesspos.flush();    
+  if (confirmtime==waitint){ 
   }
   if (confirmtime>waitint-1 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
   if (pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) moveint = 1;
