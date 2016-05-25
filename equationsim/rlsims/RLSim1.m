@@ -1,13 +1,16 @@
 %OPAL sim BH
-rewardstate = 1;%0 =constant0reward, 1= varying based probabalistically 
+%=====================================================================
+rewardstate = 1;%0 =constant0reward, 1= varying based probabalistically
 shiftstate = 0;
 choicestate = 0;
+%======================================================================
 aci = 0.1;
 agi = 0.1;
 ani = 0.1;
 bgi = 1;
 bni = 1;
-% func, v, g, n, act, prob1 
+% func, v, g, n, act, prob1
+
 vi = 0.5;
 gi = 1;
 ni = 1;
@@ -26,9 +29,9 @@ st = (tt)*reps; %number of trials per session
 cho = 1; %choices (n of solid state action pairs);
 
 
-%===========================
-%===generate structurnumel(f1es=====
-%===========================
+%====================================================================================
+%===generate structures==============================================================
+%====================================================================================
 f1 = cell(simtot,1);%1000,1
 f2 = cell(simtot,1);%1000,1
 sft = cell(simtot, (tt));
@@ -36,30 +39,24 @@ field1 = 'f1'; value1 = f1;
 field2 = 'f2'; value2 = f2;
 % sim = struc('f1', value1, 'f2', value2);
 
-%=======================
-%===prob generation=====
-%=======================
+%====================================================================================
+%===prob generation==================================================================
+%====================================================================================
 probR = rand((st), simtot);%prob for comparing against P(R)
 pp = rand((st), simtot);%prob for comparing against P(pick)
 pl = zeros(st,1);%probability of reward
 for i = 1: st
-    pl(i) = (fix((i-1)/(tt)))*0.1;
+    pl(i) = (fix((i-1)/(tt)))*0.1;%adjust
 end
 
 %SIM=======================
-%-------------
 
 for i = 1:simtot%for each sim
-%     t = 1;
     shiftstate = 1;% check
     for j = 1:st
-%     d=[];
-    t = j-tt*(shiftstate-1);
-%         try
-        
-        if mod(j,tt)== 0 & j>1%mod(((fix(j-1)/(tt))*0.1),1)
+    t = j-tt*(shiftstate-1);        
+        if mod(j,tt)== 0 & j>1
             shiftstate = shiftstate + 1;
-%             t = 1;
         end
         if t == 1
             sigmat = 0;
@@ -120,6 +117,7 @@ end
 % graph
 % ===========================
 avg = [];
+avg1 = [];
 
 for i = 1:st
     avg = sum(cat(3,f1{:}),3)/simtot;
