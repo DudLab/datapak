@@ -1,9 +1,20 @@
+%=============================================================
+%SIM OF PROBABALISTIC 2 STATE TASK WITHOUT REACH THRESHOLDS =
+%
+% simulating fig 8 of OPAL
+%
+such that when p(a)<that of prob list, other choice is picked
+%prob differences amplified in bn bg
+%bg bn biases => thresh?
+%
+%
+%=============================================================
 %OPAL sim BH
 %=====================================================================
-%probabalistic task sim 
-rewardstate = 1;%0 =constant0reward, 1= varying based probabalistically
+rewardstate = 1; % 0 = constant0reward, 1= varying based probabalistically
 shiftstate = 0;
-choicestate = 0;
+choicestate = 1;
+prl = [0.1, 0.25, 0.5, 075, 0.9];
 %======================================================================
 aci = 0.1;
 agi = 0.1;
@@ -11,7 +22,6 @@ ani = 0.1;
 bgi = 1;
 bni = 1;
 % func, v, g, n, act, prob1
-
 vi = 0.5;
 gi = 1;
 ni = 1;
@@ -19,7 +29,7 @@ acti = 0;
 rewvalue = 1;
 inczero = 1;
 trials = 100;
-simtot = 1000;%total repetiti
+simtot = 1000;%total repetitition
 reps = 11;%at different probs
 shiftstate = 1;
 pp = []; %probability picking
@@ -33,12 +43,11 @@ cho = 1; %choices (n of solid state action pairs);
 %====================================================================================
 %===generate structures==============================================================
 %====================================================================================
-f1 = cell(simtot,1);%1000,1
-f2 = cell(simtot,1);%1000,1
+f1 = cell(simtot,1);%1000,1 choice 1
 sft = cell(simtot, (tt));
 field1 = 'f1'; value1 = f1;
 field2 = 'f2'; value2 = f2;
-% sim = struc('f1', value1, 'f2', value2);
+% sim = struc('f1', value1);
 
 %====================================================================================
 %===prob generation==================================================================
@@ -47,17 +56,20 @@ probR = rand((st), simtot);%prob for comparing against P(R)
 pp = rand((st), simtot);%prob for comparing against P(pick)
 pl = zeros(st,1);%probability of reward
 for i = 1: st
+    numel(prl);
     pl(i) = (fix((i-1)/(tt)))*0.1;%adjust
 end
 
-%SIM=======================
+%SIM=======================2STATE
 
 for i = 1:simtot%for each sim
     shiftstate = 1;% check
     for j = 1:st
-    t = j-tt*(shiftstate-1);        
-        if mod(j,tt)== 0 & j>1
+    t = j-tt*(shiftstate-1);   
+        if mod(j,tt)== 0 & j > 1
             shiftstate = shiftstate + 1;
+            bni = bni + -0.1;
+            bgi = bgi + 0.1;
         end
         if t == 1
             sigmat = 0;
@@ -83,7 +95,7 @@ for i = 1:simtot%for each sim
             f1{i,1}(j,3) = f1{i,1}(j-1,3) + ani*(-1*sigmat)*(f1{i,1}(j-1,3));%n(t) = n(t-1) + an*n(t-1)*sigmat
             f1{i,1}(j,4) = (bgi*f1{i,1}(j,2)) - (bni*f1{i,1}(j,3));%act(t) = bg*g(t) - bn*n(t)
             sft{i,shiftstate}(t,1) = f1{i,1}(j,4);%
-%             d = softmax(sft{i,shiftstate});%softmax act(t)
+            d = softmax(sft{i,shiftstate}); softmax act(t)
             if choicestate == 0
                 f1{i,1}(j,5) = 1;
             else    
@@ -146,3 +158,4 @@ figure(1);
     plot(0:length(fact)-1,fact);
     title(['Act(r=' num2str(rewvalue) ', p, increasing)']);
     xlabel('time');
+
