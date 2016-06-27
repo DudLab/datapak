@@ -4,7 +4,7 @@
 cont = 1; each prob separately tested as n(101) trials
 %if cont = 2; prob tested successively, one after the other (101*reps) trials
 %init = 1; init = 0 choose higher prob side ;init = 1; random 0.5 prob between choice
-%ask softmax probability; if choice with highest softmax prob gets chosen automatically
+
 %=============================================================
 choices = 2;
 choice = 1;
@@ -50,6 +50,7 @@ for i = 1: simtot%1000 total sim
     for r = 1:reps% 10 different probabilities (10 if probstate = 0)
         for j = 1:tt%101 including 0 trials
             t = ((r-1)*tt + j);
+            tiebreaker = randi(choices);
             for c = 1: choices%choices
 				%t = ((r-1)*tt + j);
 				if (j == 1 && cont == 1) || t == 1%first trial in every rep or first in general
@@ -66,41 +67,41 @@ for i = 1: simtot%1000 total sim
                     ch{i,c}(t,4) = bgi*ch{i,c}(t,2)-bni*ch{i,c}(t,3);%act(t) = bg*g(t) - bn*n(t)
                 end
             end
-            if (j == 1 && cont == 1) || t == 1
-                if init == 1
-                    ch{i,c}(t,5)= 0.5;
-                    if rand > 0.5
-                        ch{i,1}(t,6) = 1;
-                        ch{i,2}(t,6) = 0;
-                        choice = 1;
+            for c = 1: choices
+                if (j == 1 && cont == 1) || t == 1 || (all(ch{i,1:choices}(t,4)) == ch{i,1}(t,4))
+                    ch{i,c}(t,5)= 1/choices;
+                    if c == tiebreaker
+                        ch{i,c}(t,6) = 1;
                     else
-                        ch{i,1}(t,6) = 0;
-                        ch{i,2}(t,6) = 1;
-                        choice = 2
+                        ch{i,c}(t,6) = 0;
                     end
-                end
-            else
-                ch{i,1}(t,5) = (exp(ch{i,1}(t,4)))/exp(sum(ch{i,1:choices}(t,4)));
-                ch{i,2}(t,5) = (exp(ch{i,2}(t,4)))/exp(sum(ch{i,1:choices}(t,4)));
-                if ch{i,1}(t,5) > ch{i,2}(t,5)
-                    ch{i,1}(t,6) = 1;
-                    ch{i,2}(t,6) = 0;
-                    ch{i,2}(t,7) = 0;
-                    choice = 1;
                 else
-                    ch{i,1}(t,6) = 0;
-                    ch{i,2}(t,6) = 1;
-                    ch{i,1}(t,7) = 0;
-                    choice = 2;
+                    ch{i,c}(t,5) = (exp(ch{i,c}(t,4)))/exp(sum(ch{i,1:choices}(t,4)));
                 end
             end
-%====================================================================================
-            if prob(j+((choice-1)*simtot),i) <= pl(j,choice)
-                ch{i,choice}(t,7) = rewvalue;
-            else
-                ch{i,choice}(t,7) = 0;
+            %picks choice with highest softmax prob
+            [M,I] = max(ch{i,1;choices}(t,5));
+            %I %CHECK
+            for c = 1: choices
+                if c == I
+                    ch{i,c}(t,6) = 1;
+                    if prob(j+((c-1)*simtot),i) <= pl(j,c)
+                        ch{i,c}(t,7) = rewvalue;
+                    else
+                        ch{i,c}(t,7) = 0;
+                    end
+                else
+                    ch{i,c}(t,6) = 0;
+                    ch{i,c}(t,7) = 0;
+                end
             end
-%====================================================================================
         end
     end
+end
+%====================================================================================
+GRAPHING
+%====================================================================================
+for i = 1: choices
+
+
 end
