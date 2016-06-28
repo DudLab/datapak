@@ -1,16 +1,16 @@
 %=============================================================
-%SIM OF PROBABALISTIC 2 STATE TASK WITHOUT REACH THRESHOLDS =
+%SIM OF PROBABALISTIC 2 STATE TASK WITH REACH THRESHOLDS =
 %fluid prob shift after x trials test subject has to adapt
 cont = 1; each prob separately tested as n(101) trials
 %if cont = 2; prob tested successively, one after the other (101*reps) trials
 %init = 1; init = 0 choose higher prob side ;init = 1; random 0.5 prob between choice
 
-%=============================================================
+%====================================================================
 choices = 2;
 choice = 1;
 probstate =1; 1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 %=====================================================================
-prl0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+prl0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9];
 prl = [prl0,prl1];
 aci = 0.1;
@@ -101,7 +101,7 @@ end
 %====================================================================================
 GRAPHING
 %====================================================================================
-for i = 1: choices
-
+avg = sum(cat()
+for c = 1: choices
 
 end
