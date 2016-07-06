@@ -66,7 +66,7 @@ for i = 1: simtot%1000 total sim
                     sigmat = (ch(t-1,7,c,i) - ch(t-1,1,c,i));%sigmat = r(t-1)-v(t-1)
                     ch(t,1,c,i) = ch(t-1,1,c,i) + aci*sigmat;%v(t) = v(t-1) + ac*sigmat
                     ch(t,2,c,i) = ch(t-1,2,c,i) + agi*sigmat*ch(t-1,2,c,i);%g(t) = g(t-1) + ag*g(t-1)*sigmat
-                    ch(t,3,c,i) = ch(t-1,3,c,i) + (-1)*agi*sigmat*ch(t-1,3,c,i); %n(t) = n(t-1) + an*n(t-1)*sigmat
+                    ch(t,3,c,i) = ch(t-1,3,c,i) + (-1)*ani*sigmat*ch(t-1,3,c,i); %n(t) = n(t-1) + an*n(t-1)*sigmat
                     ch(t,4,c,i) = bgi*ch(t,2,c,i)-bni*ch(t,3,c,i);%act(t) = bg*g(t) - bn*n(t)
                 end
             end
@@ -106,8 +106,7 @@ end
 % GRAPHING
 %====================================================================================
 avg = sum(ch,4)/simtot;
-
-
+bias = reshape((avg(:,5,1)-avg(:,5,2)),tt, reps);
 
 for c = 1: choices
 fv = reshape(avg(:,1,c),tt,reps);
@@ -132,3 +131,11 @@ figure(c);
     title(['Act(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
     xlabel('time');
 end
+figure(choices+1)
+    subplot(4,2,1);
+    plot(0:length(bias)-1, bias);
+    title(['bias p(c1-c2)'', p, increasing)']);
+    xlabel('time');
+    ylabel('bias');
+
+    
