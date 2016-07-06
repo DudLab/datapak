@@ -32,12 +32,13 @@ simtot = 1000;%total repetitition
 shiftstate = 1;
 tt = trials + inczero;
 st = tt*reps;
-ch = cell(simtot);%1000,2 choices
+% ch = cell(simtot);%1000,2 choices
+ch = zeros(st,7,choices,simtot);
 sm = zeros(st,choices,simtot);
 %====================================================================================
 %===prob generation==================================================================
 %====================================================================================
-prob = rand(st, simtot,choices);% if 2 choices, first 1010rows for choice1 next 1010 for choice 2 etc.
+prob = rand(st,choices,simtot);% if 2 choices, first 1010rows for choice1 next 1010 for choice 2 etc.
 pr = zeros(st,choices);%probability of reward
 %first 1000 columns for choice1 next columns.
 for i = 1: st
@@ -57,27 +58,27 @@ for i = 1: simtot%1000 total sim
                 %t = ((r-1)*tt + j);
                 if (j == 1 && cont == 1) || t == 1%first trial in every rep or first in general
                     sigmat = 0;
-                    ch{i}(t,1,c) = vi;
-                    ch{i}(t,2,c) = gi;
-                    ch{i}(t,3,c) = ni;
-                    ch{i}(t,4,c) = bgi*ch{i}(t,2,c)-bni*ch{i}(t,3,c);
+                    ch(t,1,c,i) = vi;
+                    ch(t,2,c,i) = gi;
+                    ch(t,3,c,i) = ni;
+                    ch(t,4,c,i) = bgi*ch(t,2,c,i)-bni*ch(t,3,c,i);
                 else
-                    sigmat = (ch{i}(j-1,7,c) - ch{i}(t-1,1,c));%sigmat = r(t-1)-v(t-1)
-                    ch{i}(t,1,c) = ch{i}(t-1,1,c) + aci*sigmat;%v(t) = v(t-1) + ac*sigmat
-                    ch{i}(t,2,c) = ch{i}(t-1,2,c) + agi*sigmat*ch{i}(t-1,2,c);%g(t) = g(t-1) + ag*g(t-1)*sigmat
-                    ch{i}(t,3,c) = ch{i}(t-1,3,c) + (-1)*agi*sigmat*ch{i}(t-1,3,c); %n(t) = n(t-1) + an*n(t-1)*sigmat
-                    ch{i}(t,4,c) = bgi*ch{i}(t,2,c)-bni*ch{i}(t,3,c);%act(t) = bg*g(t) - bn*n(t)
+                    sigmat = (ch(t-1,7,c,i) - ch(t-1,1,c,i));%sigmat = r(t-1)-v(t-1)
+                    ch(t,1,c,i) = ch(t-1,1,c,i) + aci*sigmat;%v(t) = v(t-1) + ac*sigmat
+                    ch(t,2,c,i) = ch(t-1,2,c,i) + agi*sigmat*ch(t-1,2,c,i);%g(t) = g(t-1) + ag*g(t-1)*sigmat
+                    ch(t,3,c,i) = ch(t-1,3,c,i) + (-1)*agi*sigmat*ch(t-1,3,c,i); %n(t) = n(t-1) + an*n(t-1)*sigmat
+                    ch(t,4,c,i) = bgi*ch(t,2,c,i)-bni*ch(t,3,c,i);%act(t) = bg*g(t) - bn*n(t)
                 end
             end
 %             sumc1 = ch{i,1}(t,4)+ch{i,2}(t,4);
 %             sumc = sum(cellfun(@(x) x(t,4),ch(i)));
             for c = 1: choices
-                if (j == 1 && cont == 1) || t == 1 || ch{i}(t,4,1) == ch{i}(t,4,2)%(range(ch{i,:}(t,4)) == 0)
-                    ch{i}(t,5,c)= 1/choices;
-                else 
-                    ch{i}(t,5,c) = (exp(ch{i}(t,4,c)))/exp(ch{i}(t,4,1)+ ch{i}(t,4,2));
+                if range(ch(t,4,:,i)) == 0
+                    ch(t,5,c,i) = 1/choices;
+                else
+                    ch(t,5,c,i) = (exp(ch(t,4,c,i)))/sum(exp(ch(t,4,1,i)+exp(ch(t,4,2,i))));
                 end
-                sm(t,c,i) = ch{i}(t,5,c);
+                    sm(t,c,i) = ch(t,5,c,i);
             end
 %====================================================================================
 % DEFINE A SOFTMAX RULE
@@ -87,15 +88,15 @@ for i = 1: simtot%1000 total sim
             [a, a] = histc(rand,p);
             for c = 1: choices
                 if c == a
-                    ch{i}(t,6,c) = 1;
-                    if prob(t,i,a) <= pr(j,c)
-                        ch{i}(t,7,c) = rewvalue;
+                    ch(t,6,c,i) = 1;
+                    if prob(t,a,i) <= pr(t,c)
+                        ch(t,7,c,i) = rewvalue;
                     else
-                        ch{i}(t,7,c) = 0;
+                        ch(t,7,c,i) = 0;
                     end
                 else
-                    ch{i}(t,6,c) = 0;
-                    ch{i}(t,7,c) = 0;
+                    ch(t,6,c,i) = 0;
+                    ch(t,7,c,i) = 0;
                 end
             end
         end
@@ -104,7 +105,30 @@ end
 %====================================================================================
 % GRAPHING
 %====================================================================================
-% avg = sum(cat()
-for c = 1: choices
+avg = sum(ch,4)/simtot;
 
+
+
+for c = 1: choices
+fv = reshape(avg(:,1,c),tt,reps);
+fg = reshape(avg(:,2,c),tt,reps);
+fn = reshape(avg(:,3,c),tt,reps);
+fact = reshape(avg(:,4,c),tt,reps);
+
+figure(c);
+    subplot(4,2,1);
+    plot(0:length(fv)-1,fv);
+    title(['V(choice ' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+        subplot(4,2,2);
+    plot(0:length(fg)-1,fg);
+    title(['G(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+
+    subplot(4,2,3);
+    plot(0:length(fn)-1,fn);
+    title(['N(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+
+    subplot(4,2,4);
+    plot(0:length(fact)-1,fact);
+    title(['Act(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+    xlabel('time');
 end

@@ -102,14 +102,8 @@ for i = 1:simtot%for each sim
                     end
                 end
             else
-                if rewardstate == 0
-                    f1{i,1}(j,6) = 0;
-                    f1{i,1}(j,7) = rewvalue;
-                end
-                if rewardstate == 1 
-                    f1{i,1}(j,6) = 0;
-                    f1{i,1}(j,7) = 0;
-                end
+                f1{i,1}(j,6) = 0;
+                f1{i,1}(j,7) = 0;
             end
         end
     end
