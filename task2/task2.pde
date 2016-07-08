@@ -6,60 +6,50 @@ import java.awt.event.InputEvent;
 import java.util.*;
 import processing.net.*; 
 import processing.serial.*;
-import javax.swing.*; 
+import javax.swing.*;
 PrintWriter output;
 PrintWriter parameters;
-PrintWriter guesspos;
+PImage target;
 color startcolor = color(204, 153, 0);
 color middle = color(204, 204, 255);
+color cursor = color(255,255,255);
 String inStr; 
 String fileName;
 String mS = " ";
 String dS = " ";
 String data = " ";
 String paramData = " ";
-String guessdata = " ";
 String directoryName = "test";
 String testsubjectname = " ";
-IntList circle_diameter;
-int block = 0;
-int waitint = 45;
-int practiceint = 0;
-int blockwidth = 20;//
-int op1;
-int confirmtime = 0;
-int startdiameter = 60;
-int ringint = 60;
-int ringnumbers;
-int ringnumbers1;
-int trialState;
-int trialCnt = 0;
-int resetint = 0;
-int outguessint = 0;
-int inguessint = 0;
-int totguessint = 0;
-int direc = 1;
-int moveint = 0;
-int maxtrials = blockwidth*3;
-float circlediameter;
-float flickerint = 10;
-float d;
-float a;
-float b;
-float x0;
-float y0;
-float outdist = 0;
-float indist = 0;
-float totdist = outdist + indist;
 String i = " ";
-long time = 0;
-boolean onRing=false;
-boolean ringstate = false;
-boolean startstate = false;
-boolean trialstate = false;
-boolean graphics;
+int trialcnt = 0;
+int trialstate = 0;
+int reachnum = 4;
+int reachtot = reachnum +(reachnum-1);
+int block = 0;
+int blockwidth = 25; //25trial block
+int tgw = 60; //targetwidths
+int currdiam;//current circlediameter
+int maxtrials = reachtot*blockwidth;
+int cd[] = new int[reachtot]; //circle diameter
+int cs = 80;//cursorsize
+int wait = 2;
+int reset = 0;
+float x0 = displayWidth*0.5;
+float y0 = displayHeight*0.5;
+float dx;
+float dy;
+float dista;
+float pdist = 0;
+float doptimal;
+long timer;
+long time;
+boolean show = false;
+Robot robot;
 
 void setup(){
+  size(displayWidth, displayHeight);
+  target = loadImage("target.png");
  try { 
     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
   } 
@@ -81,269 +71,129 @@ void setup(){
   } else {
     mS = str(m);
   }
-  
-  size(displayWidth, displayHeight);
-  circle_diameter = new IntList();
-  circle_diameter.append(90);
-  circle_diameter.append(120);
-  circle_diameter.append(150);  
-  circle_diameter.shuffle();
- //TRIALDATA===================================================================================== 
+  try { 
+    robot = new Robot();
+  } 
+  catch (Exception e) {
+    e.printStackTrace();
+  }
+  for (int l = 0; l<reachtot; l++){
+    if (l<=reachnum-1){
+      cd[l] = 120*l+150;
+    }else{
+      cd[l] = cd[reachnum-1] - 120*(l-(reachnum-1));
+    }
+  }
+  println(cd);
+
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
-  output = createWriter("DataBuffer/trialdata/" + fileName+".csv");
+  output = createWriter("DataBuffer/data/trialdata/" + fileName+".csv");
   String header = str(year())+","+str(month())+","+str(day())+","+str(hour())+","+str(minute());
   output.println(header);
   output.flush();
-  String firstLine = "timestamp, trialCnt, blockWidth, diameter, ringdist, guessoutward, guessinward, totalguess, outwarddist, inwarddist, totdist";
+  String firstLine = "timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist";
   output.println(firstLine);
   output.flush(); 
   
   //POSDATA=========================================================================================  
-  //position per millisecond
   fileName =  i + "," + "position" + "v"+str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());    
-  parameters = createWriter("DataBuffer/positiondata/" + fileName+"_p.csv");
+  parameters = createWriter("DataBuffer/data/posdata/" + fileName+"_p.csv");
   parameters.println(header);
   parameters.flush();
-  String firstLineParam = "timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, mousex, mousey";
+  String firstLineParam = "timestamp, trialcnt, block, diameter, mousex, mousey";
   parameters.println(firstLineParam);
   parameters.flush();
   
-  //GUESSPOSDATA==================================================================================
-  fileName =  i + "," + "guessloc" +str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());
-  guesspos = createWriter("DataBuffer/guessdata/" + fileName+"_g.csv");
-  guesspos.println(header);
-  guesspos.flush();
-  String flg = "timestamp, trialCnt, blockWidth, trialstate, x0,y0, ringnumbers ,diameter, ringdist, direc, mousex, mousey";
-  guesspos.println(flg);
-  guesspos.flush();
 }
 void draw(){
-  time=millis();
+  time = millis();
   background(0);
-  x0 = displayWidth*0.5;
-  y0 = displayHeight*0.5;
-  fill(0,255,255);
-  rect(x0-400,y0-400,30,confirmtime);
+  if (reset == 1){
+    dista = sqrt(sq(mouseX-pmouseX)+sq(mouseY-pmouseY));//subject distance traveled
+    pdist += dista;
+  }
   fill(255);
-  b = startdiameter + d*ringnumbers1;   
-  a =  startdiameter + d*ringnumbers;
-  circlediameter = (startdiameter + (6*d));
-  float disX = x0 - mouseX;
-  float disY = y0 - mouseY;
-  float cursorDistance =((sqrt(sq(disX) + sq(disY))));
-  float innercircleDistance = a*.5-ringint;
-  if (cursorDistance > innercircleDistance && cursorDistance < a*.5
-  && pmouseX==mouseX && pmouseY==mouseY && confirmtime == waitint) {
-    //"timestamp, trialCnt, blockWidth, trialstate, x0,y0, ringnumbers ,diameter, direc, mousex, mousey";
-    guessdata = str(time) + "," + int(trialCnt+1) + "," + int(blockwidth) + "," + trialState +"," + x0 + "," + y0 + "," +
-    ringnumbers+"," + circlediameter  + "," + direc  + "," + int(mouseX) + "," + int(mouseY); 
-    guesspos.println(guessdata);
-    guesspos.flush();    
-    onRing = true;    
-    
-  }else{
-    onRing = false;
-
-  }
-  if (practiceint<1){
-    //"timestamp, trialCnt, blockWidth, trialstate, diameter, ringdist, direc, mousex, mousey";
-    paramData = str(time) + "," + int(trialCnt+1) + "," + int(blockwidth) + "," + int(trialState) + "," + circlediameter  + "," +
-    direc  + "," + int(mouseX) + "," + int(mouseY); 
-    parameters.println(paramData);
-    parameters.flush();    
-  }else{
-    text("Practice",x0-500,y0+120);
+  textSize(32);
+  text("block: " + block,300,300);
+  text("timer: " + timer,300,350);
+  text("trials: " + trialcnt,300,370);
+  text("reset: " + reset,300,390);
+    text("pdist: " +pdist,300,410); 
+  fill(middle);
+  if (show == true){
     fill(middle);
-    ellipse(x0,y0,a,a);
-    fill(0);
-    ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
-    fill(startcolor);
-    ellipse(x0,y0, startdiameter, startdiameter);    
+    ellipse(displayWidth/2,displayHeight/2,currdiam*2,currdiam*2);
+    fill(0,0,0);
+    ellipse(displayWidth/2,displayHeight/2,currdiam*2-tgw,currdiam*2-tgw);
+  }
+  target.resize(80,0);
+  imageMode(CENTER);
+  image(target,mouseX,mouseY);
+  fill(cursor);
+  ellipse(mouseX,mouseY,15,15);
+  switch(trialstate){
     
-  }
-  if (flickerint>0){
-    fill(middle);
-    ellipse(x0,y0,b,b);
-    fill(0);
-    ellipse(x0, y0, 2*(b*.5-ringint), 2*(b*.5-ringint));
-    fill(startcolor);
-    ellipse(x0,y0, startdiameter, startdiameter);    
-    flickerint--;
-  }  
-  if (trialState>3){
-    direc = -1;
-  }else{
-    direc = 1; 
-  }
-  if (direc == -1){
-    textSize(32);
-    text("move inwards", (x0-600),y0+90);    
-  }
-  if (direc == 1){
-    textSize(32);    
-    text("move outwards", (x0-600),y0+90);    
-  } 
-  textSize(16);
-  fill(255, 255, 255, 150);
-  //if (mousePressed==true){
-  //fill(0,255,255);    
-  //rect(x0-400,y0-400,30,confirmtime+30);    
-  //fill(middle);
-  //ellipse(x0,y0,a,a);
-  //fill(0);
-  //ellipse(x0, y0, 2*innercircleDistance, 2*innercircleDistance);
-  //fill(startcolor);
-  //ellipse(x0,y0, startdiameter, startdiameter);
-  //}
-  text("hold the UP key over the correct ring staying still", (displayWidth*0.125), 120);  
-  text("Trialcnt:"+ trialCnt, (x0-400), y0);
-  //text("CursorDistance" + cursorDistance, (x0-500), y0+30);
-  //text("resetint" + resetint, (x0-500),y0+60);
-  text("block:" + block, (x0-500),y0+80);
-  //text("outguessint:" + outguessint, (x0-500),y0+100);
-  //text("inguessint:" + inguessint, (x0-500),y0+120);    
-  fill(startcolor);
-  ellipse(x0,y0,startdiameter,startdiameter);
-  
-  switch(trialState) {
-    case 0:
-      if (onRing == true){
-        startstate = true;
-        trialState = 1;
-        ringnumbers1 = 0;
-        flickerint = 10;    
-        ringnumbers = 2;
-        confirmtime=0;
+    case 0://practice/
+      robot.mouseMove(displayWidth/2,(displayHeight/2)+45);
+      pdist = 0;
+      trialstate = 1;
+    break;
+    
+    case 1://trials     
+      if (trialcnt<maxtrials){
+      //"timestamp, trialcnt, block, diameter, mousex, mousey"
+        paramData = str(time) + "," + int(trialcnt) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + int(mouseX) + "," + int(mouseY);
+        parameters.println(paramData);
+        parameters.flush();
+        //dista = sqrt(sq(mouseX-pmouseX)+sq(mouseY-pmouseY));//subject distance traveled
+        //pdist += dista;
+        currdiam = cd[block];
+        doptimal = currdiam-tgw;
+        if (sqrt(sq(mouseX-(displayWidth/2))+ sq(mouseY-(displayHeight/2)))<(currdiam-tgw)){
+          reset = 1;
+        }
+        if(onring(mouseX,mouseY,currdiam, tgw) == true){
+          text("bt" ,200,200);
+          timer++;
+          if (reset == 1 && (timer % wait)==0){
+            trialcnt = trialcnt + 1;
+            data = str(time) + "," + int(trialcnt) + "," + int(blockwidth) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + pdist + "," + doptimal;
+            //"timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist" 
+            output.println(data);
+            output.flush();
+            reset = 0;
+            trialstate = 2;
+          }
+        }else{
+          timer = 0;
+        }
       }else{
-        startstate = false;
-      }    
-      break;
-    case 1:
-      outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
-      if (onRing == true){
-        if ((trialCnt % blockwidth) == 0 && trialCnt>0){
-          block = trialCnt/blockwidth;
-        }
-        if (practiceint<1){
-          if (trialCnt<maxtrials){
-            d = circle_diameter.get(block);
-          }else{
-            exit();
-          }    
-        }else{
-            d = circle_diameter.get(block);
-        }        
-        ringnumbers1 = 2;
-        flickerint = 10;
-        trialState=2;        
-        ringnumbers = 4;
-        confirmtime=0;    
+        exit();
       }
-      break;
-    case 2:
-      outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
-      if (onRing == true){
-        ringnumbers1=4;
-        flickerint = 10;
-        trialState = 3;        
-        ringnumbers = 6;            
-        confirmtime=0;
-      } 
-      break;
-    case 3:
-      outdist = outdist + dist(mouseX, mouseY, pmouseX, pmouseY);    
-      if (onRing == true){
-        ringnumbers1=6;
-        flickerint = 10;
-        trialState=4;      
-        ringnumbers = 4;
-        confirmtime=0;        
-      }     
-      break;
-    case 4:
-      indist = indist + dist(mouseX, mouseY, pmouseX, pmouseY);       
-      if (onRing == true){
-        ringnumbers1=4;
-        flickerint = 10;  
-        trialState=5;
-        ringnumbers = 2;
-        confirmtime=0;           
-      }  
-      break;
-      case 5:
-        indist = indist + dist(mouseX, mouseY, pmouseX, pmouseY);         
-        if (onRing == true){
-          ringnumbers1=2;
-          flickerint = 10;
-          trialState = 6;
-          ringnumbers = 0;   
-        }else{
-          ringstate=false;
-        }
-        break;
-    case 6:
-      indist = indist + dist(mouseX, mouseY, pmouseX, pmouseY);  
-      if (onRing == true){
-        ringnumbers1= 0;           
-        flickerint = 10;
-        trialState = 1;  
-        ringnumbers = 2;      
-        confirmtime=0;
-        practiceint--;
-        if (practiceint<1){
-        trialCnt++;
-        totdist = indist + outdist;
-        totguessint = outguessint + inguessint;
-        data = str(time) + "," + int(trialCnt) + "," + int(blockwidth) + "," + circlediameter  + "," + d  
-        + "," + int(outguessint) + "," + int(inguessint) + "," + int(totguessint) + "," + int(outdist) + "," + int(indist) + "," + int(totdist);
-        output.println(data);
-        output.flush();
-        }     
-        outdist = 0;
-        indist = 0;
-        totdist = 0;
-        confirmtime=0;
-        outguessint=0;
-        inguessint=0;
-        totguessint=0;
-      }
-      break;
-      }
- subjectInput();     
-}
-
-boolean[] keys = new boolean[256];
-
-void keyPressed() {
-  keys[keyCode] = true;
-};
-
-void keyReleased() {
-  keys[keyCode] = false;
-  confirmtime = 0;
-  resetint = 1;
-};
-void subjectInput(){
-  
-  if (confirmtime==waitint) moveint = 0;
-  if (confirmtime==waitint){ 
-  }
-  if (confirmtime>waitint-1 || pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) confirmtime=0;
-  if (pmouseX>mouseX || pmouseX<mouseX || pmouseY>mouseY || pmouseY<mouseY) moveint = 1;
-
-  if (keys[UP]==true && pmouseX==mouseX && pmouseY==mouseY && resetint == 1 && moveint==1){   
-    if (confirmtime<waitint){
-      confirmtime++;
-    } 
-    if (practiceint<1){
-      if (confirmtime==waitint){
-        if (trialState>3){
-          inguessint = inguessint + 1;
-        }else{
-            outguessint = outguessint + 1;
-        }
-      }
-    }
+    break;
     
+    case 2:
+      if ((trialcnt % blockwidth)==0 && trialcnt>0){
+        block = block + 1;
+      }
+      trialstate = 0;
+      pdist = 0;
+    break;
+  }
+}
+void keyPressed(){
+  show = true;
+}
+void keyReleased(){
+  show = false;
+}
+boolean onring(float xx,float yy,int circlediameter, int tt){
+  float disx = (displayWidth/2) - xx;//y0-px
+  float disy = (displayHeight/2) - yy;//y0-py
+  float dist = sqrt(sq(disx)+ sq(disy));
+  if (dist<=circlediameter && dist>circlediameter-tt){
+    return true;
+  }else{
+    return false;
   }
 }

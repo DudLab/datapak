@@ -114,24 +114,24 @@ fg = reshape(avg(:,2,c),tt,reps);
 fn = reshape(avg(:,3,c),tt,reps);
 fact = reshape(avg(:,4,c),tt,reps);
 
-figure(c);
-    subplot(4,2,1);
+figure(1);
+    subplot(4,2,c);
     plot(0:length(fv)-1,fv);
     title(['V(choice ' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
-        subplot(4,2,2);
+    subplot(4,2,1+2);
     plot(0:length(fg)-1,fg);
-    title(['G(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+    title(['G(choice' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
 
-    subplot(4,2,3);
+    subplot(4,2,4+c);
     plot(0:length(fn)-1,fn);
-    title(['N(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+    title(['N(choice' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
 
-    subplot(4,2,4);
+    subplot(4,2,6+c);
     plot(0:length(fact)-1,fact);
-    title(['Act(' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+    title(['Act(choice' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
     xlabel('time');
 end
-figure(choices+1)
+figure(2)
     subplot(4,2,1);
     plot(0:length(bias)-1, bias);
     title(['bias p(c1-c2)'', p, increasing)']);
