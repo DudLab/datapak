@@ -181,12 +181,12 @@ void draw(){
     break;
   }
 }
-void keyPressed(){
-  show = true;
-}
-void keyReleased(){
-  show = false;
-}
+//void keyPressed(){
+//  show = true;
+//}
+//void keyReleased(){
+//  show = false;
+//}
 boolean onring(float xx,float yy,int circlediameter, int tt){
   float disx = (displayWidth/2) - xx;//y0-px
   float disy = (displayHeight/2) - yy;//y0-py

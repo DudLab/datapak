@@ -71,6 +71,9 @@ float randX1;
 float randX2;
 float randY1;
 float randY2;
+
+float dista;
+
 float pointsEarned = 0;
 color inside = color(0, 3, 255);
 color middle = color(204, 153, 0);
@@ -127,15 +130,6 @@ public void setup() {
   lineColor = color (255, 255, 255);
   strokeWeight(0);
 
-  //float p_pos = 0.5;
-  //if (random(1) <= p_pos) {
-  //  pos1 = true;
-  //  pos = 1;
-  //} else {
-  //  pos1 = false;
-  //  pos = 2;
-  //}
-
   int d = day(); 
   if (d<10) {
     dS = '0'+str(d);
@@ -163,12 +157,6 @@ public void setup() {
   trig_prob1.append(0.75);
   trig_prob1.append(0.9);
   trig_prob1.shuffle();
-  controlP5 = new ControlP5(this);
-  usr = controlP5.addTextfield("USER",1000,10,100,25);
-
-
-
-
 
   // create a data file to keep track of data about behavioral performance (.csv)
   //  fileName = "v"+str(year())+"_"+str(month())+"_"+str(day())+"_"+str(hour())+"_"+str(minute());  
@@ -198,6 +186,8 @@ public void setup() {
   String firstLineParam = "trialNum, blockWidth, MillisTime, pos, leftTriggerProbability, MouseX, MouseY, Start/CollectionDiameter, ForageDiameter, CircleX0, Circle Y0, CircleX1, CircleY1, CircleX2, CircleyY2, TrialState";
   parameters.println(firstLineParam);
   parameters.flush();
+  controlP5 = new ControlP5(this);
+  usr = controlP5.addTextfield( i ,1000,10,100,25);
 }
 
 
@@ -207,13 +197,19 @@ void draw() {
   background(0);
   x0 = (displayWidth*0.5);
   y0 = (900);
-
-
+  //subject distance
+  dista = sqrt(sq(mouseX - pmouseX)+sq(mouseY - pmouseY));
+  if (trialState == 2){
+    forageDistance += dista;
+  }
+  if (trialState == 3){
+    collectionDistance += dista;
+  }
+  //
   fill(rectColor);
   stroke(255);
   ellipse(mouseX, mouseY, 20, 20);
   fill(outside);
-  //ellipse(x0, y0,collectDiameter, collectDiameter);
   textSize(16);
   fill(255, 255, 255, 150);
   text("Trial", (displayWidth*0.125), textY);
@@ -225,6 +221,7 @@ void draw() {
   text(pointsEarned, (x0-700), textY + 260);
   //text(p, (displayWidth*0.125), textY + 280);
   //text(rewardpos, (displayWidth*0.125), textY + 300);
+  text("fd: " + forageDistance + ", cd: " + collectionDistance + " ,td: " + totalDistance,20,800);
   if (shiftstate==1){
     text("halfway point, left target is further out)", (displayWidth*0.125), textY + 20);    
   }
@@ -289,7 +286,7 @@ void draw() {
 
   case 1:
     collectionDistance=0;
-    optimalTotaldistance=0;
+    optimalTotaldistance = 0;
     collectionDistance = 0;  
     trigState = false;
     whichside = 0;
@@ -354,7 +351,7 @@ void draw() {
   case 2:
     onCollection = false;
     wrong = false;
-    forageDistance = forageDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
+    //forageDistance = forageDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
     time=millis();
 
     if (leftBox == true) { //e: left trigger box
@@ -398,7 +395,7 @@ void draw() {
 
   case 3: // 'collect'
     trigState=false;
-    collectionDistance = collectionDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
+    //collectionDistance = collectionDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
     totalDistance = collectionDistance+forageDistance;
     totalDifference = totalDistance-optimalTotaldistance;
     if (onCollection(x0, y0, collectDiameter)) {
@@ -425,6 +422,9 @@ void draw() {
           + "," + int(optimalTotaldistance)+"," + int(totalDifference) + "," +int(pointsEarned);
         output.println(data);
         output.flush();
+        collectionDistance = 0;
+        forageDistance = 0;
+        totalDistance = 0;
       }      
     } else {
       collectState = false;
