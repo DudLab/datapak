@@ -22,6 +22,7 @@ String paramData = " ";
 String directoryName = "test";
 String testsubjectname = " ";
 String i = " ";
+int practiceint=10;
 int trialcnt = 0;
 int trialstate = 0;
 int reachnum = 4;
@@ -35,13 +36,16 @@ int cd[] = new int[reachtot]; //circle diameter
 int cs = 80;//cursorsize
 int wait = 2;
 int reset = 0;
+int dz;
 float x0 = displayWidth*0.5;
 float y0 = displayHeight*0.5;
-float dx;
-float dy;
 float dista;
 float pdist = 0;
 float doptimal;
+float dr;
+float dd;
+float dd1;
+float ddd;
 long timer;
 long time;
 boolean show = false;
@@ -56,7 +60,7 @@ void setup(){
   catch (Exception e) { 
     e.printStackTrace();
   } 
-  String preset="Type your name here";
+  String preset="Type your name unique identifier";
   String op1s = JOptionPane.showInputDialog(frame, "Name", preset);
   if(op1s != null) i = op1s;
   int d = day(); 
@@ -91,7 +95,7 @@ void setup(){
   String header = str(year())+","+str(month())+","+str(day())+","+str(hour())+","+str(minute());
   output.println(header);
   output.flush();
-  String firstLine = "timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist";
+  String firstLine = "timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist,turnx,turny";
   output.println(firstLine);
   output.flush(); 
   
@@ -100,7 +104,7 @@ void setup(){
   parameters = createWriter("DataBuffer/data/posdata/" + fileName+"_p.csv");
   parameters.println(header);
   parameters.flush();
-  String firstLineParam = "timestamp, trialcnt, block, diameter, mousex, mousey";
+  String firstLineParam = "timestamp, trialcnt, block, diameter, ringwidth, mousex, mousey";
   parameters.println(firstLineParam);
   parameters.flush();
   
@@ -112,13 +116,16 @@ void draw(){
     dista = sqrt(sq(mouseX-pmouseX)+sq(mouseY-pmouseY));//subject distance traveled
     pdist += dista;
   }
+  dd = dist(displayWidth/2,displayHeight/2,mouseX,mouseY);
+  dd1 = dist(displayWidth/2,displayHeight/2,pmouseX,pmouseY);
+  ddd  = dd-dd1;
   fill(255);
   textSize(32);
   text("block: " + block,300,300);
-  text("timer: " + timer,300,350);
-  text("trials: " + trialcnt,300,370);
-  text("reset: " + reset,300,390);
-    text("pdist: " +pdist,300,410); 
+  text("trials: " + trialcnt,300,350);
+  //text("reset: " + reset,300,370);
+  //text("pdist: " +pdist,300,390);
+  //text("ddd " + ddd,300,410);
   fill(middle);
   if (show == true){
     fill(middle);
@@ -131,6 +138,12 @@ void draw(){
   image(target,mouseX,mouseY);
   fill(cursor);
   ellipse(mouseX,mouseY,15,15);
+  if (practiceint<1){
+    //"timestamp, trialcnt, block, diameter, ringwidth, mousex, mousey"
+    paramData = str(time) + "," + int(trialcnt) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + int(mouseX) + "," + int(mouseY);
+    parameters.println(paramData);
+    parameters.flush();
+  }
   switch(trialstate){
     
     case 0://practice/
@@ -141,31 +154,41 @@ void draw(){
     
     case 1://trials     
       if (trialcnt<maxtrials){
-      //"timestamp, trialcnt, block, diameter, mousex, mousey"
-        paramData = str(time) + "," + int(trialcnt) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + int(mouseX) + "," + int(mouseY);
-        parameters.println(paramData);
-        parameters.flush();
-        //dista = sqrt(sq(mouseX-pmouseX)+sq(mouseY-pmouseY));//subject distance traveled
-        //pdist += dista;
+        if (practiceint>0){
+          show = true;
+          text("practice" + practiceint,(displayWidth*0.125),280);
+        }else{
+          show = false;
+        }
         currdiam = cd[block];
         doptimal = currdiam-tgw;
+        
         if (sqrt(sq(mouseX-(displayWidth/2))+ sq(mouseY-(displayHeight/2)))<(currdiam-tgw)){
           reset = 1;
+          dr = 1;
+        }
+        if (sqrt(sq(mouseX-(displayWidth/2))+ sq(mouseY-(displayHeight/2)))>(currdiam)){
+          dr = 0;
         }
         if(onring(mouseX,mouseY,currdiam, tgw) == true){
-          text("bt" ,200,200);
-          timer++;
-          if (reset == 1 && (timer % wait)==0){
-            trialcnt = trialcnt + 1;
-            data = str(time) + "," + int(trialcnt) + "," + int(blockwidth) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + pdist + "," + doptimal;
-            //"timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist" 
-            output.println(data);
-            output.flush();
+          //text("bt" ,200,200);
+          if (ddd<0 && dr == 1){
+            if (practiceint>0){
+              practiceint--;
+            }
+            if (practiceint<1){
+              trialcnt = trialcnt + 1;
+              data = str(time) + "," + int(trialcnt) + "," + int(blockwidth) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + pdist + "," + doptimal + "," +
+              int(mouseX) + "," + int(mouseY);
+              //"timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist" 
+              output.println(data);
+              output.flush();
+            }
             reset = 0;
+            dr = 0;
             trialstate = 2;
           }
         }else{
-          timer = 0;
         }
       }else{
         exit();
@@ -181,12 +204,6 @@ void draw(){
     break;
   }
 }
-//void keyPressed(){
-//  show = true;
-//}
-//void keyReleased(){
-//  show = false;
-//}
 boolean onring(float xx,float yy,int circlediameter, int tt){
   float disx = (displayWidth/2) - xx;//y0-px
   float disy = (displayHeight/2) - yy;//y0-py

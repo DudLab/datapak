@@ -21,115 +21,73 @@ String data = " ";
 String paramData = " ";
 String directoryName = "test";
 String testsubjectname = " ";
-
-
-float forageDistance = 0;
-float collectionDistance = 0;
-float totalDistance = 0;
-float optimalTotaldistance = 0;
-float totalDifference = 0;
-float [] display;
-
-float x0;
-float y0;
-
+String i = " ";
+int pn = 5; //number of probabilities
+int rnum = 2;// number of reaches
+int rdt = 350;
+int rlefty[] = new int[rnum];//reach distance list of left
+int block = 0;
+int bw = 25;//blockwidth
+int blocktot = pn*rnum;
+int maxtrials = blocktot*bw;
+IntList pp;//prob randomly shuffled
+IntList rp;//reach randomly shuffled
+int trialstate = 1;// forage, collect soforth
+int trialcnt = 0;
+int pnt;//points
+int sd = 60;// startdiameter
+int tgd = 150;//targetdiameter
+float dista;
+float fd = 0;//foragedistance
+float cd = 0;//collectdistance
+float totd = 0;//totaldistance
+float optd = 0;//optimaldistance
+float ddif = 0;//difference subjectd - optd
+int x0 = displayWidth/2;//init starting position
+float y0 = 3*(displayHeight/4);//or lower
 float x1;
 float y1;
 float x2;
 float y2;
-FloatList trig_prob;
-FloatList trig_prob1;
-int whichTrig;
-int collectDiameter = 20;
-int targetcircleDiameter = 150; 
-int wrongcircleDiameter = 300;
-int bottomRightX;
-int bottomRightY;
-int topLeftX;
-int topLeftY;
-int bottomRightX2;
-int bottomRightY2;
-int topLeftX2;
-int topLeftY2;
-int bottomRightXc;
-int bottomRightYc;
-int topLeftXc;
-int topLeftYc;
-int block = 0;
-int blockWidth = 50;//50
-int shiftstate = 0;
-int textY = 120;
-int trialState = 0;
-int trialCnt = 0;
-int maxtrial = 500;//500
-int whichside = 0;
-int flickerint = 0;
-float maxpoints = 0;
-float r = random(0, 1);
+float tgdx = 300;//distance between targets
+float problist[] = {0.1,0.25,0.5,0.75,0.9};
+float rlist[] = {0, 150 + (tgd/2), 300+ (tgd/2), 450+ (tgd/2), 600+ (tgd/2)};
+float [] reachposy = {};
 float p;
-float randX1;
-float randX2;
-float randY1;
-float randY2;
-
-float dista;
-
-float pointsEarned = 0;
-color inside = color(0, 3, 255);
-color middle = color(204, 153, 0);
-color outside = color(102, 0, 204);
-color ellipseColor;
-color rectColor;
-color lineColor;
-
-boolean up1;
-boolean down1;
-int right1wrong0;
-int userchoice12;
-int userchoiceleft;
-int pos;
-int rightORwrong;
-int rewardpos;
-int practiceint = 10;
-boolean pos1;
-boolean startstate = false;
-boolean onStart = false;
-boolean onCollection = false;
-boolean trigState = false;
-boolean collectState = false; 
-boolean leftBox = false;
-boolean rightBox=false;
-boolean onwrongcircleright = false;
-boolean onwrongcircleleft = false;
-boolean wrong = false;
-long trigTime = 0;
+float r;
+float sp[] = new float[pn*rnum];
+float rl[] = new float[rnum*pn];
+float rl1[] = {0,0,0,0,0,300,300,300,300,300};
+int flickerint=0;
+int rpos;//left or right
+int wpos;// wrongpos
+int ppos;
+int practiceint=10;
+float points = 0;
+float maxpoints;
+color start = color(255,0,0);
+color left = color(51,51,255);
+color right = color(255,255,51);
+color[] col = {color(255,0,0),color(51,51,255),color(255,255,51)};
 long time = 0;
-String i = " ";
-ControlP5 controlP5;
-Numberbox TimeRemaining;
-Numberbox SessIncome;
-Textfield usr;
+long trigtime = 0;
 
-
-
-public void setup() {
-  try { 
-    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-  } 
-  catch (Exception e) { 
+void setup(){
+  size(displayWidth,displayHeight);
+  //========================================================================
+  //===============GUI/ USER INPUT==========================================
+  //========================================================================
+  try{
+    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());    
+  }catch(Exception e){
     e.printStackTrace();
-  } 
-  String preset="Type your name here";
+  }
+  String preset="Type your unique identifier";
   String op1s = JOptionPane.showInputDialog(frame, "Name", preset);
   if (op1s != null) i = op1s;
-
-  size(displayWidth, displayHeight);
-  frameRate(50);
-  rectColor = color(0);
-  ellipseColor = color(51, 51, 255);
-  lineColor = color (255, 255, 255);
-  strokeWeight(0);
-
+  //========================================================================
+  //===============TIME AND DATE============================================
+  //========================================================================
   int d = day(); 
   if (d<10) {
     dS = '0'+str(d);
@@ -142,25 +100,34 @@ public void setup() {
   } else {
     mS = str(m);
   }
-  trig_prob = new FloatList();
-  trig_prob.append(0.1);
-  trig_prob.append(0.25);
-  trig_prob.append(0.5);
-  trig_prob.append(0.75);
-  trig_prob.append(0.9);
-  trig_prob.shuffle();
-  
-  trig_prob1 = new FloatList();
-  trig_prob1.append(0.1);
-  trig_prob1.append(0.25);
-  trig_prob1.append(0.5);
-  trig_prob1.append(0.75);
-  trig_prob1.append(0.9);
-  trig_prob1.shuffle();
-
-  // create a data file to keep track of data about behavioral performance (.csv)
-  //  fileName = "v"+str(year())+"_"+str(month())+"_"+str(day())+"_"+str(hour())+"_"+str(minute());  
-
+  //========================================================================
+  //===============SHUFFLE PROBABILIIES=====================================
+  //========================================================================
+  pp = new IntList();
+  rp = new IntList();
+  for (int c = 0; c < rnum; c++){
+    IntList temp = new IntList();
+    IntList tempr  = new IntList();
+    rlefty[c] = rdt*(c);
+    for (int r =0; r< pn; r++){
+      temp.append(r);
+      tempr.append(r);
+    }
+    temp.shuffle();//if want random
+    //tempr.shuffle();
+    pp.append(temp);
+    rp.append(tempr);
+  }
+  println(pp);
+  for (int i = 0; i < pp.size(); i++){
+    sp[i] = problist[pp.get(i)];
+    rl[i] = rlist[rp.get(i)];
+  }
+  println(sp);
+  println(rl);
+  //==========================================================================
+  //===============CSV STUFF==================================================
+  //==========================================================================
   fileName = i + "v" + str(year())+"_"+mS+"_"+dS+"_"+str(hour())+"_"+str(minute());  
 
   output = createWriter("DataBuffer/trialdata/" + fileName+".csv");
@@ -171,7 +138,7 @@ public void setup() {
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialNum, blockWidth, position_number, LeftTriggerProbability, rightORwrong, Rewardposition, forageDistance, collectionDistance, totalDistance, optimalTotalDistance, Totaldifference, score";
+  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, rightorwrong, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
   output.println(firstLine);
   output.flush(); 
 
@@ -181,311 +148,157 @@ public void setup() {
 
 
   //information about what is in each column
-  //e: whichTrig = 0 for left and 1 for right
-  //e: leftProb = probability that trigger is at left box
-  String firstLineParam = "trialNum, blockWidth, MillisTime, pos, leftTriggerProbability, MouseX, MouseY, Start/CollectionDiameter, ForageDiameter, CircleX0, Circle Y0, CircleX1, CircleY1, CircleX2, CircleyY2, TrialState";
+  String firstLineParam = "trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, x0,y0, x1, y1,trialstate";
   parameters.println(firstLineParam);
   parameters.flush();
-  controlP5 = new ControlP5(this);
-  usr = controlP5.addTextfield( i ,1000,10,100,25);
 }
-
-
-
-void draw() {
-  time= millis();
+void draw(){
   background(0);
-  x0 = (displayWidth*0.5);
-  y0 = (900);
-  //subject distance
+  x0 = displayWidth/2;
+  y0 = 3*(displayHeight)/4;
+  //==========================================================================
+  //===============TEXT&VARS==================================================
+  //==========================================================================
   dista = sqrt(sq(mouseX - pmouseX)+sq(mouseY - pmouseY));
-  if (trialState == 2){
-    forageDistance += dista;
+  if (trialstate == 2){
+    fd += dista;
   }
-  if (trialState == 3){
-    collectionDistance += dista;
+  if (trialstate == 3){
+    cd += dista;
   }
-  //
-  fill(rectColor);
-  stroke(255);
-  ellipse(mouseX, mouseY, 20, 20);
-  fill(outside);
-  textSize(16);
-  fill(255, 255, 255, 150);
-  text("Trial", (displayWidth*0.125), textY);
-  text(trialCnt+1, (displayWidth*0.125), textY + 20);
-  text(testsubjectname, (x0-700), textY + 180);
-  text("maximum points", (x0-700), textY + 200);
-  text(maxpoints, (x0-700), textY + 220);
-  text("Your Points", (x0-700), textY + 240);
-  text(pointsEarned, (x0-700), textY + 260);
-  //text(p, (displayWidth*0.125), textY + 280);
-  //text(rewardpos, (displayWidth*0.125), textY + 300);
-  text("fd: " + forageDistance + ", cd: " + collectionDistance + " ,td: " + totalDistance,20,800);
-  if (shiftstate==1){
-    text("halfway point, left target is further out)", (displayWidth*0.125), textY + 20);    
-  }
-  if (practiceint>0){
-    textSize(32);
-    text("Practice",x0,y0-800);
-    if (trialState < 3 && whichside == 0){
-      stroke(240, 180, 0, 100);
-      fill(inside);
-      strokeWeight(0);
-      ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
-      stroke(240, 180, 0, 100);
-      fill(middle);
-      strokeWeight(0);
-      ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);
-    }
-  }
-  if (shiftstate==1){
-    text("halfway point, left target is further out)", (displayWidth*0.125), textY + 20);    
-  }  
-  if (practiceint < 1) {
-    paramData = int(trialCnt+1) + "," + int(blockWidth) + "," + str(time) + "," + int(pos) + "," + p + ","  
-      + int(mouseX) + "," + int(mouseY) + "," + int(collectDiameter) + "," + int(targetcircleDiameter) + "," + int(x0) + "," + int(y0) + ","+ int(x1) + "," + int(y1) + "," + int(x2) + "," + int(y2) + "," +int(trialState);
+  if (practiceint<1){
+    //"trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, x0,y0, x1, y1,trialstate";
+    paramData = int(trialcnt+1) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + r + "," + p + ","  
+      + int(mouseX) + "," + int(mouseY) + "," + int(sd) + "," + int(tgd) + "," + int(x0) + "," + int(y0) + "," + int(x1) + "," + int(y1) + "," +int(trialstate);
     parameters.println(paramData);
     parameters.flush();
   }
-  if (trialState >= 3) {
-    text("go back to collection area", (displayWidth*0.125), textY + 140);
-    ellipse(x0, y0, collectDiameter, collectDiameter);
+  if(practiceint>0){
+    fill(col[rpos]);
+    ellipse(x1,y1,tgd,tgd);
+    fill(col[wpos]);
+    ellipse(x2,y2,tgd,tgd);
+    fill(255);
+    textSize(32);
+    text("practice" + practiceint,(displayWidth*0.125),280);
   }
   if (flickerint>0){
-    if (whichside == 1){
-      stroke(240, 180, 0, 100);
-      fill(inside);
-      strokeWeight(0);
-      ellipse(x1, y1, targetcircleDiameter, targetcircleDiameter);
-    }
-    if (whichside == 2){
-      stroke(240, 180, 0, 100);
-      fill(middle);
-      strokeWeight(0);
-      ellipse(x2, y2, targetcircleDiameter, targetcircleDiameter);      
-    }
-    flickerint--;
+    fill(col[rpos]);
+    ellipse(x1,y1,tgd,tgd);    
   }
-  switch(trialState) {
-
-  case 0:
-    collectionDistance=0;
-    optimalTotaldistance=0;
-    collectionDistance = 0;
-    totalDistance=0;
-    ellipse(x0, y0, collectDiameter, collectDiameter);
-    startstate=false;
-    if (onStart(x0, y0, collectDiameter)) {
-      startstate= true;
-      trialState=1;
-    } else {
-      startstate=false;
-    }
-    break;
-
-  case 1:
-    collectionDistance=0;
-    optimalTotaldistance = 0;
-    collectionDistance = 0;  
-    trigState = false;
-    whichside = 0;
-    rightORwrong = 1;
-    userchoiceleft = 1;
-    if (trialCnt>(maxtrial/2)-1) {
-      shiftstate=1;
-    }else{
-      shiftstate=0;
-    }
-    if (shiftstate == 0) {
-      pos = 1;
-      x1 = x0 - 300;
-      y1 = y0 - 400;
-      x2 = x0 + 300;
-      y2 = y0 - 400;
-    }
+  if (flickerint>0){
+    flickerint--;  
+  }
+  fill(255);
+  if (trialstate >= 3) {
+    text("go back to collection area", (displayWidth*0.125), 280);
+    ellipse(x0, y0, sd, sd);
+  }
+  //text("rpos: "+rpos, (displayWidth*0.125), 300);
+  //text("trial:" +trialcnt, (displayWidth*0.125), 320);
+  //text("block:" +block, (displayWidth*0.125), 340);
+  //==========================================================================
+  //===============SWITCH CS==================================================
+  //==========================================================================
+  switch(trialstate){
     
-    if (shiftstate == 1) {
-      pos = 2;
-      x1 = x0 - 300;
-      y1 = y0 - 750;
-      x2 = x0 + 300;
-      y2 = y0 - 400;
-    }
-    
-    if ((trialCnt % blockWidth) == 0 && trialCnt>0) {
-      block = block + 1;
-    }
-    if (practiceint<1){
-      if (block - 5 < 5){
-        if (trialCnt < maxtrial/2){
-          p = trig_prob.get(block);
+    case 1://forage
+      if (trialcnt < maxtrials){
+        if ((trialcnt % bw) == 0 && trialcnt>0){
+          block = block + 1;
+        }
+        p = sp[block];//prob left
+        r  = rl[block];//reach rl
+        if (random(1) <=p){
+          rpos = 1;//left
+          wpos = 2;
         }else{
-          p = trig_prob1.get(block-5);
+          rpos = 2;//right
+          wpos = 1;
         }
-      }else{
+        x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
+        y1 = y0 + (rpos-2)*r;
+        x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
+        y2 = y0 + (wpos-2)*r;
+        ppos = rpos;
+        pnt = 1;
+        fill(col[0]);
+        ellipse(x0,y0,sd,sd);
+        if (oncircler(x0, y0, sd) == true){
+          trialstate = 2;
+        }
+      }else{        
         exit();
-      }
-    }else{
-        p = trig_prob.get(block);
-    }
+      }    
+    break;
     
-    i = testsubjectname;
-    //left reward probability of returning true
-    if (random(1) <= p) {
-      leftBox = true;
-      optimalTotaldistance =2*(dist(x1, y1, x0, y0)-((collectDiameter+targetcircleDiameter)*0.5));
-      rewardpos = 1;
-      rightBox = false;
-    } else {
-      leftBox = false;
-      optimalTotaldistance =2*(dist(x2, y2, x0, y0)-((collectDiameter+targetcircleDiameter)*0.5));
-      rewardpos = 2;
-      rightBox = true;
-    }
-
-    trialState = 2;
-    forageDistance = 0;
+    case 2://forage
+      if (trialcnt < maxtrials){       
+        if (oncirclew(x2,y2,tgd)==true){
+          ppos = wpos;
+          pnt = 0;
+        }
+        if (oncircler(x1,y1,tgd)==true){
+          flickerint = 15;
+          trigtime = millis();
+          trialstate = 3;
+        }
+      }
     break;
-
-  case 2:
-    onCollection = false;
-    wrong = false;
-    //forageDistance = forageDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
-    time=millis();
-
-    if (leftBox == true) { //e: left trigger box
-      whichTrig = 0;
-      if (onwrongcircleright(x2, y2, wrongcircleDiameter)) {
-        rightORwrong = rightORwrong -1;
-        userchoiceleft = userchoiceleft-1;
-      }
-
-      if (onCircleLeft(x1, y1, targetcircleDiameter)) {
-        whichside = 1;
-        trigState = true;
-        flickerint = 15;        
-        trialState = 3; 
-        trigTime = millis();
-      } else {
-        trigState = false;
-      }
-      break;
-    }
-    if (rightBox==true) {
-      //e: right trigger area
-      whichTrig = 1;
-      if (onCircleRight(x2, y2, targetcircleDiameter)) {
-        userchoiceleft = userchoiceleft-1;
-      }
-      if (onwrongcircleleft(x1, y1, wrongcircleDiameter)) {
-        rightORwrong = rightORwrong - 1;
-      }
-      if (onCircleRight(x2, y2, targetcircleDiameter)) {
-        whichside = 2;
-        trigState = true;
-        flickerint = 15;
-        trialState = 3; 
-        trigTime = millis();
-      } else {
-        trigState = false;
-      }
-      break;
-    }
-
-  case 3: // 'collect'
-    trigState=false;
-    //collectionDistance = collectionDistance + dist(mouseX, mouseY, pmouseX, pmouseY);
-    totalDistance = collectionDistance+forageDistance;
-    totalDifference = totalDistance-optimalTotaldistance;
-    if (onCollection(x0, y0, collectDiameter)) {
-      collectState = true;
-      trialState=1;
-      if (practiceint>0){
-        practiceint--;
-      }
-      if (practiceint<1){
-        trialCnt++;
-        if (rightORwrong >0) {
-          right1wrong0 = 1;
-        } else { 
-          right1wrong0= 0;
+    
+    case 3:
+      fill(col[0]);
+      ellipse(x0,y0,sd,sd);
+      optd = dist(x0,y0,x1,y1) - (sd+tgd)*0.5;
+      totd = cd + fd;
+      ddif = totd-optd;
+      maxpoints = maxpoints + 100;
+      points = points + 100*((optd/totd))*pnt;
+      if (oncircler(x0, y0, sd) == true){
+        if (practiceint>0){
+          practiceint--;
         }
-        if (userchoiceleft>0) {
-          userchoice12 = 1;
-        } else { 
-          userchoice12= 0;
+        if (practiceint<1){
+          trialcnt++;
+          // "timestamp, trialNum, blockWidth, reach, leftprob, rightorwrong, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
+          data = str(time)+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ int(rpos) +","+int(fd)+","+int(cd)+"," + int(totd) 
+            + "," + int(optd)+"," + int(ddif) + "," +int(points);
+          output.println(data);
+          output.flush();
+          cd = 0;
+          fd = 0;
+          totd = 0;
         }
-        maxpoints = maxpoints + 100;
-        pointsEarned = pointsEarned + 100*((optimalTotaldistance/totalDistance));
-        data = str(time)+","+ int(trialCnt)+","+ int(blockWidth) + "," + int(pos) + "," + p + ","+ right1wrong0 + ","+ int(rewardpos) +","+int(forageDistance)+","+int(collectionDistance)+"," + int(totalDistance) 
-          + "," + int(optimalTotaldistance)+"," + int(totalDifference) + "," +int(pointsEarned);
-        output.println(data);
-        output.flush();
-        collectionDistance = 0;
-        forageDistance = 0;
-        totalDistance = 0;
-      }      
-    } else {
-      collectState = false;
-    }
+        trialstate = 1;
+      }
     break;
   }
 }
-//===============================================================
-//Trigger conditions      
-//===============================================================
-boolean onCircleLeft(float x1, float y1, int diameter) {
-  float disX = x1 - mouseX;
-  float disY = y1 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
+void keyPressed(){
+  if (key == CODED){
+    if (keyCode == UP && block <pn*rnum){
+      block++;
+    }
+    if (keyCode == DOWN && block > 0){
+      block--;
+    }
+  }
+}
+boolean oncircler(float cx, float cy, int cd){
+  float dx = cx- mouseX;
+  float dy = cy - mouseY;
+  if (sqrt(sq(dx) + sq(dy)) < cd/2){
     return true;
-  } else {
+  }else{
     return false;
   }
 }
-boolean onwrongcircleright(float x2, float y2, int diameter) {
-  float disX = x2 - mouseX;
-  float disY = y2 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
+boolean oncirclew(float cx, float cy, int cd){
+  float dx = cx- mouseX;
+  float dy = cy - mouseY;
+  if (sqrt(sq(dx) + sq(dy)) < cd/2){
     return true;
-  } else {
-    return false;
-  }
-}
-boolean onwrongcircleleft(float x1, float y1, int diameter) {
-  float disX = x1 - mouseX;
-  float disY = y1 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
-    return true;
-  } else {
-    return false;
-  }
-}
-boolean onCircleRight(float x2, float y2, int diameter) {
-  float disX = x2 - mouseX;
-  float disY = y2 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
-    return true;
-  } else {
-    return false;
-  }
-}
-boolean onStart(float x0, float y0, int diameter) {
-  float disX = x0 - mouseX;
-  float disY = y0 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
-    return true;
-  } else {
-    return false;
-  }
-}
-boolean onCollection(float x0, float y0, int diameter) {
-  float disX = x0 - mouseX;
-  float disY = y0 - mouseY;
-  if (sqrt(sq(disX) + sq(disY)) < diameter/2 ) {
-    return true;
-  } else {
+  }else{
     return false;
   }
 }
