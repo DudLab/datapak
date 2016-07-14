@@ -20,12 +20,12 @@ bgi = 1;
 bni = 1;
 % func, v, g, n, act, prob1
 vi = 0;
-gi = .5;
-ni = 1.5;
+gi = .75;
+ni = 1.75;
 acti = -1;
 % rewvalue = 1;
-inczero = 1;
-trials = 100;
+inczero = 0;
+trials = 101;
 agshift = 11;
 reps = 11;%at different probs
 simtot = 1000;%total repetitition
@@ -56,7 +56,7 @@ end
 for i = 1: simtot%1000 total sim
     for a = 1:agshift
         rewvalue = 0.0 + 0.2*(a-1);
-        for r = 1:reps% 10 different probabilities (10 if probstate = 0)
+        for r = 1:reps% 
             for j = 1:tt%101 including 0 trials
                 t = ((r-1)*tt + j);       
                     %t = ((r-1)*tt + j);
@@ -92,13 +92,19 @@ end
 %====================================================================================
 avg = sum(ch,4)/simtot;
 
-fv2 = sum((reshape(avg(:,1,:),tt,reps,agshift)),1)/101;
-fv1 = reshape(fv2,11,11);
+% fv2 = sum((reshape(avg(:,1,:),tt,reps,agshift)),1)/100;
+% fv1 = reshape(fv2,11,11);
+for n = 1: reps
+    fv(:,n) = avg(trials:trials:end,1,n);
+    fg(:,n) = avg(trials:trials:end,2,n);
+    fn(:,n) = avg(trials:trials:end,3,n);
+    fact(:,n) = avg(trials:trials:end,4,n);
+end
 
-fv = reshape((sum((reshape(avg(:,1,:),tt,reps,agshift)),1)/101),11,11)
-fg = reshape((sum((reshape(avg(:,2,:),tt,reps,agshift)),1)/101),11,11)
-fn = reshape((sum((reshape(avg(:,3,:),tt,reps,agshift)),1)/101),11,11)
-fact = reshape((sum((reshape(avg(:,4,:),tt,reps,agshift)),1)/101),11,11)
+% fv = reshape((sum((reshape(avg(:,1,:),tt,reps,agshift)),1)/trials),11,11);
+% fg = reshape((sum((reshape(avg(:,2,:),tt,reps,agshift)),1)/trials),11,11);
+% fn = reshape((sum((reshape(avg(:,3,:),tt,reps,agshift)),1)/trials),11,11);
+% fact = reshape((sum((reshape(avg(:,4,:),tt,reps,agshift)),1)/trials),11,11);
 
 figure(1);
     subplot(4,2,1);
