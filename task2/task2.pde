@@ -61,7 +61,7 @@ void setup(){
     e.printStackTrace();
   } 
   String preset="Type your name unique identifier";
-  String op1s = JOptionPane.showInputDialog(frame, "Name", preset);
+  String op1s = JOptionPane.showInputDialog(frame, "Identifier", preset);
   if(op1s != null) i = op1s;
   int d = day(); 
   if (d<10) {
