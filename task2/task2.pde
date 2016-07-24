@@ -42,6 +42,7 @@ float y0 = displayHeight*0.5;
 float dista;
 float pdist = 0;
 float doptimal;
+float diff;
 float dr;
 float dd;
 float dd1;
@@ -95,7 +96,7 @@ void setup(){
   String header = str(year())+","+str(month())+","+str(day())+","+str(hour())+","+str(minute());
   output.println(header);
   output.flush();
-  String firstLine = "timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist,turnx,turny";
+  String firstLine = "timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist, diff, turnx, turny";
   output.println(firstLine);
   output.flush(); 
   
@@ -178,14 +179,16 @@ void draw(){
             }
             if (practiceint<1){
               trialcnt = trialcnt + 1;
+              diff = pdist-doptimal;
               data = str(time) + "," + int(trialcnt) + "," + int(blockwidth) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + pdist + "," + doptimal + "," +
-              int(mouseX) + "," + int(mouseY);
-              //"timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist" 
+              diff + ","+int(mouseX) + "," + int(mouseY);
+              //"timestamp, trialCnt, blockWidth, block, diameter,targetwidth, totdist, optdist," 
               output.println(data);
               output.flush();
             }
             reset = 0;
             dr = 0;
+            diff = 0;
             trialstate = 2;
           }
         }else{

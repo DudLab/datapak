@@ -27,7 +27,7 @@ int rnum = 2;// number of reaches
 int rdt = 350;
 int rlefty[] = new int[rnum];//reach distance list of left
 int block = 0;
-int bw = 25;//blockwidth
+int bw = 50;//blockwidth ORIGINAL 25
 int blocktot = pn*rnum;
 int maxtrials = blocktot*bw;
 IntList pp;//prob randomly shuffled
@@ -138,7 +138,7 @@ void setup(){
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, rightorwrong, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
+  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, subjpos, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
   output.println(firstLine);
   output.flush(); 
 
@@ -260,7 +260,7 @@ void draw(){
         }
         if (practiceint<1){
           trialcnt++;
-          // "timestamp, trialNum, blockWidth, reach, leftprob, rightorwrong, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
+          // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
           data = str(time)+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ int(rpos) +","+int(fd)+","+int(cd)+"," + int(totd) 
             + "," + int(optd)+"," + int(ddif) + "," +int(points);
           output.println(data);
