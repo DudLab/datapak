@@ -28,7 +28,7 @@ int trialstate = 0;
 int reachnum = 4;
 int reachtot = reachnum +(reachnum-1);
 int block = 0;
-int blockwidth = 25; //25trial block
+int blockwidth = 50; //25trial block
 int tgw = 60; //targetwidths
 int currdiam;//current circlediameter
 int maxtrials = reachtot*blockwidth;
@@ -36,7 +36,7 @@ int cd[] = new int[reachtot]; //circle diameter
 int cs = 80;//cursorsize
 int wait = 2;
 int reset = 0;
-int dz;
+float dz;
 float x0 = displayWidth*0.5;
 float y0 = displayHeight*0.5;
 float dista;
@@ -105,7 +105,7 @@ void setup(){
   parameters = createWriter("DataBuffer/data/posdata/" + fileName+"_p.csv");
   parameters.println(header);
   parameters.flush();
-  String firstLineParam = "timestamp, trialcnt, block, diameter, ringwidth, mousex, mousey";
+  String firstLineParam = "timestamp, trialcnt, block, diameter, ringwidth, mousex, mousey, distcenter";
   parameters.println(firstLineParam);
   parameters.flush();
   
@@ -117,6 +117,7 @@ void draw(){
     dista = sqrt(sq(mouseX-pmouseX)+sq(mouseY-pmouseY));//subject distance traveled
     pdist += dista;
   }
+  dz = sqrt(sq(mouseX-(displayWidth/2))+ sq(mouseY-(displayHeight/2)));
   dd = dist(displayWidth/2,displayHeight/2,mouseX,mouseY);
   dd1 = dist(displayWidth/2,displayHeight/2,pmouseX,pmouseY);
   ddd  = dd-dd1;
@@ -124,7 +125,7 @@ void draw(){
   textSize(32);
   text("block: " + block,300,300);
   text("trials: " + trialcnt,300,350);
-  //text("reset: " + reset,300,370);
+  //text("dz: " + dz,300,370);
   //text("pdist: " +pdist,300,390);
   //text("ddd " + ddd,300,410);
   fill(middle);
@@ -141,7 +142,7 @@ void draw(){
   ellipse(mouseX,mouseY,15,15);
   if (practiceint<1){
     //"timestamp, trialcnt, block, diameter, ringwidth, mousex, mousey"
-    paramData = str(time) + "," + int(trialcnt) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + int(mouseX) + "," + int(mouseY);
+    paramData = str(time) + "," + int(trialcnt) + "," + int(block) + "," + int(currdiam) + "," + int(tgw) + "," + int(mouseX) + "," + int(mouseY) + "," + dz;
     parameters.println(paramData);
     parameters.flush();
   }

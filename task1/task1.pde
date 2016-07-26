@@ -148,12 +148,13 @@ void setup(){
 
 
   //information about what is in each column
-  String firstLineParam = "trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, x0,y0, x1, y1,trialstate";
+  String firstLineParam = "trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
   parameters.println(firstLineParam);
   parameters.flush();
 }
 void draw(){
   background(0);
+  time = millis();
   x0 = displayWidth/2;
   y0 = 3*(displayHeight)/4;
   //==========================================================================
@@ -167,8 +168,8 @@ void draw(){
     cd += dista;
   }
   if (practiceint<1){
-    //"trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, x0,y0, x1, y1,trialstate";
-    paramData = int(trialcnt+1) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + r + "," + p + ","  
+    //"trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
+    paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + r + "," + p + ","  
       + int(mouseX) + "," + int(mouseY) + "," + int(sd) + "," + int(tgd) + "," + int(x0) + "," + int(y0) + "," + int(x1) + "," + int(y1) + "," +int(trialstate);
     parameters.println(paramData);
     parameters.flush();
@@ -261,7 +262,7 @@ void draw(){
         if (practiceint<1){
           trialcnt++;
           // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
-          data = str(time)+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ int(rpos) +","+int(fd)+","+int(cd)+"," + int(totd) 
+          data =time+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ int(rpos) +","+int(fd)+","+int(cd)+"," + int(totd) 
             + "," + int(optd)+"," + int(ddif) + "," +int(points);
           output.println(data);
           output.flush();
