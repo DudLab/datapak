@@ -1,4 +1,4 @@
-% requires movav and varycolor functions
+
 
 % get filenames
 filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trialdata/';
@@ -23,13 +23,20 @@ end
 
 % threshes = 2%for old csv
 %trial data for task1 and 2
-col = size(pd1,2);
+half = 2;
+colp = size(pd1,2);
 mpd = max(np);
 rn = numel(unique(ad(:,4,1)));
 pn = numel(unique(ad(:,5,1)));
-tt = pn*b;
+col = size(ad,2);
+tt = pn*b/half;
 cl = varycolor(rn + 1);
 
+hd = reshape((b/2)+1:b,(b/2),1);
+for i = 1:(rn*pn)
+    hdx(1+(b/2)*(i-1):(b/2)*i,1) = hd(:,1) + b*(i-1);
+end
+hindex = reshape(hdx,tt,rn);
 if rn == 2
     version = 1;
 end
@@ -38,20 +45,25 @@ if rn == 5
 end
 chleft = zeros(pn,rn,ns);
 avg = zeros(pn,rn);
-td = zeros(size(ad,1)/rn,size(ad,2),rn,ns);
-correct = zeros(b*pn,rn,ns);
+td = zeros((size(ad,1)/rn)/half,size(ad,2),rn,ns);
+td1 = zeros((size(ad,1)/rn),size(ad,2),rn,ns);
+correct = zeros(tt,rn,ns);
 idxc = zeros(rn,ns);
-incorrect = zeros(b*pn,rn,ns);% trial number for correct
+incorrect = zeros(tt,rn,ns);% trial number for correct
 idxn = zeros(rn,ns);
 for k = 1:ns
     for t = 1:rn
         %     separate into thresh 3dim = each separate reach
-        td(:,:,t,k) = ad(ad(:,4,k)==t,:,k);
+        td1(:,:,t,k) = ad(ad(:,4,k)==t,:,k);
 
         % sort based on prob
-        [y,idx] = sort(td(:,5,t,k));
-        td(:,:,t,k) = td(idx,:,t,k);
-        
+        [y,idx] = sort(td1(:,5,t,k));
+        td1(:,:,t,k) = td1(idx,:,t,k);
+        if half == 2
+            td(:,:,t,k) = td1(ismember(td1(:,2,t,k),hindex(:,t)),:,t,k);
+        else
+            td(:,:,t,k) = td1(:,:,t,k);
+        end
         if version == 1
         %   CORRECT
             idxc(t,k) = numel(find(td(:,6,t,k) == 1));
@@ -75,18 +87,29 @@ for k = 1:ns
             incorrect(1:idxn(t,k),t,k) ...
                 = td((td(:,6,t,k) ~= td(:,7,t,k)),2,t,k);
             incorrect(idxn(t,k):tt,t,k) = 0;
+
         end
         for i = 1:5
+            if half == 2% take 2nd half
+                sl = (b/2);
+                sdx = 1+ (i-1)*25;
+            else
+                sl = b;%take all trials
+                sdx = 1+(b)*(i-1);
+            end
             if version == 1
 %               PROB CHOOSE LEFT
-                chleft(i,t,k) = (numel(td((td(1+(50)*(i-1):50*i,6,t,k) == 1 & td(1+(50)*(i-1):50*i,7,t,k) == 1))) ...
-                    + numel(td((td(1+(50)*(i-1):50*i,6,t,k)== 0 & td(1+(50)*(i-1):50*i,7,t,k) == 2))))/50;
+                chleft(i,t,k) = (numel(td((td(sdx:sl*i,6,t,k) == 1 & td(sdx:sl*i,7,t,k) == 1))) ...
+                    + numel(td((td(sdx:sl*i,6,t,k)== 0 & td(sdx:sl*i,7,t,k) == 2))))/sl;
+                pt(k,:,t,i) = reshape(cumsum(td(sdx:sl*i,6,t,k)==td(sdx:sl*i,7,t,k))./reshape(1:(sl),sl,1),1,sl); 
+
+%
             end
             if version == 2
 %               PROB CHOOSE LEFT
             %  new "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";      
-                chleft(i,t,k) = (numel(td((td(1+(50)*(i-1):50*i,6,t)== 1))))/50;
-                
+                chleft(i,t,k) = (numel(td((td(sdx:sl*i,6,t)== 1))))/sl;
+                pt(k,:,t,i) = reshape(cumsum(td(sdx:sl*i,6,t,k))./reshape(1:(sl),sl,1),1,sl);
             end
         end        
     end
@@ -108,32 +131,19 @@ if nopos == 1
             tpd(:,:,k) = csvread(strcat(filepathp,fnamep), 2,0);
         end
         for t = 1:rn%rn
-    %         cell col = reach
-%             if k<2
-%                 rt{t,1} = tpd(ismember(tpd(tpd(:,4,k)==t, 1, k),correct(:,t,k)),:,k);%1,2,etc.
-%                 wn{t,1} = tpd(ismember(tpd(tpd(:,4,k)==t, 1, k),incorrect(:,t,k)),:,k);%1,2,etc.
-%             else
-%                 rt{t,1} = vertcat(rt{t,1},tpd(ismember(tpd(tpd(:,4,k)==t, 1, k),correct(:,t,k)),:,k));
-%                 wn{t,1} = vertcat(wn{t,1},tpd(ismember(tpd(tpd(:,4,k)==t, 1, k),incorrect(:,t,k)),:,k));
-%             end
-            if k<2
-                rt{t,1} = tpd(ismember(tpd(:, 1, k),correct(:,:,k)),:,k);%1,2,etc.
-                wn{t,1} = tpd(ismember(tpd(:, 1, k),incorrect(:,:,k)),:,k);%1,2,etc.
-            else
-                rt{t,1} = vertcat(rt{t,1},tpd(ismember(tpd(:, 1, k),correct(:,:,k)),:,k));
-                wn{t,1} = vertcat(wn{t,1},tpd(ismember(tpd(:, 1, k),incorrect(:,:,k)),:,k));
+            for i = 1:5
+                rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,4,k)==t,:,k);
+                wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,4,k)==t,:,k);
+    %                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,4,k)==t,:,k);
+    %                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,4,k)==t,:,k);
             end
         end
     end
 end
-asdf =  tpd(ismember(tpd(tpd(:,4,2)==2,1,1),correct(:,2,2)),:,2);
-% asdf1 =  tpd(ismember(tpd(tpd(:,4,1)==1,1,1),correct(:,2,2)),:,2);
-% asdf = tpd(ismember(tpd(tpd(:,4,1)==2, 1, 1),correct(:,2,1)),:,1);
-% asdf1 = tpd(ismember(tpd(tpd(:,4,2)==2, 1, 2),correct(:,2,2)),:,2);
-% asdfc = vertcat(asdf,asdf1);
-% zr = asdfc - rt{2,1};
-% sd = numel(unique(rt{1,1}(:,4)));
-% sd1 = numel(unique(rt{2,1}(:,4)));
+% for i = 1:rn
+%     rt{i} = cat(1,rt1{i,:});
+%     wn{i} = cat(1,wn1{i,:});
+% end
 % ==============================================================
 % FIGURES
 % ==============================================================
@@ -158,90 +168,94 @@ figure(1);
     xlabel('P(reward)');
     ylabel('P(choose left)');
     title('P(choose L) as function of P(reward)');
-if nopos == 1
-figure(2);
-    if version == 1
-    s = scatter(asdf(:,6) ,asdf(:,7));
-%     subplot(1,2,1);
-%     scatter(rt{1,1}(:,6),rt{1,1}(:,7));
-%     subplot(1,2,2)
-%     scatter(rt{2,1}(:,6),rt{2,1}(:,7));
+if nopos == 1 
+    for t = 1:rn
+        figure(t+1);
+%         hold all
+        for i = 1:pn
+        hold on            
+            subplot(5,2,i);
+            x = 1:length(pt(:,:,t,i));
+            shadedErrorBar(x,pt(:,:,t,i),{@mean, @(x) 1*std(x)},'r',0);
+            hold all
+            plot(1:length(pt(:,:,t,i)),pt(:,:,t,i));
+            title(['p(r)=' num2str(rprob(i))]);
+            xlabel('trials');
+        %     ylabel('choice prob');
+        end
+        a = axes;
+        if half == 2
+            t1 = title(['P(choose L) second half of trials at reach' num2str(t)]);
+        else
+            t1 = title(['P(choose L) at reach' num2str(t)]);
+        end
+        a.Visible = 'off';
+        t1.Visible = 'on';
     end
-    if version == 2
-        s = scatter(rt{1,1}(rt{1,1}(:,15)==2,6) ,rt{1,1}(rt{1,1}(:,15)==2,7));
-    end
-%     s.LineWidth = 0.6;
-%     s.MarkerEdgeColor = 'b';
-%     s.MarkerFaceColor = [0 0.5 0.5];
-figure(7);
-    subplot(1,2,1);
-    scatter(rt{1,1}(:,6),rt{1,1}(:,7));
-    subplot(1,2,2)
-    scatter(rt{2,1}(:,6),rt{2,1}(:,7));
-
-
-%     hold on
-%     x = rt{1,1}(rt{1,1}(:,16)== 2,6);
-%     y = rt{1,1}(rt{1,1}(:,16)== 2,7);
-%     [n,c] = hist3([x, y]);
-%     contour(c{1},c{2},n)
-% asdf = numel(unique(rt{
     for r = 1:rn
-        figure((1+2*(r-1))+2);
+        for k = ns
+        figure((r+rn+1));
         xlabel('X');
         ylabel('Y');
-        title(['Forage Trajectory(correct choices) reach' num2str(r)]);
-        hold all
-        for i = 1: 5
-            if version == 1
-                subplot(5,2,1+2*(i-1));
-                scatter(rt{1,1}(rt{1,1}(:,16)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,6) ...
-                ,rt{1,1}(rt{1,1}(:,16)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,7));
-                subplot(5,2,2*i);
-                n = hist3([rt{1,1}(rt{1,1}(:,16)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,6) ...
-                ,rt{1,1}(rt{1,1}(:,16)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,7)],[10,10]);
-                imagesc(n);
-                title(['Forage Trajectory(correct choices) reach' num2str(r)]);
-            end
-            if version == 2
-                subplot(5,2,1+2*(i-1));
-                scatter(rt{1,1}(rt{1,1}(:,15)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,6) ...
-                ,rt{1,1}(rt{1,1}(:,15)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,7));
-                subplot(5,2,2*i);
-                n = hist3([rt{1,1}(rt{1,1}(:,15)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,6) ...
-                ,rt{1,1}(rt{1,1}(:,15)== 2 & rt{1,1}(:,5)== rprob(i)& rt{1,1}(:,4)==r,7)],[10,10]);
-                imagesc(n);
+%         hold all
+            for i = 1: 5
+                if version == 1
+    %               CORRECT & rt{r,k}(:,4)==r
+                    subplot(5,4,1+4*(i-1));
+                    scatter(rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
+                    ,rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),7));
+                    title(['correct choices p(r)=' num2str(rprob(i))]);
+                    subplot(5,4,2+4*(i-1));
+                    n = hist3([rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
+                    ,rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(i),7)],[10,10]);
+                    imagesc(n);
+    %               INCORRECT
+                    subplot(5,4,3+4*(i-1));
+                    scatter(wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
+                    ,wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),7));
+                    title(['incorrect choices p(r)=' num2str(rprob(i))]);
+                    subplot(5,4,4+4*(i-1));
+                    nw = hist3([wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
+                    ,wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),7)],[10,10]);
+                    imagesc(nw);
+                end
+                if version == 2
+    %               CORRECT  
+                    subplot(5,4,1+4*(i-1));
+                    scatter(rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
+                    ,rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),7));
+                    title(['correct choices p(r)=' num2str(rprob(i))]);
+                    subplot(5,4,2+4*(i-1));
+                    n = hist3([rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
+                    ,rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),7)],[10,10]);
+                    imagesc(n);
+    %               INCORRECT
+                    subplot(5,4,3+4*(i-1));
+                    scatter(wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
+                    ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i) & wn{r,k}(:,4)==r,7));
+                    title(['incorrect choices p(r)=' num2str(rprob(i))]);
+                    subplot(5,4,4+4*(i-1));
+                    nw = hist3([wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
+                    ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i),7)],[10,10]);
+                    imagesc(nw);
+                end
             end
         end
-
-        figure((2*r)+2);
-        hold all
-        xlabel('X');
-        ylabel('Y');
-        title(['Forage Trajectory(incorrect choices) reach' num2str(r)]);
-        for i = 1: 5
-            if version == 1
-                subplot(5,2,1+2*(i-1));
-                scatter(wn{1,1}(wn{r,1}(:,16)== 2 & wn{1,1}(:,5)== rprob(i)& wn{1,1}(:,4)==r,6) ...
-                ,wn{1,1}(wn{1,1}(:,16)== 2 & wn{1,1}(:,5)== rprob(i) & wn{1,1}(:,4)==r,7));
-                subplot(5,2,2*i);
-                nw = hist3([wn{1,1}(wn{1,1}(:,16)== 2 & wn{1,1}(:,5)== rprob(i)& wn{1,1}(:,4)==r,6) ...
-                ,wn{1,1}(wn{1,1}(:,16)== 2 & wn{1,1}(:,5)== rprob(i)& wn{1,1}(:,4)==r,7)],[10,10]);
-                imagesc(nw);
-                title(['Forage Trajectory(incorrect choices) reach' num2str(r)]);
-            end
-            if version == 2
-                subplot(5,2,1+2*(i-1));
-                scatter(wn{r,1}(wn{r,1}(:,15)== 2 & wn{r,1}(:,5)== rprob(i),6) ...
-                ,wn{r,1}(wn{r,1}(:,15)== 2 & wn{r,1}(:,5)== rprob(i),7));
-                subplot(5,2,2*i);
-                nw = hist3([wn{r,1}(wn{r,1}(:,15)== 2 & wn{r,1}(:,5)== rprob(i),6) ...
-                ,wn{r,1}(wn{r,1}(:,15)== 2 & wn{r,1}(:,5)== rprob(i),7)],[10,10]);
-                imagesc(nw);
-            end     
+        a = axes;
+        if half == 2
+            t1 = title(['Forage trajectories (second half of trials) reach ' num2str(k)]);
+        else
+            t1 = title(['Forage trajectories reach ' num2str(k)]);
         end
+        a.Visible = 'off';
+        t1.Visible = 'on';
     end
 end
-% figure(3);
+% figure(7);
+% scatter(rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(2)& rt{r,k}(:,4)==2,6) ...
+%                 ,rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(2)& rt{r,k}(:,4)==2,7));
+% figure(8);
+% scatter(wn{r,k}(wn{r,k}(:,16)== 2 & wn{r,k}(:,5)== rprob(2)& wn{r,k}(:,4)==2,6) ...
+%                 ,wn{r,k}(wn{r,k}(:,16)== 2 & wn{r,k}(:,5)== rprob(2)& wn{r,k}(:,4)==2,7));
 % 
 % figure(4);
