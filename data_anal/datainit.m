@@ -243,9 +243,9 @@ if nopos == 1
         end
         a = axes;
         if half == 2
-            t1 = title(['Forage trajectories (second half of trials) reach ' num2str(k)]);
+            t1 = title(['Forage trajectories (second half of trials) reach ' num2str(r)]);
         else
-            t1 = title(['Forage trajectories reach ' num2str(k)]);
+            t1 = title(['Forage trajectories reach ' num2str(r)]);
         end
         a.Visible = 'off';
         t1.Visible = 'on';

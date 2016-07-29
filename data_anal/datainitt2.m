@@ -2,13 +2,13 @@ filepath2 = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task2/DataBuffer/data
 filepathp2 = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task2/DataBuffer/data/posdata/';
 fnamesp2 = dir(strcat(filepathp2,'*.csv'));
 fnames2 = dir(strcat(filepath2,'*.csv'));
-nopos = 1;%0 = no positionstuff; 1 = yes
-ns = length(fnames2);%number of test subjects
-ad2 = zeros(175*2,11,ns);%alldata 175*2
+nopos = 1;%0 = no positions1tuff; 1 = yes
+ns1 = length(fnames2);%number of test subjects
+ad2 = zeros(175*2,11,ns1);%alldata 175*2
 b = 50; %block
 half = 2;
 
-for k = 1:ns
+for k = 1:ns1
     fname2 = fnames2(k).name;
     ad2(:,:,k) = csvread(strcat(filepath2,fname2), 2,0);
     if nopos == 1
@@ -26,7 +26,7 @@ for i = 1:(rth)
 end
 hindex2 = reshape(hdx2,(b/2),rth);
 clearvars td2
-for k = 1:ns    
+for k = 1:ns1    
     for t = 1:rth
         if half == 2
             td2(:,:,t,k) = ad2(ad2(:,4,k)==(t-1) & ismember(ad2(:,2,k),hindex2(:,t)),:,k);
@@ -38,7 +38,7 @@ for k = 1:ns
 end
 if nopos == 1
     clearvars tpd2
-    for k = 1:ns
+    for k = 1:ns1
         if np2(k)< mpd
             tpd2(1:np(k),:,k) = csvread(strcat(filepathp2,fnamep2), 2,0);
             tpd2(np(k):mpd,:,k) = 0;
@@ -54,7 +54,7 @@ if nopos == 1
         end
     end
 end
-figure(1);
+figure(6);
 for i = 1:rth
     pmx(i,1) = min(p2{i,1}(:,6));%x
     pmx(i,2) = max(p2{i,1}(:,6));%y
@@ -81,7 +81,7 @@ end
 a.Visible = 'off';
 t1.Visible = 'on';
 
-figure(2);
+figure(7);
 hold all
 %     subplot(7,2,1+2*(i-1));
 plot(1:rth,pmn,'r',1:rth,pmx(:,1),'g',1:rth, pmx(:,2),'b');

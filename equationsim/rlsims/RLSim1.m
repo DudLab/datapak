@@ -52,6 +52,7 @@ for i = 1: simtot%1000 total sim
     for r = 1:reps% 10 different probabilities (10 if probstate = 0)
         for j = 1:tt%101 including 0 trials
             t = ((r-1)*tt + j);
+%              rewvalue = 0.0 + 0.2*(a-1);
             tiebreaker = randi(choices);
             for c = 1: choices%choices
                 %t = ((r-1)*tt + j);
@@ -65,7 +66,7 @@ for i = 1: simtot%1000 total sim
                     sigmat = (ch(t-1,7,c,i) - ch(t-1,1,c,i));%sigmat = r(t-1)-v(t-1)
                     ch(t,1,c,i) = ch(t-1,1,c,i) + aci*sigmat;%v(t) = v(t-1) + ac*sigmat
                     ch(t,2,c,i) = ch(t-1,2,c,i) + agi*sigmat*ch(t-1,2,c,i);%g(t) = g(t-1) + ag*g(t-1)*sigmat
-                    ch(t,3,c,i) = ch(t-1,3,c,i) + (-1)*agi*sigmat*ch(t-1,3,c,i); %n(t) = n(t-1) + an*n(t-1)*sigmat
+                    ch(t,3,c,i) = ch(t-1,3,c,i) - (ani*sigmat*ch(t-1,3,c,i)); %n(t) = n(t-1) + an*n(t-1)*sigmat
                     ch(t,4,c,i) = bgi*ch(t,2,c,i)-bni*ch(t,3,c,i);%act(t) = bg*g(t) - bn*n(t)
                 end
             end

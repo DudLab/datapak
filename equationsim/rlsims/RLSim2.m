@@ -13,16 +13,20 @@ probstate =1; %1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 prl0 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9, 1];
 prl = [prl0;prl1];
-aci = 0.1;
+aci = 0.05;
 agi = 0.1;
 ani = 0.1;
 bgi = 1;
 bni = 1;
 % func, v, g, n, act, prob1
-vi = 0;
-gi = .75;
-ni = 1.75;
-acti = -1;
+% vi = 0;
+% gi = .75;
+% ni = 1.75;
+% acti = -1;
+vi = 0.5;
+gi = 1;
+ni = 1;
+acti = 0;
 % rewvalue = 1;
 inczero = 0;
 trials = 101;
@@ -70,7 +74,7 @@ for i = 1: simtot%1000 total sim
                     sigmat = (ch(t-1,7,a,i) - ch(t-1,1,a,i));%sigmat = r(t-1)-v(t-1)
                     ch(t,1,a,i) = ch(t-1,1,a,i) + aci*sigmat;%v(t) = v(t-1) + ac*sigmat
                     ch(t,2,a,i) = ch(t-1,2,a,i) + agi*sigmat*ch(t-1,2,a,i);%g(t) = g(t-1) + ag*g(t-1)*sigmat
-                    ch(t,3,a,i) = ch(t-1,3,a,i) + ani*(-1*sigmat)*ch(t-1,3,a,i); %n(t) = n(t-1) + an*n(t-1)*sigmat
+                    ch(t,3,a,i) = ch(t-1,3,a,i) - (ani*(sigmat)*ch(t-1,3,a,i)); %n(t) = n(t-1) + an*n(t-1)*sigmat
                     ch(t,4,a,i) = bgi*ch(t,2,a,i)-bni*ch(t,3,a,i);%act(t) = bg*g(t) - bn*n(t)
                 end
                 ch(t,5,a,i) = 1;
@@ -91,7 +95,7 @@ end
 % GRAPHING
 %====================================================================================
 avg = sum(ch,4)/simtot;
-
+avg2 = mean(avg,3);
 % fv2 = sum((reshape(avg(:,1,:),tt,reps,agshift)),1)/100;
 % fv1 = reshape(fv2,11,11);
 for n = 1: reps
@@ -100,12 +104,16 @@ for n = 1: reps
     fn(:,n) = avg(trials:trials:end,3,n);
     fact(:,n) = avg(trials:trials:end,4,n);
 end
-
-% fv = reshape((sum((reshape(avg(:,1,:),tt,reps,agshift)),1)/trials),11,11);
-% fg = reshape((sum((reshape(avg(:,2,:),tt,reps,agshift)),1)/trials),11,11);
-% fn = reshape((sum((reshape(avg(:,3,:),tt,reps,agshift)),1)/trials),11,11);
-% fact = reshape((sum((reshape(avg(:,4,:),tt,reps,agshift)),1)/trials),11,11);
-
+%     fv2 = reshape(avg2(:,1),tt,reps);
+%     fg2 = reshape(avg2(:,2),tt,reps);
+%     fn2 = reshape(avg2(:,3),tt,reps);
+%     fact2 = reshape(avg2(:,4),tt,reps);
+%     
+    fv2 = reshape(avg(:,1,6),tt,reps);
+    fg2 = reshape(avg(:,2,6),tt,reps);
+    fn2 = reshape(avg(:,3,6),tt,reps);
+    fact2 = reshape(avg(:,4,6),tt,reps);
+    
 figure(1);
     subplot(4,2,1);
     plot(prl0,fv);%length(fv)-1,fv check
@@ -123,3 +131,22 @@ figure(1);
     plot(prl0,fact);
     title(['Act(' 'r=' num2str(rewvalue) ', p, increasing)']);
     xlabel('p(R)');
+    
+    figure(2);
+    subplot(4,2,1);
+    plot(1:length(fv2),fv2);%length(fv)-1,fv check
+    title(['V(choice ' 'r=' num2str(rewvalue) ', p, increasing)']);
+    xlim([0,100]);
+    subplot(4,2,3);
+    plot(1:length(fg2),fg2);
+    title(['G(' 'r=' num2str(rewvalue) ', p, increasing)']);
+    xlim([0,100]);
+    subplot(4,2,5);
+    plot(1:length(fn2),fn2);
+    title(['N('  'r=' num2str(rewvalue) ', p, increasing)']);
+    xlim([0,100]);
+    subplot(4,2,7);
+    plot(1:length(fact2),fact2);
+    title(['Act(' 'r=' num2str(rewvalue) ', p, increasing)']);
+    xlabel('p(R)');
+    xlim([0,100]);
