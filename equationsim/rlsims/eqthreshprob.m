@@ -8,13 +8,14 @@ cont = 1; %each prob separately tested as n(101) trials
 
 %=============================================================
 choices = 2;
+cho = [1,2]
 choice = 1;
 probstate =1; %1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 %=====================================================================
-prl0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+prl0 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9];
 prl = [prl0;prl1];
-aci = 0.1;
+aci = 0.05;
 agi = 0.1;
 ani = 0.1;
 bgi = 1;
@@ -27,7 +28,7 @@ acti = 0;
 rewvalue = 1;
 inczero = 1;
 trials = 100;
-reps = 10;%at different probs
+reps = 11;%at different probs
 simtot = 1000;%total repetitition
 shiftstate = 1;
 tt = trials + inczero;
@@ -35,6 +36,7 @@ st = tt*reps;
 % ch = cell(simtot);%1000,2 choices
 ch = zeros(st,7,choices,simtot);
 sm = zeros(st,choices,simtot);
+color = varyColor(reps);
 %====================================================================================
 %===prob generation==================================================================
 %====================================================================================
@@ -78,16 +80,17 @@ for i = 1: simtot%1000 total sim
                 else
                     ch(t,5,c,i) = (exp(ch(t,4,c,i)))/sum(exp(ch(t,4,1,i)+exp(ch(t,4,2,i))));
                 end
-                    sm(t,c,i) = ch(t,5,c,i);
+%                     sm(t,c,i) = ch(t,5,c,i);
             end
 %====================================================================================
 % DEFINE A SOFTMAX RULE
 %====================================================================================
 %           hardmax[M,I] = max(ch{i,1:choices}(t,5)); picks highest prob
-            p = cumsum([0; sm(t,1:end-1,i).'; 1+1e3*eps]);
-            [a, a] = histc(rand,p);
+%             p = cumsum([0; sm(t,1:end-1,i).'; 1+1e3*eps]);
+%             [a, a] = histc(rand,p);
+            pick = cho(find(rand<cumsum(ch(t,5,:,i)),1,'first'));
             for c = 1: choices
-                if c == a
+                if c == pick
                     ch(t,6,c,i) = 1;
                     if prob(t,a,i) <= pr(t,c)
                         ch(t,7,c,i) = rewvalue;
@@ -107,18 +110,18 @@ end
 %====================================================================================
 avg = sum(ch,4)/simtot;
 bias = reshape((avg(:,5,1)-avg(:,5,2)),tt, reps);
-
+% avgc = 
 for c = 1: choices
 fv = reshape(avg(:,1,c),tt,reps);
 fg = reshape(avg(:,2,c),tt,reps);
 fn = reshape(avg(:,3,c),tt,reps);
 fact = reshape(avg(:,4,c),tt,reps);
-
+avgc = reshape(avg(:,5,c),tt,reps);
 figure(1);
     subplot(4,2,c);
     plot(0:length(fv)-1,fv);
     title(['V(choice ' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
-    subplot(4,2,1+2);
+    subplot(4,2,2+c);
     plot(0:length(fg)-1,fg);
     title(['G(choice' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
 
@@ -130,6 +133,14 @@ figure(1);
     plot(0:length(fact)-1,fact);
     title(['Act(choice' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
     xlabel('time');
+figure(3);
+    subplot(4,2,c);
+    plot(0:length(fv)-1,fv);
+    title(['Choice' num2str(c)]);
+    subplot(4,2,2+c);
+    plot(0:length(fg)-1,fg);
+    title(['G(choice' num2str(c) 'r=' num2str(rewvalue) ', p, increasing)']);
+
 end
 figure(2)
     subplot(4,2,1);

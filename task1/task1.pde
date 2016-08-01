@@ -1,7 +1,7 @@
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Task 1; 4thresh 5 probs
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
+//monitor of 27inch x 19.5
 import controlP5.*;
 import java.applet.Applet;
 import java.awt.*;
@@ -35,11 +35,13 @@ IntList rp;//reach randomly shuffled
 int trialstate = 1;// forage, collect soforth
 int trialcnt = 0;
 int pnt;//points
-int sd = 60;// startdiameter
-int tgd = 150;//targetdiameter
+int offset = displayHeight/20;
+int sd = displayWidth/10;// startdiameter60
+int tgd = displayWidth/10;//targetdiameter150
 float dista;
 float fd = 0;//foragedistance
 float cd = 0;//collectdistance
+float rightorwrong = 0;
 float totd = 0;//totaldistance
 float optd = 0;//optimaldistance
 float ddif = 0;//difference subjectd - optd
@@ -49,19 +51,22 @@ float x1;
 float y1;
 float x2;
 float y2;
-float tgdx = 300;//distance between targets
+float tgdx = displayWidth/4;//distance between targets
 float problist[] = {0.1,0.25,0.5,0.75,0.9};
-float rlist[] = {0, 150 + (tgd/2), 300+ (tgd/2), 450+ (tgd/2), 600+ (tgd/2)};
+float rlist[] = {displayHeight/2, displayHeight/2};
 float [] reachposy = {};
 float p;
 float r;
 float sp[] = new float[pn*rnum];
 float rl[] = new float[rnum*pn];
-float rl1[] = {0,0,0,0,0,300,300,300,300,300};
+float px;
+float py;
+
 int flickerint=0;
 int rpos;//left or right
 int wpos;// wrongpos
 int ppos;
+int ultrasonicmode = 0;
 int practiceint=10;
 float points = 0;
 float maxpoints;
@@ -110,11 +115,13 @@ void setup(){
     IntList tempr  = new IntList();
     rlefty[c] = rdt*(c);
     for (int r =0; r< pn; r++){
-      temp.append(r);
-      tempr.append(r);
+        temp.append(r);
+      if (r<rnum){      
+        tempr.append(r);
+      }      
     }
     temp.shuffle();//if want random
-    //tempr.shuffle();
+    tempr.shuffle();
     pp.append(temp);
     rp.append(tempr);
   }
@@ -138,7 +145,7 @@ void setup(){
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, subjpos, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
+  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, subjpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";
   output.println(firstLine);
   output.flush(); 
 
@@ -154,13 +161,21 @@ void setup(){
 }
 void draw(){
   background(0);
+  if (ultrasonicmode == 0){
+    px = mouseX;
+    py = mouseY;
+  }else{
+    
+  }
   time = millis();
   x0 = displayWidth/2;
-  y0 = 3*(displayHeight)/4;
+  y0 = (displayHeight)-sd;
   //==========================================================================
   //===============TEXT&VARS==================================================
   //==========================================================================
-  dista = sqrt(sq(mouseX - pmouseX)+sq(mouseY - pmouseY));
+  if (ultrasonicmode == 0){
+    dista = sqrt(sq(mouseX - pmouseX)+sq(mouseY - pmouseY));
+  }
   if (trialstate == 2){
     fd += dista;
   }
@@ -170,7 +185,7 @@ void draw(){
   if (practiceint<1){
     //"trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
     paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + r + "," + p + ","  
-      + int(mouseX) + "," + int(mouseY) + "," + int(sd) + "," + int(tgd) + "," + int(x0) + "," + int(y0) + "," + int(x1) + "," + int(y1) + "," +int(trialstate);
+      + int(px) + "," + int(py) + "," + int(sd) + "," + int(tgd) + "," + int(x0) + "," + int(y0) + "," + int(x1) + "," + int(y1) + "," +int(trialstate);
     parameters.println(paramData);
     parameters.flush();
   }
@@ -208,8 +223,13 @@ void draw(){
         if ((trialcnt % bw) == 0 && trialcnt>0){
           block = block + 1;
         }
-        p = sp[block];//prob left
-        r  = rl[block];//reach rl
+        if (practiceint<1){
+          p = sp[block];//prob left
+          r  = rl[block];//reach rl
+        }else{
+          p = 1;//prob left
+          r  = rl[block];//reach rl          
+        }
         if (random(1) <=p){
           rpos = 1;//left
           wpos = 2;
@@ -222,6 +242,7 @@ void draw(){
         x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
         y2 = y0 + (wpos-2)*r;
         ppos = rpos;
+        rightorwrong = 1;
         pnt = 1;
         fill(col[0]);
         ellipse(x0,y0,sd,sd);
@@ -235,8 +256,9 @@ void draw(){
     
     case 2://forage
       if (trialcnt < maxtrials){       
-        if (oncirclew(x2,y2,tgd)==true){
+        if (oncirclew(x2,y2,4*tgd)==true){//4*target diameter
           ppos = wpos;
+          rightorwrong = 0;
           pnt = 0;
         }
         if (oncircler(x1,y1,tgd)==true){
@@ -261,8 +283,8 @@ void draw(){
         }
         if (practiceint<1){
           trialcnt++;
-          // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rewpos, forageDist, CollDist, totDist, optdist, diff, score";
-          data =time+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ int(rpos) +","+int(fd)+","+int(cd)+"," + int(totd) 
+          // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";
+          data =time+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ rightorwrong +","+int(fd)+","+int(cd)+"," + int(totd) 
             + "," + int(optd)+"," + int(ddif) + "," +int(points);
           output.println(data);
           output.flush();
@@ -286,8 +308,8 @@ void keyPressed(){
   }
 }
 boolean oncircler(float cx, float cy, int cd){
-  float dx = cx- mouseX;
-  float dy = cy - mouseY;
+  float dx = cx- px;
+  float dy = cy - py;
   if (sqrt(sq(dx) + sq(dy)) < cd/2){
     return true;
   }else{
@@ -295,8 +317,8 @@ boolean oncircler(float cx, float cy, int cd){
   }
 }
 boolean oncirclew(float cx, float cy, int cd){
-  float dx = cx- mouseX;
-  float dy = cy - mouseY;
+  float dx = cx- px;
+  float dy = cy - py;
   if (sqrt(sq(dx) + sq(dy)) < cd/2){
     return true;
   }else{

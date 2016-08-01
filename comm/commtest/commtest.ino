@@ -4,7 +4,8 @@
 #define ep1 2
 #define tp2 5
 #define ep2 4
-
+#define led1 6
+#define led2 7
 #define sn  2
 #define maxdist 300
 float fd, rd;
@@ -20,7 +21,8 @@ void setup() {
   pinMode(ep1, INPUT);
   pinMode(tp2, OUTPUT);
   pinMode(ep2, INPUT);
-
+  pinMode(led1, OUTPUT);
+  pinMode(led2, OUTPUT);
 }
 
 void loop() {
@@ -29,7 +31,16 @@ fd = sensor(tp1,ep1);
 // fd = distance;
 //sensor(tp2,ep2);
 rd =  sensor(tp2,ep2);
- 
+  if (fd <= 5){
+    digitalWrite(led1,HIGH);
+  }else{
+    digitalWrite(led1,LOW);
+  }
+  if (rd <= 5){
+    digitalWrite(led2,HIGH);
+  }else{
+    digitalWrite(led2,LOW);
+  } 
  Serial.print(fd);
  Serial.print(",");
  Serial.println(rd);

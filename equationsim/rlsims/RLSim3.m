@@ -8,14 +8,15 @@ cont = 1; %each prob separately tested as n(101) trials
 %=============================================================
 choices = 1;
 choice = 1;
+cho = [1,2];
 probstate =1; %1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 %=====================choices================================================
 prl0 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9, 1];
 prl = [prl0;prl1];
-aci = 0.05;
-agi = 0.1;
-ani = 0.1;
+aci = 0.1;
+agi = 0.1;%0.1
+ani = 0.1;%0.1
 bgi = 1;
 bni = 1;
 % func, v, g, n, act, prob1
@@ -31,6 +32,7 @@ acti = 0;
 inczero = 0;
 trials = 101;
 agshift = 11;
+rewvalue = 1;
 reps = 11;%at different probs
 simtot = 1000;%total repetitition
 shiftstate = 1;
@@ -59,7 +61,7 @@ end
 
 for i = 1: simtot%1000 total sim
     for a = 1:agshift
-        rewvalue = 0.0 + 0.2*(a-1);
+        agi = 0.0 + 0.01*(a-1);
         for r = 1:reps% 
             for j = 1:tt%101 including 0 trials
                 t = ((r-1)*tt + j);       
@@ -115,6 +117,7 @@ end
     fact2 = reshape(avg(:,4,6),tt,reps);
     
 figure(1);
+%     set(gca, 'ColorOrder', cl);
     subplot(4,2,2);
     plot(prl0,fv);%length(fv)-1,fv check
     title(['V(choice ' 'r=' num2str(rewvalue) ', p, increasing)']);
@@ -130,25 +133,28 @@ figure(1);
     subplot(4,2,8);
     plot(prl0,fact);
     title(['Act(' 'r=' num2str(rewvalue) ', p, increasing)']);
-    xlabel('p(R)');
-    subplot(4,2,1);
-    plot(1:length(fv2),fv2);%length(fv)-1,fv check
-    title(['V(choice ' 'r=' num2str(rewvalue) ', p, increasing)']);
-    xlim([0,100]);
-    subplot(4,2,3);
-    plot(1:length(fg2),fg2);
-    title(['G(' 'r=' num2str(rewvalue) ', p, increasing)']);
-    xlim([0,100]);
-    subplot(4,2,5);
-    plot(1:length(fn2),fn2);
-    title(['N('  'r=' num2str(rewvalue) ', p, increasing)']);
-    xlim([0,100]);
-    subplot(4,2,7);
-    plot(1:length(fact2),fact2);
+    figure(2);
+    plot(prl0,fact(:,11));
     title(['Act(' 'r=' num2str(rewvalue) ', p, increasing)']);
-    xlabel('p(R)');
-    xlim([0,100]);    
-    a = axes;
-    t1 = title(['Single state OPAL, aC=' num2str(aci)]);
-    a.Visible = 'off';
-    t1.Visible = 'on';
+%     xlabel('p(R)');
+%     subplot(4,2,1);
+%     plot(1:length(fv2),fv2);%length(fv)-1,fv check
+%     title(['V(choice ' 'r=' num2str(rewvalue) ', p, increasing)']);
+%     xlim([0,100]);
+%     subplot(4,2,3);
+%     plot(1:length(fg2),fg2);
+%     title(['G(' 'r=' num2str(rewvalue) ', p, increasing)']);
+%     xlim([0,100]);
+%     subplot(4,2,5);
+%     plot(1:length(fn2),fn2);
+%     title(['N('  'r=' num2str(rewvalue) ', p, increasing)']);
+%     xlim([0,100]);
+%     subplot(4,2,7);
+%     plot(1:length(fact2),fact2);
+%     title(['Act(' 'r=' num2str(rewvalue) ', p, increasing)']);
+%     xlabel('p(R)');
+%     xlim([0,100]);    
+%     a = axes;
+%     t1 = title(['Single state OPAL, aC=' num2str(aci)]);
+%     a.Visible = 'off';
+%     t1.Visible = 'on';
