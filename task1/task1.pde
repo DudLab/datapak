@@ -27,6 +27,7 @@ int rnum = 2;// number of reaches
 int rdt = 350;
 int rlefty[] = new int[rnum];//reach distance list of left
 int block = 0;
+int rblock = 0;
 int bw = 50;//blockwidth ORIGINAL 25
 int blocktot = pn*rnum;
 int maxtrials = blocktot*bw;
@@ -36,7 +37,7 @@ int trialstate = 1;// forage, collect soforth
 int trialcnt = 0;
 int pnt;//points
 int offset = displayHeight/20;
-int sd = displayWidth/10;// startdiameter60
+int sd = 150;//displayWidth/10;// startdiameter60
 int tgd = displayWidth/10;//targetdiameter150
 float dista;
 float fd = 0;//foragedistance
@@ -46,19 +47,21 @@ float totd = 0;//totaldistance
 float optd = 0;//optimaldistance
 float ddif = 0;//difference subjectd - optd
 int x0 = displayWidth/2;//init starting position
-float y0 = 3*(displayHeight/4);//or lower
+float y0;//or lower
 float x1;
 float y1;
 float x2;
 float y2;
 float tgdx = displayWidth/4;//distance between targets
 float problist[] = {0.1,0.25,0.5,0.75,0.9};
-float rlist[] = {displayHeight/2, displayHeight/2};
+float rlist[] = {sqrt(pow((displayHeight*0.40),2)-pow((displayWidth/4),2))
+, sqrt(pow(((displayHeight*0.40)*2),2)-pow((displayWidth/4),2))};
 float [] reachposy = {};
 float p;
 float r;
 float sp[] = new float[pn*rnum];
-float rl[] = new float[rnum*pn];
+float rl[] = new float[rnum];
+float rindex[] = new float[rnum];
 float px;
 float py;
 
@@ -110,28 +113,33 @@ void setup(){
   //========================================================================
   pp = new IntList();
   rp = new IntList();
+  float rlist[] = {sqrt(pow((displayHeight*0.40),2)-pow((displayWidth/0),2))
+  , sqrt(pow(((displayHeight*0.40)*2),2)-pow((displayWidth/0),2))};
+  IntList tempr  = new IntList();
   for (int c = 0; c < rnum; c++){
     IntList temp = new IntList();
-    IntList tempr  = new IntList();
+    //IntList tempr  = new IntList();
     rlefty[c] = rdt*(c);
-    for (int r =0; r< pn; r++){
+    tempr.append(c);
+    for (int r =0; r<pn; r++){
         temp.append(r);
-      if (r<rnum){      
-        tempr.append(r);
-      }      
     }
     temp.shuffle();//if want random
-    tempr.shuffle();
     pp.append(temp);
-    rp.append(tempr);
+    //rp.append(tempr);
   }
-  println(pp);
-  for (int i = 0; i < pp.size(); i++){
-    sp[i] = problist[pp.get(i)];
+  tempr.shuffle();
+  rp.append(tempr);
+  for (int i = 0; i < rp.size(); i++){
     rl[i] = rlist[rp.get(i)];
+    rindex[i] = rp.get(i);
   }
+  for (int i = 0; i < pp.size(); i++){
+      sp[i] = problist[pp.get(i)];
+    
+  }
+  println(rindex);
   println(sp);
-  println(rl);
   //==========================================================================
   //===============CSV STUFF==================================================
   //==========================================================================
@@ -165,11 +173,20 @@ void draw(){
     px = mouseX;
     py = mouseY;
   }else{
-    
   }
+  text("rpos: "+rpos, (displayWidth*0.125), 300);
+  text("trial:" +trialcnt, (displayWidth*0.125), 320);
+  text("block:" +block, (displayWidth*0.125), 340);
+  text("dist:" +dista, (displayWidth*0.125), 360);
+  text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
+  text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
+  sd =  displayWidth/12;//displayWidth/10;// startdiameter60
+  tgd = displayWidth/12;
+  tgdx = displayWidth/4;
   x0 = displayWidth/2;
   y0 = (displayHeight)-sd;
+  offset = displayHeight/20;
   //==========================================================================
   //===============TEXT&VARS==================================================
   //==========================================================================
@@ -184,7 +201,7 @@ void draw(){
   }
   if (practiceint<1){
     //"trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
-    paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + r + "," + p + ","  
+    paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + (rindex[rblock] +1) + "," + p + ","  
       + int(px) + "," + int(py) + "," + int(sd) + "," + int(tgd) + "," + int(x0) + "," + int(y0) + "," + int(x1) + "," + int(y1) + "," +int(trialstate);
     parameters.println(paramData);
     parameters.flush();
@@ -196,7 +213,7 @@ void draw(){
     ellipse(x2,y2,tgd,tgd);
     fill(255);
     textSize(32);
-    text("practice" + practiceint,(displayWidth*0.125),280);
+    text("practice" + practiceint,(displayWidth*0.125),displayHeight-32);
   }
   if (flickerint>0){
     fill(col[rpos]);
@@ -207,12 +224,9 @@ void draw(){
   }
   fill(255);
   if (trialstate >= 3) {
-    text("go back to collection area", (displayWidth*0.125), 280);
+    text("go back to collection area", (displayWidth*0.125), displayHeight-64);
     ellipse(x0, y0, sd, sd);
   }
-  //text("rpos: "+rpos, (displayWidth*0.125), 300);
-  //text("trial:" +trialcnt, (displayWidth*0.125), 320);
-  //text("block:" +block, (displayWidth*0.125), 340);
   //==========================================================================
   //===============SWITCH CS==================================================
   //==========================================================================
@@ -223,12 +237,15 @@ void draw(){
         if ((trialcnt % bw) == 0 && trialcnt>0){
           block = block + 1;
         }
+        if ((trialcnt % bw*pn) == 0 && trialcnt>0){
+          rblock = rblock + 1;
+        }
         if (practiceint<1){
           p = sp[block];//prob left
-          r  = rl[block];//reach rl
+          r  = rl[rblock];//reach rl
         }else{
           p = 1;//prob left
-          r  = rl[block];//reach rl          
+          r  = rl[rblock];//reach rl          
         }
         if (random(1) <=p){
           rpos = 1;//left
@@ -237,10 +254,17 @@ void draw(){
           rpos = 2;//right
           wpos = 1;
         }
-        x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
-        y1 = y0 + (rpos-2)*r;
-        x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
-        y2 = y0 + (wpos-2)*r;
+        if (rblock<1){
+          x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
+          y1 = y0 -r;
+          x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
+          y2 = y0 -r;
+        }else{
+          x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
+          y1 = y0 + (rpos-2)*r;
+          x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
+          y2 = y0 + (wpos-2)*r;
+        }
         ppos = rpos;
         rightorwrong = 1;
         pnt = 1;
@@ -282,12 +306,16 @@ void draw(){
           practiceint--;
         }
         if (practiceint<1){
-          trialcnt++;
+          //trialcnt++;
+          if (trialcnt>0){
           // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";
-          data =time+","+ int(trialcnt)+","+ int(bw) + "," + r + "," + p + ","+ ppos + ","+ rightorwrong +","+int(fd)+","+int(cd)+"," + int(totd) 
+          data =time+","+ int(trialcnt)+","+ int(bw) + "," + (rindex[rblock] +1)+ "," + p + ","+ ppos + ","+ rightorwrong +","+int(fd)+","+int(cd)+"," + int(totd)
             + "," + int(optd)+"," + int(ddif) + "," +int(points);
+            
           output.println(data);
           output.flush();
+          }
+          trialcnt++;
           cd = 0;
           fd = 0;
           totd = 0;
@@ -297,16 +325,16 @@ void draw(){
     break;
   }
 }
-void keyPressed(){
-  if (key == CODED){
-    if (keyCode == UP && block <pn*rnum){
-      block++;
-    }
-    if (keyCode == DOWN && block > 0){
-      block--;
-    }
-  }
-}
+//void keyPressed(){
+//  if (key == CODED){
+//    if (keyCode == UP && block <pn*rnum){
+//      block++;
+//    }
+//    if (keyCode == DOWN && block > 0){
+//      block--;
+//    }
+//  }
+//}
 boolean oncircler(float cx, float cy, int cd){
   float dx = cx- px;
   float dy = cy - py;
