@@ -12,6 +12,7 @@ np = zeros(ns);
 rprob = [0.1,0.25,0.5, 0.75,0.9];
 b = 50; %block
 for k = 1:ns
+    legendcell{k} = ['usr' num2str(k)];
     fname = fnames(k).name;
     ad(:,:,k) = csvread(strcat(filepath,fname), 2,0);
     if nopos == 1
@@ -20,7 +21,7 @@ for k = 1:ns
         np(k) = numel(pd1(:,2));
     end
 end
-
+legendcell{k+1} = 'avg';
 % threshes = 2%for old csv
 %trial data for task1 and 2
 half = 2;
@@ -112,7 +113,7 @@ for k = 1:ns
 %               PROB CHOOSE LEFT
             %  new "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";      
                 chleft(i,t,k) = (numel(td((td(sdx:sl*i,6,t)== 1))))/sl;
-                pt(k,:,t,i) = reshape(cumsum(td(sdx:sl*i,7,t,k)==1)./reshape(1:(sl),sl,1),1,sl);
+                pt(k,:,t,i) = reshape(cumsum(td(sdx1:sl1*i,6,t,k)==1)./reshape(1:(sl1),sl1,1),1,sl1);
             end
         end        
     end
@@ -137,8 +138,6 @@ if nopos == 1
             for i = 1:5
                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,4,k)==t,:,k);
                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,4,k)==t,:,k);
-    %                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,4,k)==t,:,k);
-    %                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,4,k)==t,:,k);
             end
         end
     end
@@ -151,26 +150,39 @@ end
 % FIGURES
 % ==============================================================
 figure(1);
+    subplot(2,1,1);
     set(gca, 'ColorOrder', cl);
     set(gca,'fontsize',18);
     hold all;
-    for i = 1:rn+1
-        if i <rn+1
-            plot(rprob,avg(:,i));
+    for i = 1:ns+1
+        if i <ns+1
+            plot(rprob,chleft(:,i,1));
         else
-            plot(rprob,avg1);
+            plot(rprob,avg(:,1));
         end
     end
-    if version == 1
-        legend('r1','r2','avg all');
-    end
-    if version == 2
-        legend('r1','r2','r3','r4','r5','avg all');
-    end
+        legend(legendcell);
     
     xlabel('P(reward)');
     ylabel('P(choose left)');
-    title('P(choose L) as function of P(reward)');
+    title('P(choose L) as function of P(Leftreward) (R1)');
+    
+    subplot(2,1,2);
+    set(gca, 'ColorOrder', cl);
+    set(gca,'fontsize',18);
+    hold all;
+    for i = 1:ns+1
+        if i <ns+1
+            plot(rprob,chleft(:,i,2));
+        else
+            plot(rprob,avg(:,2));
+        end
+    end
+        legend(legendcell);
+    
+    xlabel('P(reward)');
+    ylabel('P(choose left)');
+    title('P(choose L) as function of P(Leftreward) (R2)');   
 if nopos == 1 
     for t = 1:rn
         figure(t+1);

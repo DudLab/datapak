@@ -12,6 +12,7 @@ np = zeros(ns);
 rprob = [0.1,0.25,0.5, 0.75,0.9];
 b = 50; %block
 for k = 1:ns
+ legendCell = cellstr(num2str(N', 'N=%-d'))
     fname = fnames(k).name;
     ad(:,:,k) = csvread(strcat(filepath,fname), 2,0);
     if nopos == 1
@@ -77,15 +78,14 @@ for k = 1:ns
             incorrect(idxn(t,k):tt,t,k) = 0;
         end
         if version == 2
-        %   CORRECT TEST OUT WITH NEW CSV
-            idxc(t,k) = numel(find(td(:,6,t,k) == td(:,7,t,k)));
+            idxc(t,k) = numel(find(td(:,7,t,k) == 1));
             correct(1:idxc(t,k),t,k) ...
-                = td((td(:,6,t,k) == td(:,7,t,k)),2,t,k);
+                = td((td(:,7,t,k) == 1),2,t,k);
             correct(idxc(t,k):tt,t,k) = 0;
         %   INCORRECT
             idxn(t,k) = tt - idxc(t,k);
             incorrect(1:idxn(t,k),t,k) ...
-                = td((td(:,6,t,k) ~= td(:,7,t,k)),2,t,k);
+                = td((td(:,7,t,k) == 0),2,t,k);
             incorrect(idxn(t,k):tt,t,k) = 0;
 
         end
@@ -101,10 +101,10 @@ for k = 1:ns
             end
             if version == 1
 %               PROB CHOOSE LEFT
-                chleft(i,t,k) = (numel(td((td(sdx:sl*i,6,t,k) == 1 & td(sdx:sl*i,7,t,k) == 1))) ...
-                    + numel(td((td(sdx:sl*i,6,t,k)== 0 & td(sdx:sl*i,7,t,k) == 2))))/sl;
-                pt(k,:,t,i) = reshape(cumsum(td((td(sdx1:sl1*i,6,t,k) == 1 & td(sdx1:sl1*i,7,t,k) == 1 ...
-                    | td((td(sdx1:sl1*i,6,t,k)== 0 & td(sdx1:sl1*i,7,t,k) == 2))),7,t,k))./reshape(1:(b),b,1),1,b); 
+                chleft(i,t,k) = ((sum((td(sdx:sl*i,6,t,k) == 1 & td(sdx:sl*i,7,t,k) == 1))) ...
+                    + (sum((td(sdx:sl*i,6,t,k)== 0 & td(sdx:sl*i,7,t,k) == 2))))/sl;
+                pt(k,:,t,i) = reshape(cumsum((td1(sdx1:sl1*i,6,t,k)==1 & td1(sdx1:sl1*i,7,t,k)==1) ...
+                    | (td1(sdx1:sl1*i,6,t,k)==0 & td1(sdx1:sl1*i,7,t,k)==2))./reshape(1:(b),b,1),1,b); 
 %                 pt(k,:,t,i) = reshape(cumsum(td1(1+(b)*(i-1):b*i,6,t,k)==td1(1+(b)*(i-1):b*i,7,t,k))./reshape(1:(b),b,1),1,b); 
 
 %
@@ -113,7 +113,7 @@ for k = 1:ns
 %               PROB CHOOSE LEFT
             %  new "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";      
                 chleft(i,t,k) = (numel(td((td(sdx:sl*i,6,t)== 1))))/sl;
-                pt(k,:,t,i) = reshape(cumsum(td(sdx:sl*i,6,t,k))./reshape(1:(sl),sl,1),1,sl);
+                pt(k,:,t,i) = reshape(cumsum(td(sdx:sl*i,7,t,k)==1)./reshape(1:(sl),sl,1),1,sl);
             end
         end        
     end
@@ -152,26 +152,39 @@ end
 % FIGURES
 % ==============================================================
 figure(1);
+    subplot(2,1,1);
     set(gca, 'ColorOrder', cl);
     set(gca,'fontsize',18);
     hold all;
-    for i = 1:rn+1
-        if i <rn+1
-            plot(rprob,avg(:,i));
-        else
-            plot(rprob,avg1);
-        end
+    for i = 1:ns
+%         if i <ns
+            plot(rprob,chleft(:,i,1));
+%         else
+%             plot(rprob,avg(:,1));
+%         end
     end
-    if version == 1
-        legend('r1','r2','avg all');
-    end
-    if version == 2
-        legend('r1','r2','r3','r4','r5','avg all');
-    end
+%         legend('r1','r2','avg all');
     
     xlabel('P(reward)');
     ylabel('P(choose left)');
-    title('P(choose L) as function of P(reward)');
+    title('P(choose L) as function of P(Leftreward) (R1)');
+    
+    subplot(2,1,2);
+    set(gca, 'ColorOrder', cl);
+    set(gca,'fontsize',18);
+    hold all;
+    for i = 1:ns
+%         if i <ns
+            plot(rprob,chleft(:,i,2));
+%         else
+%             plot(rprob,avg(:,1));
+%         end
+    end
+%         legend('r1','r2','avg all');
+    
+    xlabel('P(reward)');
+    ylabel('P(choose left)');
+    title('P(choose L) as function of P(Leftreward) (R2)');   
 if nopos == 1 
     for t = 1:rn
         figure(t+1);
@@ -188,11 +201,11 @@ if nopos == 1
         %     ylabel('choice prob');
         end
         a = axes;
-        if half == 2
-            t1 = title(['P(choose L) second half of trials at reach' num2str(t)]);
-        else
+%         if half == 2
+%             t1 = title(['P(choose L) second half of trials at reach' num2str(t)]);
+%         else
             t1 = title(['P(choose L) at reach' num2str(t)]);
-        end
+%         end
         a.Visible = 'off';
         t1.Visible = 'on';
     end
