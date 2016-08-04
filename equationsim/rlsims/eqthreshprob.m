@@ -13,8 +13,8 @@ choice = 1;
 probstate =1; %1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 %=====================================================================
 prl0 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
-prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9];
-prl = [prl0;prl1];
+% prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9];
+% prl = [prl0;prl1];
 aci = 0.05;
 agi = 0.1;
 ani = 0.1;
@@ -36,7 +36,7 @@ st = tt*reps;
 % ch = cell(simtot);%1000,2 choices
 ch = zeros(st,7,choices,simtot);
 sm = zeros(st,choices,simtot);
-color = varyColor(reps);
+color = varycolor(reps);
 %====================================================================================
 %===prob generation==================================================================
 %====================================================================================
@@ -44,7 +44,7 @@ prob = rand(st,choices,simtot);% if 2 choices, first 1010rows for choice1 next 1
 pr = zeros(st,choices);%probability of reward
 %first 1000 columns for choice1 next columns.
 for i = 1: st
-    pr(i,1) = prl(1,(fix((i-1)/(tt))+1));
+    pr(i,1) = prl0((fix((i-1)/(tt))+1));
     pr(i,2) = 1-pr(i,1);
 end
 %====================================================================================
@@ -92,7 +92,7 @@ for i = 1: simtot%1000 total sim
             for c = 1: choices
                 if c == pick
                     ch(t,6,c,i) = 1;
-                    if prob(t,a,i) <= pr(t,c)
+                    if rand <= pr(t,c)
                         ch(t,7,c,i) = rewvalue;
                     else
                         ch(t,7,c,i) = 0;

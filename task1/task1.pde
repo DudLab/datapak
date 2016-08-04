@@ -113,8 +113,8 @@ void setup(){
   //========================================================================
   pp = new IntList();
   rp = new IntList();
-  float rlist[] = {sqrt(pow((displayHeight*0.40),2)-pow((displayWidth/0),2))
-  , sqrt(pow(((displayHeight*0.40)*2),2)-pow((displayWidth/0),2))};
+  float rlist[] = {sqrt(pow((displayHeight*0.40),2)-pow((displayWidth/10),2))
+  , sqrt(pow(((displayHeight*0.40)*2),2)-pow((displayWidth/10),2))};
   IntList tempr  = new IntList();
   for (int c = 0; c < rnum; c++){
     IntList temp = new IntList();
@@ -153,7 +153,7 @@ void setup(){
   output.flush();
 
   // information about what is in each column
-  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, subjpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";
+  String firstLine = "timestamp, trialNum, blockWidth, reach, leftprob, subjpos, Rightorwrong, rpos, forageDist, totDist, optdist, diff, score";
   output.println(firstLine);
   output.flush(); 
 
@@ -308,8 +308,8 @@ void draw(){
         if (practiceint<1){
           //trialcnt++;
           if (trialcnt>0){
-          // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";
-          data =time+","+ int(trialcnt)+","+ int(bw) + "," + (rindex[rblock] +1)+ "," + p + ","+ ppos + ","+ rightorwrong +","+int(fd)+","+int(cd)+"," + int(totd)
+          // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, rpos, forageDist, totDist, optdist, diff, score";
+          data =time+","+ int(trialcnt)+","+ int(bw) + "," + (rindex[rblock] +1)+ "," + p + ","+ ppos + ","+ rightorwrong +","+rpos+","+int(fd)+"," + int(totd)
             + "," + int(optd)+"," + int(ddif) + "," +int(points);
             
           output.println(data);

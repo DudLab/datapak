@@ -8,16 +8,16 @@ cont = 1; %each prob separately tested as n(101) trials
 %=============================================================
 choices = 1;
 choice = 1;
-probstate =1; %1 = lincresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
+probstate =1; %1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 %=====================choices================================================
 prl0 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
-prl1 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
+% prl1 = [0.1, 0.1, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 0.9, 0.9, 1];
 prl = [prl0;prl1];
-aci = 0.05;%ac value****************************************
+aci = 0.05;%ac value
 agi = 0.1;%ag value
-ani = 0.1;%an value
-bgi = 1;%bg value
-bni = 1;%ac value
+ani = 0.1;
+bgi = 1;
+bni = 1;
 % func, v, g, n, act, prob1
 % vi = 0;
 % gi = .75;
@@ -59,7 +59,7 @@ end
 
 for i = 1: simtot%1000 total sim
     for a = 1:agshift
-        rewvalue = 0.0 + 0.2*(a-1);%when a = 5, rewvalue ==1,
+        rewvalue = 0.0 + 0.2*(a-1);
         for r = 1:reps% 
             for j = 1:tt%101 including 0 trials
                 t = ((r-1)*tt + j);       
@@ -109,10 +109,10 @@ end
 %     fn2 = reshape(avg2(:,3),tt,reps);
 %     fact2 = reshape(avg2(:,4),tt,reps);
 %     
-    fv2 = reshape(avg(:,1,6),tt,reps);%take where rewardvalue ==1
-    fg2 = reshape(avg(:,2,6),tt,reps);%take where rewardvalue ==1
-    fn2 = reshape(avg(:,3,6),tt,reps);%take where rewardvalue ==1
-    fact2 = reshape(avg(:,4,6),tt,reps);%take where rewardvalue ==1
+    fv2 = reshape(avg(:,1,6),tt,reps);
+    fg2 = reshape(avg(:,2,6),tt,reps);
+    fn2 = reshape(avg(:,3,6),tt,reps);
+    fact2 = reshape(avg(:,4,6),tt,reps);
     
 figure(6);
     subplot(4,2,2);

@@ -12,7 +12,7 @@ np = zeros(ns);
 rprob = [0.1,0.25,0.5, 0.75,0.9];
 b = 50; %block
 for k = 1:ns
- legendCell = cellstr(num2str(N', 'N=%-d'))
+    legendcell{k} = ['usr' num2str(k)];
     fname = fnames(k).name;
     ad(:,:,k) = csvread(strcat(filepath,fname), 2,0);
     if nopos == 1
@@ -21,7 +21,7 @@ for k = 1:ns
         np(k) = numel(pd1(:,2));
     end
 end
-
+legendcell{k+1} = 'avg';
 % threshes = 2%for old csv
 %trial data for task1 and 2
 half = 2;
@@ -32,12 +32,17 @@ pn = numel(unique(ad(:,5,1)));
 col = size(ad,2);
 tt = pn*b/half;
 cl = varycolor(4);
+poscl = varycolor(500);
+if half == 2
+    hd = reshape((b/2)+1:b,(b/2),1);
+    for i = 1:(rn*pn)
+        hdx(1+(b/2)*(i-1):(b/2)*i,1) = hd(:,1) + b*(i-1);
+    end
 
-hd = reshape((b/2)+1:b,(b/2),1);
-for i = 1:(rn*pn)
-    hdx(1+(b/2)*(i-1):(b/2)*i,1) = hd(:,1) + b*(i-1);
+    hindex = reshape(hdx,tt,rn);
+else
+    hindex = reshape(1:500,tt,rn);
 end
-hindex = reshape(hdx,tt,rn);
 if colp == 16
     version = 1;
 end
@@ -53,6 +58,20 @@ idxc = zeros(rn,ns);
 incorrect = zeros(tt,rn,ns);% trial number for correct
 idxn = zeros(rn,ns);
 for k = 1:ns
+%=================================================================================
+%=================================================================================
+% HANDLING ALL TRIAL DATA
+%=================================================================================
+%=================================================================================
+    if version == 1
+        pta(k,:) = reshape(((ad(:,6,k)==1 & ad(:,7,k)==1) ...
+            | (ad(:,6,k)==0 & ad(:,7,k)==2)),1,(size(ad,1)));
+    end
+    if version == 2
+        pta(k,:) = reshape(((ad(:,6,k)==1)),1,(size(ad,1)));
+    end
+%=================================================================================
+%=================================================================================
     for t = 1:rn
         %     separate into thresh 3dim = each separate reach
         td1(:,:,t,k) = ad(ad(:,4,k)==t,:,k);
@@ -101,21 +120,23 @@ for k = 1:ns
             end
             if version == 1
 %               PROB CHOOSE LEFT
+% old "timestamp, trialNum, blockWidth, position_number, LeftTriggerProbability, rightORwrong, Rewardposition, forageDistance, collectionDistance, totalDistance, optimalTotalDistance, Totaldifference, score"
                 chleft(i,t,k) = ((sum((td(sdx:sl*i,6,t,k) == 1 & td(sdx:sl*i,7,t,k) == 1))) ...
                     + (sum((td(sdx:sl*i,6,t,k)== 0 & td(sdx:sl*i,7,t,k) == 2))))/sl;
-                pt(k,:,t,i) = reshape(cumsum((td1(sdx1:sl1*i,6,t,k)==1 & td1(sdx1:sl1*i,7,t,k)==1) ...
-                    | (td1(sdx1:sl1*i,6,t,k)==0 & td1(sdx1:sl1*i,7,t,k)==2))./reshape(1:(b),b,1),1,b); 
-%                 pt(k,:,t,i) = reshape(cumsum(td1(1+(b)*(i-1):b*i,6,t,k)==td1(1+(b)*(i-1):b*i,7,t,k))./reshape(1:(b),b,1),1,b); 
-
+                pt(k,:,t,i) = reshape(((td1(sdx1:sl1*i,6,t,k)==1 & td1(sdx1:sl1*i,7,t,k)==1) ...
+                    | (td1(sdx1:sl1*i,6,t,k)==0 & td1(sdx1:sl1*i,7,t,k)==2)),1,b);
+%                 pt(k,:,t,i) = reshape(cumsum((td1(sdx1:sl1*i,6,t,k)==1 & td1(sdx1:sl1*i,7,t,k)==1) ...
+%                     | (td1(sdx1:sl1*i,6,t,k)==0 & td1(sdx1:sl1*i,7,t,k)==2))./reshape(1:(b),b,1),1,b); 
 %
             end
             if version == 2
 %               PROB CHOOSE LEFT
-            %  new "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, forageDist, CollDist, totDist, optdist, diff, score";      
+            %            // "timestamp, trialNum, blockWidth, reach4, leftprob5, playerpos6, Rightorwrong7, rpos8, forageDist, totDist, optdist, diff, score";
                 chleft(i,t,k) = (numel(td((td(sdx:sl*i,6,t)== 1))))/sl;
-                pt(k,:,t,i) = reshape(cumsum(td(sdx:sl*i,7,t,k)==1)./reshape(1:(sl),sl,1),1,sl);
+                pt(k,:,t,i) = reshape((td(sdx1:sl1*i,6,t,k)==1),1,sl1);
+%                 pt(k,:,t,i) = reshape(cumsum(td(sdx1:sl1*i,6,t,k)==1)./reshape(1:(sl1),sl1,1),1,sl1);
             end
-        end        
+        end
     end
 end
 for i = 1:rn
@@ -136,143 +157,240 @@ if nopos == 1
         end
         for t = 1:rn%rn
             for i = 1:5
+%                Newpos="trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,4,k)==t,:,k);
                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,4,k)==t,:,k);
-    %                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,4,k)==t,:,k);
-    %                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,4,k)==t,:,k);
             end
         end
     end
 end
-% for i = 1:rn
-%     rt{i} = cat(1,rt1{i,:});
-%     wn{i} = cat(1,wn1{i,:});
-% end
-% ==============================================================
+%=================================================================================
+%=================================================================================
+% OPAL MODEL STUFF
+%=================================================================================
+%=================================================================================
+
+%=================================================================================
+%=================================================================================
+
+%=================================================================================
+%=================================================================================
 % FIGURES
-% ==============================================================
+%=================================================================================
+%=================================================================================
 figure(1);
     subplot(2,1,1);
     set(gca, 'ColorOrder', cl);
     set(gca,'fontsize',18);
     hold all;
-    for i = 1:ns
-%         if i <ns
-            plot(rprob,chleft(:,i,1));
-%         else
-%             plot(rprob,avg(:,1));
-%         end
+    for i = 1:ns+1
+        if i <ns+1
+            plot(rprob,chleft(:,1,i));
+        else
+            plot(rprob,avg(:,1));
+        end
     end
-%         legend('r1','r2','avg all');
+    legend(legendcell);
     
     xlabel('P(reward)');
     ylabel('P(choose left)');
-    title('P(choose L) as function of P(Leftreward) (R1)');
+    if half == 2
+        title('P(choose L) as function of P(Leftreward) (R1) 2ndhalf');
+    else
+        title('P(choose L) as function of P(Leftreward) (R1)');
+    end
     
     subplot(2,1,2);
     set(gca, 'ColorOrder', cl);
     set(gca,'fontsize',18);
     hold all;
-    for i = 1:ns
-%         if i <ns
-            plot(rprob,chleft(:,i,2));
-%         else
-%             plot(rprob,avg(:,1));
-%         end
+    for i = 1:ns+1
+        if i <ns+1
+            plot(rprob,chleft(:,2,i));
+        else
+            plot(rprob,avg(:,2));
+        end
     end
-%         legend('r1','r2','avg all');
+        legend(legendcell);
     
     xlabel('P(reward)');
     ylabel('P(choose left)');
-    title('P(choose L) as function of P(Leftreward) (R2)');   
+    if half == 2
+        title('P(choose L) as function of P(Leftreward) (R2) 2ndhalf');
+    else
+        title('P(choose L) as function of P(Leftreward) (R2)');
+    end
 if nopos == 1 
     for t = 1:rn
         figure(t+1);
 %         hold all
         for i = 1:pn
-        hold on            
+%         hold on            
             subplot(5,2,i);
             x = 1:length(pt(:,:,t,i));
-            shadedErrorBar(x,pt(:,:,t,i),{@mean, @(x) 1*std(x)},'r',0);
+            semline(pt(:,:,t,i),10,'r');
+%             shadedErrorBar(x,pt(:,:,t,i),{@mean, @(x) 1*std(x)},'r',0);
             hold all
-            plot(1:length(pt(:,:,t,i)),pt(:,:,t,i));
+%             plot(1:length(pt(:,:,t,i)),pt(:,:,t,i));
             title(['p(r)=' num2str(rprob(i))]);
             xlabel('trials');
-        %     ylabel('choice prob');
+            ylabel('choice prob');
         end
-        a = axes;
-%         if half == 2
-%             t1 = title(['P(choose L) second half of trials at reach' num2str(t)]);
-%         else
+            a = axes;
             t1 = title(['P(choose L) at reach' num2str(t)]);
-%         end
-        a.Visible = 'off';
-        t1.Visible = 'on';
+            a.Visible = 'off';
+            t1.Visible = 'on';
     end
     for r = 1:rn
-        for k = ns
         figure((r+rn+1));
+        for k = ns
         xlabel('X');
         ylabel('Y');
-%         hold all
-            for i = 1: 5
+            for i = 1: pn
+                set(gca, 'ColorOrder', poscl);
+                hold all
                 if version == 1
-    %               CORRECT & rt{r,k}(:,4)==r
-                    subplot(5,4,1+4*(i-1));
-                    scatter(rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
-                    ,rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),7));
-                    title(['correct choices p(r)=' num2str(rprob(i))]);
+                    for p = 1:tt
+        %               CORRECT & rt{r,k}(:,4)==r ,'color', poscl(p+(r-1)*tt,:)
+                        
+                        subplot(5,4,1+4*(i-1));
+                        hold on
+                        plot(rt{r,k}(rt{r,k}(:,colp) == 2 & rt{r,k}(:,5) == rprob(i) ...
+                            & rt{r,k}(:,1) == hindex(p,r),6) ...
+                        ,rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5) == rprob(i)...
+                            & rt{r,k}(:,1) == hindex(p,r),7),'color', poscl(p+(r-1)*tt,:));
+                        title(['correct choices p(r)=' num2str(rprob(i))]);
+                        
+        %               INCORRECT
+                        subplot(5,4,3+4*(i-1));
+                        hold on
+                        plot(wn{r,k}(wn{r,k}(:,colp) == 2 & wn{r,k}(:,5) == rprob(i)...
+                            & wn{r,k}(:,1) == hindex(p,r),6) ...
+                        ,wn{r,k}(wn{r,k}(:,colp) == 2 & wn{r,k}(:,5) == rprob(i) ...
+                            & wn{r,k}(:,1) == hindex(p,r),7),'color', poscl(p+(r-1)*tt,:));
+                        title(['incorrect choices p(r)=' num2str(rprob(i))]);
+                    end
+%                   CORRECT
                     subplot(5,4,2+4*(i-1));
-                    n = hist3([rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
+                    n = hist3([rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),6)...
                     ,rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(i),7)],[10,10]);
                     imagesc(n);
-    %               INCORRECT
-                    subplot(5,4,3+4*(i-1));
-                    scatter(wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
-                    ,wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),7));
-                    title(['incorrect choices p(r)=' num2str(rprob(i))]);
-                    subplot(5,4,4+4*(i-1));
-                    nw = hist3([wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
+%                   INCORRECT
+                    subplot(5,4,4+4*(i-1));                   
+                    nw = hist3([wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),6)...
                     ,wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),7)],[10,10]);
                     imagesc(nw);
                 end
                 if version == 2
+                    for p = 1:tt
     %               CORRECT  
-                    subplot(5,4,1+4*(i-1));
-                    scatter(rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
-                    ,rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),7));
-                    title(['correct choices p(r)=' num2str(rprob(i))]);
+                        subplot(5,4,1+4*(i-1));
+                        hold on
+                        hold all
+                        plot(rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i)...
+                            & rt{r,k}(:,1) == hindex(p,r),6) ...
+                        ,rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i)...
+                            & rt{r,k}(:,1) == hindex(p,r),7));
+                        title(['correct choices p(r)=' num2str(rprob(i))]);
+        %               INCORRECT
+                        subplot(5,4,3+4*(i-1));
+                        hold on
+                        hold all
+                        plot(wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i)... 
+                            & wn{r,k}(:,1) == hindex(p,r),6)...
+                        ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i)...
+                            & wn{r,k}(:,1) == hindex(p,r),7));
+                        title(['incorrect choices p(r)=' num2str(rprob(i))]);
+                    end
+%                   CORRECT
                     subplot(5,4,2+4*(i-1));
-                    n = hist3([rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),6) ...
-                    ,rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,5)== rprob(i),7)],[10,10]);
+                    n = hist3([rt{r,k}(rt{r,k}(:,15) == 2 & rt{r,k}(:,5) == rprob(i),6) ...
+                    ,rt{r,k}(rt{r,k}(:,15) == 2 & rt{r,k}(:,5) == rprob(i),7)],[10,10]);
                     imagesc(n);
-    %               INCORRECT
-                    subplot(5,4,3+4*(i-1));
-                    scatter(wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
-                    ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i) & wn{r,k}(:,4)==r,7));
-                    title(['incorrect choices p(r)=' num2str(rprob(i))]);
+%                   INCORRECT
                     subplot(5,4,4+4*(i-1));
-                    nw = hist3([wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i),6) ...
-                    ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5)== rprob(i),7)],[10,10]);
+                    nw = hist3([wn{r,k}(wn{r,k}(:,15) == 2 & wn{r,k}(:,5) == rprob(i),6) ...
+                    ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,5) == rprob(i),7)],[10,10]);
                     imagesc(nw);
+                    
                 end
             end
         end
-        a = axes;
-        if half == 2
-            t1 = title(['Forage trajectories (second half of trials) reach ' num2str(r)]);
-        else
-            t1 = title(['Forage trajectories reach ' num2str(r)]);
-        end
-        a.Visible = 'off';
-        t1.Visible = 'on';
+        ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
+        t = text(0.5, 1,['Forage trajectories (second half of trials) reach =' num2str(r)],'HorizontalAlignment' ...
+        ,'center','VerticalAlignment', 'top');
+        t.FontSize = 18;
     end
 end
-% figure(7);
-% scatter(rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(2)& rt{r,k}(:,4)==2,6) ...
-%                 ,rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(2)& rt{r,k}(:,4)==2,7));
-% figure(8);
-% scatter(wn{r,k}(wn{r,k}(:,16)== 2 & wn{r,k}(:,5)== rprob(2)& wn{r,k}(:,4)==2,6) ...
-%                 ,wn{r,k}(wn{r,k}(:,16)== 2 & wn{r,k}(:,5)== rprob(2)& wn{r,k}(:,4)==2,7));
-% 
-% figure(4);
+for i = 1:ns
+    figure(((2*rn)+1)+i);
+    hold on
+        if version == 1
+            %==================================================================================
+            %==================================================================================
+%             lcorr = ((ad(:,6,i)==1 & ad(:,7,i)==1));%actual left reward port rewarded
+%             lwro = ((ad(:,6,i)==0 & ad(:,7,i)==1));%actual left reward port unrewarded            
+%             rcorr = ((ad(:,6,i)==1 & ad(:,7,i)==2));%actual right reward port rewarded
+%             rwro  = ((ad(:,6,i)==0 & ad(:,7,i)==2));%actual right reward port unrewarded
+            cl = (ad(:,7,i)==1);
+            cr = (ad(:,7,i)==2);
+            cc(:,1) = reshape((ad(:,7,1)==1),1,size(ad,1));
+            %==================================================================================
+            %==================================================================================
+%             xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),lwro,lcorr,rcorr,rwro];%with right or wrong
+%             ht = [0.1,0.1,0.05,0.075,-0.05,-0.75];
+%             hv = [1.3,1.3,1.15,1.10,-0.15,-0.10];
+%             col = [1 0 0; 0 0 1; .8 .4 0; 1 .5 0;0 .2 0; 0 .8 0];
+            xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),cl,cr];
+            ht = [0.1,0.1,0.075,-0.075];
+            hv = [1.3,1.3,1.10,-0.10];
+            col = [1 0 0; 0 0 1; 1 .5 0;0 .8 0];
+            lt = [2,2,1,1,1,1];
+            (shade(xs,0,hv, ht, col,lt));
+            %==================================================================================
+            %==================================================================================   
+        end
+        if version == 2
+            %==================================================================================
+            %==================================================================================
+%             lcorr = find((ad(:,6,i)==1 & ad(:,7,i)==1))*1.1;%actual left reward port rewarded
+%             lwro = find((ad(:,6,i)==2 & ad(:,7,i)==0))*1.15;%actual left reward port unrewarded
+%             rcorr = find((ad(:,6,i)==2 & ad(:,7,i)==1))*(-0.1);%actual right reward port rewarded
+%             rwro  = find((ad(:,6,i)==1 & ad(:,7,i)==0))*(-0.15);%actual right reward port unrewarded
+            cl = (ad(:,8,i)==1);
+            cr = (ad(:,8,i)==2);
+            cc(:,i) = reshape((ad(:,8,1)==1),1,size(ad,1));
+            %==================================================================================
+            %==================================================================================
+%             xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),lwro,lcorr,rcorr,rwro];%with right or wrong
+%             ht = [0.1,0.1,0.05,0.075,-0.05,-0.75];
+%             hv = [1.3,1.3,1.15,1.10,-0.15,-0.10];
+%             col = [1 0 0; 0 0 1; .8 .4 0; 1 .5 0;0 .2 0; 0 .8 0];
+            xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),cl,cr];
+            ht = [0.1,0.1,0.075,-0.075];
+            hv = [1.3,1.3,1.10,-0.10];
+            col = [1 0 0; 0 0 1; 1 .5 0;0 .8 0];
+            lt = [2,2,1,1,1,1];
+            (shade(xs,0,hv, ht, col,lt));
+            
+            %==================================================================================
+            %==================================================================================
+            
+        end
+%         plot(find(pta(i,:)==1),1,'Color', [0 0.2 0]); %plot the 1's
+%         plot(find(pta(i,:)==0),0,'Color', [0 0.8 0]); %plot the 0's
+        avgval = 10;
+        plot(moveavg(cc(:,i),avgval), 'c');
+        plot(moveavg(pta(i,:),avgval),'k');
+        l = legend('reach1',' ','reach2',' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
+            'P(reward|left)','Choice moving avg');
+        l.FontSize = 16;
+        xlabel('Trials');
+        ylabel('Probability');
+        xlim([0, size(ad,1)]);
+        ylim([-0.2,1.3]);
+        ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
+        t = text(0.5, 1,['P(choose L) over time, usr ' num2str(i) ',movavg= ' num2str(avgval) ' trials'],'HorizontalAlignment' ...
+        ,'center','VerticalAlignment', 'top');
+        t.FontSize = 22;
+end
