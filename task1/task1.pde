@@ -30,11 +30,11 @@ int block = 0;
 int rblock = 0;
 int bw = 50;//blockwidth ORIGINAL 25
 int blocktot = pn*rnum;
-int maxtrials = blocktot*bw;
+int maxtrials = 500;
 IntList pp;//prob randomly shuffled
 IntList rp;//reach randomly shuffled
 int trialstate = 1;// forage, collect soforth
-int trialcnt = 0;
+int trialcnt = 490;//0;
 int pnt;//points
 int offset = displayHeight/20;
 int sd = displayWidth/20;//displayWidth/10;// startdiameter60
@@ -70,7 +70,7 @@ int rpos;//left or right
 int wpos;// wrongpos
 int ppos;
 int ultrasonicmode = 0;
-int practiceint=10;
+int practiceint=0;//10;
 float points = 0;
 float maxpoints;
 color start = color(255,0,0);
@@ -174,11 +174,11 @@ void draw(){
     py = mouseY;
   }else{
   }
-  text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
+  //text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
   text("trial:" +trialcnt, (displayWidth*0.125), 320);
   text("block:" +block, (displayWidth*0.125), 340);
   text("dist:" +dista, (displayWidth*0.125), 360);
-  text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
+  //text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
   //text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
   sd =  displayWidth/12;//displayWidth/10;// startdiameter60
@@ -224,7 +224,7 @@ void draw(){
   }
   fill(255);
   if (trialstate >= 3) {
-    text("go back to collection area", (displayWidth*0.125), displayHeight-64);
+    text("go back to collection area", (displayWidth*0.125), 300);
     ellipse(x0, y0, sd, sd);
   }
   //==========================================================================
@@ -233,11 +233,11 @@ void draw(){
   switch(trialstate){
     
     case 1://forage
-      if (trialcnt < maxtrials){
-        if ((trialcnt % bw) == 0 && trialcnt>0){
+      if (trialcnt <= maxtrials){
+        if ((trialcnt % (bw+1)) == 0 && trialcnt>0){
           block = block + 1;
         }
-        if ((trialcnt % bw*pn) == 0 && trialcnt>0){
+        if ((trialcnt % (250+1)) == 0 && trialcnt>0){
           rblock = rblock + 1;
         }
         if (practiceint<1){
@@ -279,7 +279,7 @@ void draw(){
     break;
     
     case 2://forage
-      if (trialcnt < maxtrials){       
+      if (trialcnt <= maxtrials){       
         if (oncirclew(x2,y2,4*tgd)==true){//4*target diameter
           ppos = wpos;
           rightorwrong = 0;
@@ -325,13 +325,13 @@ void draw(){
     break;
   }
 }
-void keyPressed(){
-  if (show == true){
-    fill(125,125,255);
-    ellipse(x2,y2,4*tgd,4*tgd);
-    text("rpos: "+rpos, (displayWidth*0.125), 300);
-  }
-}
+//void keyPressed(){
+//  if (show == true){
+//    fill(125,125,255);
+//    ellipse(x2,y2,4*tgd,4*tgd);
+//    text("rpos: "+rpos, (displayWidth*0.125), 300);
+//  }
+//}
 boolean oncircler(float cx, float cy, int cd){
   float dx = cx- px;
   float dy = cy - py;
