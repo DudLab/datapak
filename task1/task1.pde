@@ -54,8 +54,8 @@ float x2;
 float y2;
 float tgdx = displayWidth/4;//distance between targets
 float problist[] = {0.1,0.25,0.5,0.75,0.9};
-float rlist[] = {sqrt(pow((displayHeight*0.40),2)-pow((displayWidth/4),2))
-, sqrt(pow(((displayHeight*0.40)*2),2)-pow((displayWidth/4),2))};
+float rlist[] = {sqrt(pow((displayHeight*0.35),2)-pow((displayWidth/4),2))
+, sqrt(pow(((displayHeight*0.35)*2),2)-pow((displayWidth/4),2))};
 float [] reachposy = {};
 float p;
 float r;
@@ -79,7 +79,7 @@ color right = color(255,255,51);
 color[] col = {color(255,0,0),color(51,51,255),color(255,255,51)};
 long time = 0;
 long trigtime = 0;
-
+boolean show = true;
 void setup(){
   size(displayWidth,displayHeight);
   //========================================================================
@@ -174,12 +174,12 @@ void draw(){
     py = mouseY;
   }else{
   }
-  text("rpos: "+rpos, (displayWidth*0.125), 300);
+  text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
   text("trial:" +trialcnt, (displayWidth*0.125), 320);
   text("block:" +block, (displayWidth*0.125), 340);
   text("dist:" +dista, (displayWidth*0.125), 360);
   text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
-  text("reach"+ r, (displayWidth*0.125), displayHeight-64);
+  //text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
   sd =  displayWidth/12;//displayWidth/10;// startdiameter60
   tgd = displayWidth/12;
@@ -254,16 +254,16 @@ void draw(){
           rpos = 2;//right
           wpos = 1;
         }
-        if (rblock<1){
+        if ((rindex[rblock] +1)==1){
           x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
           y1 = y0 -r;
           x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
           y2 = y0 -r;
         }else{
           x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
-          y1 = y0 + (rpos-2)*r;
+          y1 = y0 + (rpos-2)*r - abs((rpos-1)*(rl[1]-rl[0]));
           x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
-          y2 = y0 + (wpos-2)*r;
+          y2 = y0 + (wpos-2)*r - abs((wpos-1)*(rl[1]-rl[0]));
         }
         ppos = rpos;
         rightorwrong = 1;
@@ -325,16 +325,13 @@ void draw(){
     break;
   }
 }
-//void keyPressed(){
-//  if (key == CODED){
-//    if (keyCode == UP && block <pn*rnum){
-//      block++;
-//    }
-//    if (keyCode == DOWN && block > 0){
-//      block--;
-//    }
-//  }
-//}
+void keyPressed(){
+  if (show == true){
+    fill(125,125,255);
+    ellipse(x2,y2,4*tgd,4*tgd);
+    text("rpos: "+rpos, (displayWidth*0.125), 300);
+  }
+}
 boolean oncircler(float cx, float cy, int cd){
   float dx = cx- px;
   float dy = cy - py;
