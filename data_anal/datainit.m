@@ -221,6 +221,7 @@ figure(1);
         title('P(choose L) as function of P(Leftreward) (R2)');
     end
 if nopos == 1 
+    if ns>1
     for t = 1:rn
         figure(t+1);
 %         hold all
@@ -241,20 +242,20 @@ if nopos == 1
             a.Visible = 'off';
             t1.Visible = 'on';
     end
+    end
     for r = 1:rn
         figure((r+rn+1));
-        for k = ns
+        for k = 1:ns
         xlabel('X');
         ylabel('Y');
             for i = 1: pn
                 set(gca, 'ColorOrder', poscl);
-                hold all
+%                 hold all
                 if version == 1
                     for p = 1:tt
         %               CORRECT & rt{r,k}(:,4)==r ,'color', poscl(p+(r-1)*tt,:)
-                        
+%                         hold on
                         subplot(5,4,1+4*(i-1));
-                        hold on
                         plot(rt{r,k}(rt{r,k}(:,colp) == 2 & rt{r,k}(:,5) == rprob(i) ...
                             & rt{r,k}(:,1) == hindex(p,r),6) ...
                         ,rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5) == rprob(i)...
@@ -262,8 +263,8 @@ if nopos == 1
                         title(['correct choices p(r)=' num2str(rprob(i))]);
                         
         %               INCORRECT
-                        subplot(5,4,3+4*(i-1));
                         hold on
+                        subplot(5,4,3+4*(i-1));
                         plot(wn{r,k}(wn{r,k}(:,colp) == 2 & wn{r,k}(:,5) == rprob(i)...
                             & wn{r,k}(:,1) == hindex(p,r),6) ...
                         ,wn{r,k}(wn{r,k}(:,colp) == 2 & wn{r,k}(:,5) == rprob(i) ...
@@ -325,6 +326,9 @@ end
 for i = 1:ns
     figure(((2*rn)+1)+i);
     hold on
+    cl = (ad(:,(6+version),i)==1);
+    cr = (ad(:,(6+version),i)==2);
+    cc = reshape((ad(:,(6+version),i)==1),1,size(ad,1));
         if version == 1
             %==================================================================================
             %==================================================================================
@@ -332,21 +336,8 @@ for i = 1:ns
 %             lwro = ((ad(:,6,i)==0 & ad(:,7,i)==1));%actual left reward port unrewarded            
 %             rcorr = ((ad(:,6,i)==1 & ad(:,7,i)==2));%actual right reward port rewarded
 %             rwro  = ((ad(:,6,i)==0 & ad(:,7,i)==2));%actual right reward port unrewarded
-            cl = (ad(:,7,i)==1);
-            cr = (ad(:,7,i)==2);
-            cc = reshape((ad(:,7,i)==1),1,size(ad,1));
             %==================================================================================
             %==================================================================================
-%             xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),lwro,lcorr,rcorr,rwro];%with right or wrong
-%             ht = [0.1,0.1,0.05,0.075,-0.05,-0.75];
-%             hv = [1.3,1.3,1.15,1.10,-0.15,-0.10];
-%             col = [1 0 0; 0 0 1; .8 .4 0; 1 .5 0;0 .2 0; 0 .8 0];
-            xs = [(ad(:,4,i)==1),(ad(:,4,i)==2),cl,cr];
-            ht = [0.1,0.1,0.075,-0.075];
-            hv = [1.3,1.3,1.10,-0.10];
-            col = [1 0 0; 0 0 1; 1 .5 0;0 .8 0];
-            lt = [2,2,1,1,1,1];
-            (shade(xs,0,hv, ht, col,lt));
             %==================================================================================
             %==================================================================================   
         end
@@ -357,26 +348,18 @@ for i = 1:ns
 %             lwro = find((ad(:,6,i)==2 & ad(:,7,i)==0))*1.15;%actual left reward port unrewarded
 %             rcorr = find((ad(:,6,i)==2 & ad(:,7,i)==1))*(-0.1);%actual right reward port rewarded
 %             rwro  = find((ad(:,6,i)==1 & ad(:,7,i)==0))*(-0.15);%actual right reward port unrewarded
-            cl = (ad(:,8,i)==1);
-            cr = (ad(:,8,i)==2);
-            cc = reshape((ad(:,8,i)==1),1,size(ad,1));
             %==================================================================================
-            %==================================================================================
-%             xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),lwro,lcorr,rcorr,rwro];%with right or wrong
-%             ht = [0.1,0.1,0.05,0.075,-0.05,-0.75];
-%             hv = [1.3,1.3,1.15,1.10,-0.15,-0.10];
-%             col = [1 0 0; 0 0 1; .8 .4 0; 1 .5 0;0 .2 0; 0 .8 0];
-            xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),cl,cr];
-            ht = [0.1,0.1,0.075,-0.075];
-            hv = [1.3,1.3,1.10,-0.10];
-            col = [1 0 0; 0 0 1; 1 .5 0;0 .8 0];
-            lt = [2,2,1,1,1,1];
-            (shade(xs,0,hv, ht, col,lt));
-            
+            %==================================================================================         
             %==================================================================================
             %==================================================================================
             
         end
+        xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),cl,cr];
+        ht = [0.1,0.1,0.075,-0.075];
+        hv = [1.3,1.3,1.10,-0.10];
+        col = [1 0 0; 0 0 1; 1 .5 0;0 .8 0];
+        lt = [2,2,1,1,1,1];
+        (shade(xs,0,hv, ht, col,lt));
 %         plot(find(pta(i,:)==1),1,'Color', [0 0.2 0]); %plot the 1's
 %         plot(find(pta(i,:)==0),0,'Color', [0 0.8 0]); %plot the 0's
         avgval = 20;

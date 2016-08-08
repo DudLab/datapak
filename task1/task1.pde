@@ -37,7 +37,7 @@ int trialstate = 1;// forage, collect soforth
 int trialcnt = 0;
 int pnt;//points
 int offset = displayHeight/20;
-int sd = 150;//displayWidth/10;// startdiameter60
+int sd = displayWidth/20;//displayWidth/10;// startdiameter60
 int tgd = displayWidth/10;//targetdiameter150
 float dista;
 float fd = 0;//foragedistance
@@ -113,8 +113,8 @@ void setup(){
   //========================================================================
   pp = new IntList();
   rp = new IntList();
-  float rlist[] = {sqrt(pow((displayHeight*0.40),2)-pow((displayWidth/10),2))
-  , sqrt(pow(((displayHeight*0.40)*2),2)-pow((displayWidth/10),2))};
+  float rlist[] = {sqrt(pow((displayHeight*0.35),2)-pow((displayWidth/10),2))
+  , sqrt(pow(((displayHeight*0.35)*2),2)-pow((displayWidth/10),2))};
   IntList tempr  = new IntList();
   for (int c = 0; c < rnum; c++){
     IntList temp = new IntList();
@@ -213,7 +213,7 @@ void draw(){
     ellipse(x2,y2,tgd,tgd);
     fill(255);
     textSize(32);
-    text("practice" + practiceint,(displayWidth*0.125),displayHeight-32);
+    text("practice= " + practiceint,(displayWidth*0.125),400);
   }
   if (flickerint>0){
     fill(col[rpos]);
