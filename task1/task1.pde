@@ -280,7 +280,7 @@ void draw(){
     
     case 2://forage
       if (trialcnt <= maxtrials){       
-        if (oncirclew(x2,y2,4*tgd)==true){//4*target diameter
+        if (oncirclew(x2,y2,5*tgd)==true){//4*target diameter
           ppos = wpos;
           rightorwrong = 0;
           pnt = 0;
@@ -328,7 +328,7 @@ void draw(){
 //void keyPressed(){
 //  if (show == true){
 //    fill(125,125,255);
-//    ellipse(x2,y2,4*tgd,4*tgd);
+//    ellipse(x2,y2,5*tgd,5*tgd);
 //    text("rpos: "+rpos, (displayWidth*0.125), 300);
 //  }
 //}

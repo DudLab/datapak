@@ -74,8 +74,6 @@ for k = 1:ns
 %=================================================================================
 %=================================================================================
     [ok, rindex] = sort(ad(:,4,k));
-%     td1(:,:,t,k) = ad(ad(:,4,k)==t,:,k);
-%     hval = 
     for t = 1:rn
         td1(:,:,t,k) = ad(ad(:,4,k)==t,:,k);
         %     separate into thresh 3dim = each separate reach
@@ -154,9 +152,11 @@ for i = 1:rn
     avg(:,i) = (sum(chleft(:,i,:),3)/ns);
 end
 avg1 = sum(avg,2)/rn;
-% ==============================================================
+%=================================================================================
+%=================================================================================
 % TASK1positionstuff
-% ==============================================================
+%=================================================================================
+%=================================================================================
 if nopos == 1
     clearvars tpd
     for k = 1:ns
@@ -175,6 +175,7 @@ if nopos == 1
         end
     end
 end
+stratsort(tpd,ns,version);%get offline sorted data"true choice"
 %=================================================================================
 %=================================================================================
 % OPAL MODEL STUFF
@@ -233,26 +234,25 @@ figure(1);
     end
 if nopos == 1 
     if ns>1
-    for t = 1:rn
-        figure(t+1);
-%         hold all
-        for i = 1:pn
-%         hold on            
-            subplot(5,2,i);
-            x = 1:length(pt(:,:,t,i));
-            semline(pt(:,:,t,i),10,'r');
-%             shadedErrorBar(x,pt(:,:,t,i),{@mean, @(x) 1*std(x)},'r',0);
-            hold all
-%             plot(1:length(pt(:,:,t,i)),pt(:,:,t,i));
-            title(['p(r)=' num2str(rprob(i))]);
-            xlabel('trials');
-            ylabel('choice prob');
+        for r = 1:rn
+            figure(r+1);
+    %         hold all
+            for i = 1:pn
+    %         hold on            
+                subplot(5,2,i);
+                x = 1:length(pt(:,:,r,i));
+                semline(pt(:,:,r,i),10,'r');
+    %             shadedErrorBar(x,pt(:,:,t,i),{@mean, @(x) 1*std(x)},'r',0);
+                hold all
+                title(['p(r)=' num2str(rprob(i))]);
+                xlabel('trials');
+                ylabel('choice prob');
+            end
+                a = axes;
+                t1 = title(['P(choose L) at reach' num2str(t)]);
+                a.Visible = 'off';
+                t1.Visible = 'on';
         end
-            a = axes;
-            t1 = title(['P(choose L) at reach' num2str(t)]);
-            a.Visible = 'off';
-            t1.Visible = 'on';
-    end
     end
     for r = 1:rn
         figure((r+rn+1));
@@ -376,6 +376,7 @@ for i = 1:ns
         avgval = 20;
         plot(moveavg(cc,avgval), 'c');
         plot(moveavg(pta(i,:),avgval),'k');
+%         plot(
         l = legend(['reach' num2str(halfac(1,i))],' ',['reach' num2str(halfac(2,i))],...
             ' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
             'P(reward|left) moving avg','Choice moving avg');

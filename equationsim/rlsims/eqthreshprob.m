@@ -27,6 +27,8 @@ cls = (ad(:,(6+version),subji)==1);
 crs = (ad(:,(6+version),subji)==2);
 xs1 = [(ad(:,4,subji)==2),(ad(:,4,subji)==1),cls,crs];
 ccs = reshape((ad(:,(6+version),subji)==1),1,size(ad,1));
+% NuoLi = ptrial(([1; (sum(diff(ptrial(:,7:8,subji))~=0,2))])~=0,...
+%     (version+5):(version+6));%remove duplicate time-adjacent point [x,y]
 reps = length(prs);
 %at different probs
 simtot = 1000;%total repetitition
