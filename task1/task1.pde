@@ -34,7 +34,7 @@ int maxtrials = 500;
 IntList pp;//prob randomly shuffled
 IntList rp;//reach randomly shuffled
 int trialstate = 1;// forage, collect soforth
-int trialcnt = 490;//0;
+int trialcnt = 0;
 int pnt;//points
 int offset = displayHeight/20;
 int sd = displayWidth/20;//displayWidth/10;// startdiameter60
@@ -70,7 +70,7 @@ int rpos;//left or right
 int wpos;// wrongpos
 int ppos;
 int ultrasonicmode = 0;
-int practiceint=0;//10;
+int practiceint=10;
 float points = 0;
 float maxpoints;
 color start = color(255,0,0);

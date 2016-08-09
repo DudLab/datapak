@@ -376,8 +376,7 @@ for i = 1:ns
         avgval = 20;
         plot(moveavg(cc,avgval), 'c');
         plot(moveavg(pta(i,:),avgval),'k');
-        l = legend(['reach' num2str(halfac(1,i))],' ',['reach' num2str(halfac(2,i))],...
-            ' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
+        l = legend(['reach' num2str(hval(i))],' ','reach2',' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
             'P(reward|left) moving avg','Choice moving avg');
         l.FontSize = 16;
         xlabel('Trials');

@@ -7,7 +7,7 @@ cho = [1,2]
 choice = 1;
 probstate =1; %1 = incresing prob e.g., 0.1,0.2,0.3... 2= follows prl1
 %=====================================================================
-aci = 0.05;
+aci = 0.1;
 agi = 0.1;
 ani = 0.1;
 bgi = 1;
@@ -88,22 +88,22 @@ end
 %====================================================================================
 avg = sum(ch,4)/simtot;
 choicemean = avg(:,6,1);
-figure(2)
+figure(9)
     hold all
     (shade(xs1,0,hv, ht, col,lt));
         avgval = 20;
         plot(moveavg(ccs,avgval), 'c');%
         plot(moveavg(pta(subji,:),avgval),'k');
         plot(1:length(choicemean),choicemean,'r');
-        l = legend('reach1',' ','reach2',' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
-            'P(reward|left) moving avg','Choice moving avg', 'OPAl chL');
+        l = legend(['reach' num2str(halfac(1,subji))],' ',['reach' num2str(halfac(2,subji))],' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
+            'P(reward|left) moving avg','Choice moving avg', ['OPAL, ac =' num2str(aci)]);
         l.FontSize = 16;
         xlabel('Trials');
         ylabel('Probability');
         xlim([0, size(ad,1)]);
         ylim([-0.2,1.3]);
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-        t = text(0.5, 1,['P(choose L) over time, usr ' num2str(i) ',movavg= ' num2str(avgval) ' trials'],'HorizontalAlignment' ...
+        t = text(0.5, 1,['P(choose L) over time, usr' num2str(subji) ',movavg= ' num2str(avgval) ' trials'],'HorizontalAlignment' ...
         ,'center','VerticalAlignment', 'top');
         t.FontSize = 22;
       
