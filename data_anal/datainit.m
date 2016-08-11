@@ -1,11 +1,10 @@
 
-
 % get filenames
 filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trialdata/';
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
 fnamesp = dir(strcat(filepathp,'*.csv'));
 fnames = dir(strcat(filepath,'*.csv'));
-nopos = 1;%0 = no positionstuff; 1 = yes
+nopos = 0;%0 = no positionstuff; 1 = yes
 ns = length(fnames);%number of test subjects
 ad = zeros(500,13,ns);%alldata
 np = zeros(ns);
@@ -16,11 +15,9 @@ for k = 1:ns
     legendcell{k} = ['usr' num2str(k)];
     fname = fnames(k).name;
     ad(:,:,k) = csvread(strcat(filepath,fname),2, 0);
-    if nopos == 1
-        fnamep = fnamesp(k).name;    
-        pd1 = csvread(strcat(filepathp,fnamep), 2,0);
-        np(k) = numel(pd1(:,2));
-    end
+	fnamep = fnamesp(k).name;    
+	pd1 = csvread(strcat(filepathp,fnamep), 2,0);
+	np(k) = numel(pd1(:,2));
 end
 legendcell{k+1} = 'avg';
 % threshes = 2%for old csv
@@ -157,25 +154,24 @@ avg1 = sum(avg,2)/rn;
 % TASK1positionstuff
 %=================================================================================
 %=================================================================================
-if nopos == 1
-    clearvars tpd
-    for k = 1:ns
-        if np(k)< mpd
-            tpd(1:np(k),:,k) = csvread(strcat(filepathp,fnamep), 2,0);
-            tpd(np(k):mpd,:,k) = 0;
-        else
-            tpd(:,:,k) = csvread(strcat(filepathp,fnamep), 2,0);
-        end
+clearvars tpd
+for k = 1:ns
+    if np(k)< mpd
+        tpd(1:np(k),:,k) = csvread(strcat(filepathp,fnamep), 2,0);
+        tpd(np(k):mpd,:,k) = 0;
+    else
+        tpd(:,:,k) = csvread(strcat(filepathp,fnamep), 2,0);
+    end
+    if nopos ==1
         for t = 1:rn%rn
             for i = 1:5
-%                Newpos="trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
+    %                Newpos="trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
             end
         end
     end
 end
-stratsort(tpd,ns,version);%get offline sorted data"true choice"
 %=================================================================================
 %=================================================================================
 % OPAL MODEL STUFF
@@ -334,8 +330,63 @@ if nopos == 1
         t.FontSize = 18;
     end
 end
+%=================================================================================
+%=================================================================================
+% Get strategies, e.t.c, and sort
+%=================================================================================
+%=================================================================================
+if version == 1
+    psorted = stratsort(tpd,ns,version,ad);%get offline sorted data"true choice"
+end
+if version == 2
+    psorted = stratsort(tpd,ns,version);
+end
+%=================================================================================
+%=================================================================================
 for i = 1:ns
-    figure(((2*rn)+1)+i);
+    figure(((2*rn)+1)+1);
+    for p = 1:500
+%=================================================================================
+%=================================================================================
+%         hold all
+        if psorted(p,2,i)==1 & psorted(p,3,i)==0
+            hold on
+            subplot(2,3,1 + 3*(ad(p,4,i)-1))%reach1
+            if psorted(p,1,i)==1%left
+                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'b');%left
+            else
+                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'r');%right
+            end
+        title(['choose L/R correct' num2str(rprob(i))]);
+        end
+%=================================================================================
+%=================================================================================
+        if psorted(p,2,i)==0 & psorted(p,3,i)==0
+            hold on
+            subplot(2,3,2 + 3*(ad(p,4,i)-1))%reach1
+            if psorted(p,1,i)==1%left
+                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'b');%left
+            else
+                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'r');%right
+            end
+        title(['chooseL/R incorrect' num2str(rprob(i))]);
+        end
+%=================================================================================
+%=================================================================================
+        if psorted(p,2,i)==1 & psorted(p,3,i)==1
+            hold on 
+            subplot(2,3,3 + 3*(ad(p,4,i)-1))%reach1
+            if psorted(p,1,i)==1%left
+                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'b');%left
+            else
+                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'r');%right
+            end
+        title(['chooseL/R correct trap' num2str(rprob(i))]);
+        end
+    end
+%=================================================================================
+%=================================================================================
+    figure(((2*rn)+2)+i);
     hold on
     cl = (ad(:,(6+version),i)==1);
     cr = (ad(:,(6+version),i)==2);
@@ -390,3 +441,4 @@ for i = 1:ns
         ,'center','VerticalAlignment', 'top');
         t.FontSize = 22;
 end
+% figure

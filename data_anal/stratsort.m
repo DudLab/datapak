@@ -1,31 +1,81 @@
-function psorted = stratsort(tpd,ns,version)
+function psorted = stratsort(tpd,ns,version,ad)
 % trl = 457;%457 has TRAPLINE%33whack
 % trialtot = (numel(unique(tpd(:,1,1)))-1);%500
 psort = zeros(500,3,ns);%subjchoice,correct/incorrect,trapline
+if version == 1
+    lrb = tpd(1,10,1,1);
+    x = [tpd(1,12,1), tpd(1,14,1)];
+    y = sort(unique(tpd(:,13,1)), 'descend');
+end
+if version == 2
+    lrb = tpd(1,11,1,1);
+    x = sort(unique(tpd(:,13,1)));%larger x = right, smaller x left
+    y = sort(unique(tpd(:,14,1)), 'descend');
+end
+mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
 for k = 1:ns
     for p = 1:500%trialtot
-        ptrial = tpd(tpd(:,1,k)==p & tpd(:,end,k)==2,:,k);
-        lrb = tpd(1,11,1,1);
-        NuoLi = ptrial(([1; (sum(diff(ptrial(:,(version+5):(version+6)))~=0,2))])~=0,...
-            (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
-        pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
-        if pthresh<0.5
-            pchoice = 1;%1 left
-        else
-            pchoice = 0;%2 right
+%         ptrial = tpd(tpd(:,1,k)==p & tpd(:,end,k)==2,:,k);
+%         lrb = tpd(1,11,1,1);
+%         NuoLi = ptrial(([1; (sum(diff(ptrial(:,(version+5):(version+6)))~=0,2))])~=0,...
+%             (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
+%         pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
+
+        if version == 1
+            ptrial = tpd(tpd(:,1,k)==p,:,k);
+            rnum = mp(ad(p,4,k));
         end
-        if pchoice == ptrial(2,4)
-            rw = 1;
-        else
-            rw = 0;
+        if version == 2
+            ptrial = tpd(tpd(:,1,k)==p,:,k);
+            rnum= tpd(p,5,k);
+            
         end
-        if (NuoLi(end,1)<lrb & pchoice==1) | (NuoLi(end,1)>lrb & pchoice==2)
-            trap = 0;
+        
+        if numel(ptrial>0)
+            [a ,cdist, b] = distance2curve(ptrial(:,(version+5):(version+6)),rnum);
+            ptrial1 = ptrial(find(ptrial(:,end)==2),:);
+            ptrial2 = ptrial(find(ptrial(:,end)==3),:);
+            NuoLi = ptrial1(([1; (sum(diff(ptrial1(:,(version+5):(version+6)))~=0,2))])~=0,...
+                (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
+%             NuoLi2 = ptrial2(([1; (sum(diff(ptrial2(:,(version+5):(version+6)))~=0,2))])~=0,...
+%                 (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
+            pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
+            if pthresh<0.5
+                pchoice = 1;%1 left
+            else
+                pchoice = 2;%2 right
+            end
+            if nargin ==3 & version == 2
+                if (pchoice == ptrial(2,4))
+                    rw = 1;
+                else
+                    rw = 0;
+                end
+            end
+            if nargin == 4 & version == 1
+                if (version == 1 & pchoice == ad(p,7,k))
+                    rw = 1;
+                else
+                    rw = 0;
+                end
+            end
+            if (pchoice==1 & NuoLi(end,1)<lrb) | ( pchoice ==2 & NuoLi(end,1)>lrb)
+    %             trap = 0;
+%                 if (pchoice == 1 & pthresh2>0.5 ) | (pchoice ==2 & pthresh2<0.5)         
+%                 if (pchoice == 1 & numel(ptrial(:,(5+version))>(lrb))>2) | ...
+%                          (pchoice == 2 & numel(ptrial(:,(5+version))<(lrb))>2)
+                if cdist<100%threshclosest
+                    trap = 1;
+                else
+                    trap = 0;
+                end 
+            else
+                trap = 1;
+            end
+            psort(p,:,k) = [abs(pchoice-2); rw; trap];
         else
-            trap = 1;
+            psort(p,:,k) = [2; 2; 2];
         end
-        psort(p,:,k) = [pchoice; rw; trap];
     end
-end
 psorted = psort;
 end
