@@ -18,25 +18,25 @@ for k = 1:ns
     fname = fnames(k).name;
     ad(:,:,k) = csvread(strcat(filepath,fname),2, 0);
 	fnamep = fnamesp(k).name;
-      pd1 = csvread(strcat(filepathp,fnamep), 2,0);
-%     tpd1 = csvread(strcat(filepathp,fnamep), 2,0);
-%     if k < 2
-%         tpd = [tpd1(tpd1(:,1)<(1+(500*k)),:),repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])];
-%         ad1 = csvread(strcat(filepath,fname),2, 0);
-%     else
-%         tpd1(:,1) = tpd1(:,1)+500*(k-1);
-%         tpd = vertcat(tpd, [tpd1(tpd1(:,1)<(1+(500*k)),:),[repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])]]);
-%         ad1 = vertcat(ad1,ad(:,:,k));
-%     end
-    np(k) = size(pd1,1);
+%       pd1 = csvread(strcat(filepathp,fnamep), 2,0);
+    tpd1 = csvread(strcat(filepathp,fnamep), 2,0);
+    if k < 2
+        tpd = [tpd1(tpd1(:,1)<(1+(500*k)),:),repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])];
+        ad1 = csvread(strcat(filepath,fname),2, 0);
+    else
+        tpd1(:,1) = tpd1(:,1)+500*(k-1);
+        tpd = vertcat(tpd, [tpd1(tpd1(:,1)<(1+(500*k)),:),[repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])]]);
+        ad1 = vertcat(ad1,ad(:,:,k));
+    end
+%     np(k) = size(pd1,1);
 end
 legendcell{k+1} = 'avg';
 % threshes = 2%for old csv
 %trial data for task1 and 2
 half = 2;
-% colp = size(tpd,2);
-colp = size(pd1,2);
-mpd = max(np);
+colp = size(tpd,2);
+% colp = size(pd1,2);
+% mpd = max(np);
 rn = numel(unique(ad(:,4,1)));
 pn = numel(unique(ad(:,5,1)));
 col = size(ad,2);
@@ -53,10 +53,10 @@ if half == 2
 else
     hindex = reshape(1:500,tt,rn);
 end
-if colp == 16
+if colp == 17
     version = 1;
 end
-if colp == 15
+if colp == 16
     version = 2;
 end
 chleft = zeros(pn,rn,ns);
@@ -166,27 +166,27 @@ avg1 = sum(avg,2)/rn;
 % TASK1positionstuff
 %=================================================================================
 %=================================================================================
-clearvars tpd
-for k = 1:ns
-    if np(k)< mpd
-        tpd(1:np(k),:,k) = csvread(strcat(filepathp,fnamep), 2,0);
-        tpd(np(k):mpd,:,k) = 0;
-%         tpd1 = (
-% 
-% /
-    else
-        tpd(:,:,k) = csvread(strcat(filepathp,fnamep), 2,0);
-    end
-    if nopos ==1
-        for t = 1:rn%rn
-            for i = 1:5
-%                    Newpos="trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
-                rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
-                wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
-            end
-        end
-    end
-end
+% clearvars tpd
+% for k = 1:ns
+%     if np(k)< mpd
+%         tpd(1:np(k),:,k) = csvread(strcat(filepathp,fnamep), 2,0);
+%         tpd(np(k):mpd,:,k) = 0;
+% %         tpd1 = (
+% % 
+% % /
+%     else
+%         tpd(:,:,k) = csvread(strcat(filepathp,fnamep), 2,0);
+%     end
+%     if nopos ==1
+%         for t = 1:rn%rn
+%             for i = 1:5
+% %                    Newpos="trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
+%                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
+%                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
+%             end
+%         end
+%     end
+% end
 %=================================================================================
 %=================================================================================
 % OPAL MODEL STUFF
@@ -351,7 +351,7 @@ end
 %=================================================================================
 %=================================================================================
 if version == 1
-    psorted = stratsort(tpd,ns,version,ad);%get offline sorted data"true choice"
+    psorted = stratsort(tpd,ns,version,ad1);%get offline sorted data"true choice"
 end
 if version == 2
     psorted = stratsort(tpd,ns,version);
@@ -360,21 +360,22 @@ end
 %=================================================================================
 % % for i = 1:ns
 %     if i ==2
-    i = 1;
+%     i = 1;
     figure(((2*rn)+1)+1);
-    for p = 1:500%ns*500%numel(unique(tpd(:,1)))
+    for p = 1:ns*500%numel(unique(tpd(:,1)))
 %=================================================================================
 %=================================================================================
 %         i = fix((p-1)/(500))+1;
-        if psorted(p,2,i)==1 & psorted(p,3,i)==0
-            subplot(2,3,1 + 3*(ad(p,4,i)-1))%reach1
+        if psorted(p,2)==1 & psorted(p,3)==0
+%             subplot(2,3,1 + 3*(ad(p,4,i)-1))%reach1
+            subplot(2,3,1 + 3*(ad1(p,4)-1))%reach1
             hold on
-            if psorted(p,1,i)==1%left
+            if psorted(p,1)==1%left
                 hold on
-                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'b');%left
+                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'b');%left
             else
                 hold on
-                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'r');%right
+                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'r');%right
             end
         title(['choose L/R correct']);
         else
@@ -382,15 +383,16 @@ end
         end
 %=================================================================================
 %=================================================================================
-        if psorted(p,2,i)==0 & psorted(p,3,i)==0
-            subplot(2,3,2 + 3*(ad(p,4,i)-1))%reach1%p-(fix((p-1)/(500))*500)
+        if psorted(p,2)==0 & psorted(p,3)==0
+%             subplot(2,3,2 + 3*(ad(p,4,i)-1))%reach1%p-(fix((p-1)/(500))*500)
+            subplot(2,3,2 + 3*(ad1(p,4)-1))%reach1%p-(fix((p-1)/(500))*500)
             hold on
-            if psorted(p,1,i)==1%left
+            if psorted(p,1)==1%left
                 hold on
-                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'b');%left
+                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'b');%left
             else
                 hold on
-                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'r');%right
+                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'r');%right
             end
         title(['chooseL/R incorrect']);
         else
@@ -398,15 +400,16 @@ end
         end
 %=================================================================================
 %=================================================================================
-        if psorted(p,2,i)==1 & psorted(p,3,i)==1
-            subplot(2,3,3 + 3*(ad(p,4,i)-1))%reach1
+        if psorted(p,2)==1 & psorted(p,3)==1
+%             subplot(2,3,3 + 3*(ad(p,4,i)-1))%reach1
+            subplot(2,3,3 + 3*(ad1(p,4)-1))%reach1
             hold on
-            if psorted(p,1,i)==1%left
+            if psorted(p,1)==1%left
                 hold on
-                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'b');%left
+                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'b');%left
             else
                 hold on
-                plot(tpd(tpd(:,1,i)==p,(version+5),i),tpd(tpd(:,1,i)==p,(version+6),i),'r');%right
+                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'r');%right
             end
         title(['chooseL/R correct trap']);
         else
