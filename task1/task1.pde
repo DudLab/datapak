@@ -261,9 +261,9 @@ void draw(){
           y2 = y0 -r;
         }else{
           x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
-          y1 = y0 + (rpos-2)*r - abs((rpos-1)*(rl[1]-rl[0]));
+          y1 = y0 + (rpos-2)*r - abs((rpos-1)*(min(rl)));
           x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
-          y2 = y0 + (wpos-2)*r - abs((wpos-1)*(rl[1]-rl[0]));
+          y2 = y0 + (wpos-2)*r - abs((wpos-1)*(min(rl)));
         }
         ppos = rpos;
         rightorwrong = 1;

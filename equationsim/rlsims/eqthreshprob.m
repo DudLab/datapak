@@ -29,23 +29,23 @@ xs1 = [(ad(:,4,subji)==2),(ad(:,4,subji)==1),cls,crs];
 ccs = reshape((ad(:,(6+version),subji)==1),1,size(ad,1));
 % NuoLi = ptrial(([1; (sum(diff(ptrial(:,7:8,subji))~=0,2))])~=0,...
 %     (version+5):(version+6));%remove duplicate time-adjacent point [x,y]
-reps = length(prs);
 %at different probs
 simtot = 1000;%total repetitition
 tt = trials + inczero;
-st = tt*reps;
 % ch = cell(simtot);%1000,2 choices
-ch = zeros(st,7,choices,simtot);
-sm = zeros(st,choices,simtot);
+ch = zeros(500,7,choices,simtot);
+sm = zeros(500,choices,simtot);
+reps = 10;
 color = varycolor(reps);
 %====================================================================================
 %===simulation=======================================================================
 %====================================================================================
-
+i = int32(1);
+t = int32(1);
 for i = 1: simtot%1000 total sim
-    for r = 1:reps% 10 different probabilities (10 if probstate = 0)
-        for j = 1:tt%101 including 0 trials
-            t = ((r-1)*tt + j);
+%     for r = 1:reps% 10 different probabilities (10 if probstate = 0)
+        for t = 1:500%j = 1:tt%101 including 0 trials
+%             t = ((r-1)*tt + j);
             for c = 1: choices%choices
                 %t = ((r-1)*tt + j);
                if t ==1 %first trial in every rep or first in general
@@ -83,7 +83,7 @@ for i = 1: simtot%1000 total sim
                 end
             end
         end
-    end
+%     end
 end
 %====================================================================================
 % GRAPHING

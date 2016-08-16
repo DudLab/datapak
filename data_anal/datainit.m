@@ -166,33 +166,14 @@ avg1 = sum(avg,2)/rn;
 % TASK1positionstuff
 %=================================================================================
 %=================================================================================
-% clearvars tpd
-% for k = 1:ns
-%     if np(k)< mpd
-%         tpd(1:np(k),:,k) = csvread(strcat(filepathp,fnamep), 2,0);
-%         tpd(np(k):mpd,:,k) = 0;
-% %         tpd1 = (
-% % 
-% % /
-%     else
-%         tpd(:,:,k) = csvread(strcat(filepathp,fnamep), 2,0);
-%     end
-%     if nopos ==1
-%         for t = 1:rn%rn
-%             for i = 1:5
-% %                    Newpos="trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
-%                 rt{t,k} = tpd(ismember(tpd(:, 1, k),correct(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
-%                 wn{t,k} = tpd(ismember(tpd(:, 1, k),incorrect(:,t,k)) & tpd(:,(version+3),k)==t,:,k);
-%             end
-%         end
-%     end
-% end
 %=================================================================================
 %=================================================================================
 % OPAL MODEL STUFF
 %=================================================================================
 %=================================================================================
-
+%get opal simulation for each test subject
+acv = 0.1;%ac value
+opaldata = opal(ad1,version,ns,acv);
 %=================================================================================
 %=================================================================================
 
@@ -265,85 +246,6 @@ if nopos == 1
                 t1.Visible = 'on';
         end
     end
-    for r = 1:rn
-        figure((r+rn+1));
-        for k = 1:ns
-        xlabel('X');
-        ylabel('Y');
-            for i = 1: pn
-                set(gca, 'ColorOrder', poscl);
-%                 hold all
-                if version == 1
-                    for p = 1:tt
-        %               CORRECT & rt{r,k}(:,4)==r ,'color', poscl(p+(r-1)*tt,:)
-%                         hold on
-                        subplot(5,4,1+4*(i-1));
-                        plot(rt{r,k}(rt{r,k}(:,colp) == 2 & rt{r,k}(:,5) == rprob(i) ...
-                            & rt{r,k}(:,1) == hindex(p,r),6) ...
-                        ,rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5) == rprob(i)...
-                            & rt{r,k}(:,1) == hindex(p,r),7),'color', poscl(p+(r-1)*tt,:));
-                        title(['correct choices p(r)=' num2str(rprob(i))]);
-                        
-        %               INCORRECT
-                        hold on
-                        subplot(5,4,3+4*(i-1));
-                        plot(wn{r,k}(wn{r,k}(:,colp) == 2 & wn{r,k}(:,5) == rprob(i)...
-                            & wn{r,k}(:,1) == hindex(p,r),6) ...
-                        ,wn{r,k}(wn{r,k}(:,colp) == 2 & wn{r,k}(:,5) == rprob(i) ...
-                            & wn{r,k}(:,1) == hindex(p,r),7),'color', poscl(p+(r-1)*tt,:));
-                        title(['incorrect choices p(r)=' num2str(rprob(i))]);
-                    end
-%                   CORRECT
-                    subplot(5,4,2+4*(i-1));
-                    n = hist3([rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,5)== rprob(i),6)...
-                    ,rt{r,k}(rt{r,k}(:,16)== 2 & rt{r,k}(:,5)== rprob(i),7)],[10,10]);
-                    imagesc(n);
-%                   INCORRECT
-                    subplot(5,4,4+4*(i-1));                   
-                    nw = hist3([wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),6)...
-                    ,wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,5)== rprob(i),7)],[10,10]);
-                    imagesc(nw);
-                end
-                if version == 2
-                    for p = 1:tt
-    %               CORRECT 
-                        subplot(5,4,1+4*(i-1));
-                        hold on
-                        hold all
-                        plot(rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,6)== rprob(i)...
-                            & rt{r,k}(:,1) == hindex(p,halfac(r,k)),7) ...
-                        ,rt{r,k}(rt{r,k}(:,15)== 2 & rt{r,k}(:,6)== rprob(i)...
-                            & rt{r,k}(:,1) == hindex(p,halfac(r,k)),8));
-                        title(['correct choices p(r)=' num2str(rprob(i))]);
-        %               INCORRECT
-                        subplot(5,4,3+4*(i-1));
-                        hold on
-                        hold all
-                        plot(wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,6)== rprob(i)... 
-                            & wn{r,k}(:,1) == hindex(p,halfac(r,k)),7)...
-                        ,wn{r,k}(wn{r,k}(:,15)== 2 & wn{r,k}(:,6)== rprob(i)...
-                            & wn{r,k}(:,1) == hindex(p,halfac(r,k)),8));
-                        title(['incorrect choices p(r)=' num2str(rprob(i))]);
-                    end
-%                   CORRECT
-                    subplot(5,4,2+4*(i-1));
-                    n = hist3([rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,6)== rprob(i),7)...
-                    ,rt{r,k}(rt{r,k}(:,colp)== 2 & rt{r,k}(:,6)== rprob(i),8)],[10,10]);
-                    imagesc(n);
-%                   INCORRECT
-                    subplot(5,4,4+4*(i-1));                   
-                    nw = hist3([wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,6)== rprob(i),7)...
-                    ,wn{r,k}(wn{r,k}(:,colp)== 2 & wn{r,k}(:,6)== rprob(i),8)],[10,10]);
-                    imagesc(nw);
-                    
-                end
-            end
-        end
-        ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
-        t = text(0.5, 1,['Forage trajectories (second half of trials) reach =' num2str(r)],'HorizontalAlignment' ...
-        ,'center','VerticalAlignment', 'top');
-        t.FontSize = 18;
-    end
 end
 %=================================================================================
 %=================================================================================
@@ -358,26 +260,27 @@ if version == 2
 end
 %=================================================================================
 %=================================================================================
-% % for i = 1:ns
-%     if i ==2
-%     i = 1;
+% SORT STRATEGIES & TRAJECTORIES
+%=================================================================================
+%=================================================================================
     figure(((2*rn)+1)+1);
+    p = int32(1);%faster speed
     for p = 1:ns*500%numel(unique(tpd(:,1)))
 %=================================================================================
 %=================================================================================
-%         i = fix((p-1)/(500))+1;
+% SORT STRATEGIES
+%=================================================================================
+%=================================================================================
         if psorted(p,2)==1 & psorted(p,3)==0
 %             subplot(2,3,1 + 3*(ad(p,4,i)-1))%reach1
             subplot(2,3,1 + 3*(ad1(p,4)-1))%reach1
             hold on
             if psorted(p,1)==1%left
-                hold on
-                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'b');%left
+                plot(tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+5)),tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+6)),'b');%left
             else
-                hold on
-                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'r');%right
+                plot(tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+5)),tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+6)),'r');%right
             end
-        title(['choose L/R correct']);
+        title(['choose L/R correct, reach ' num2str(ad1(p,4))]);
         else
 %             hold off
         end
@@ -387,14 +290,12 @@ end
 %             subplot(2,3,2 + 3*(ad(p,4,i)-1))%reach1%p-(fix((p-1)/(500))*500)
             subplot(2,3,2 + 3*(ad1(p,4)-1))%reach1%p-(fix((p-1)/(500))*500)
             hold on
-            if psorted(p,1)==1%left
-                hold on
-                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'b');%left
+            if psorted(p,1)==1%left & tpd(:,colp-1)==2
+                plot(tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+5)),tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+6)),'b');%left
             else
-                hold on
-                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'r');%right
+                plot(tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+5)),tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+6)),'r');%right
             end
-        title(['chooseL/R incorrect']);
+        title(['chooseL/R incorrect, reach ' num2str(ad1(p,4))]);
         else
 %             hold off
         end
@@ -405,75 +306,68 @@ end
             subplot(2,3,3 + 3*(ad1(p,4)-1))%reach1
             hold on
             if psorted(p,1)==1%left
-                hold on
-                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'b');%left
+                plot(tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+5)),tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+6)),'b');%left
             else
-                hold on
-                plot(tpd(tpd(:,1)==p,(version+5)),tpd(tpd(:,1)==p,(version+6)),'r');%right
+                plot(tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+5)),tpd(tpd(:,1)==p & tpd(:,colp-1)==2,(version+6)),'r');%right
             end
-        title(['chooseL/R correct trap']);
+        title(['chooseL/R correct trap, reach ' num2str(ad1(p,4))]);
         else
 %             hold off
         end
     end
+        ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
+        t = text(0.5, 1,['Forage Trajectories'],'HorizontalAlignment' ...
+        ,'center','VerticalAlignment', 'top');
+        t.FontSize = 22;
 % end
 %=================================================================================
 %=================================================================================
+trajec = 1;
 for i = 1:ns
     figure(((2*rn)+2)+i);
     hold on
-    cl = (ad(:,(6+version),i)==1);
-    cr = (ad(:,(6+version),i)==2);
-    cc = reshape((ad(:,(6+version),i)==1),1,size(ad,1));
-        if version == 1
-            %eliminate bad trial, split,  
-            %==================================================================================
-            %==================================================================================
-%             lcorr = ((ad(:,6,i)==1 & ad(:,7,i)==1));%actual left reward port rewarded
-%             lwro = ((ad(:,6,i)==0 & ad(:,7,i)==1));%actual left reward port unrewarded            
-%             rcorr = ((ad(:,6,i)==1 & ad(:,7,i)==2));%actual right reward port rewarded
-%             rwro  = ((ad(:,6,i)==0 & ad(:,7,i)==2));%actual right reward port unrewarded
-            %==================================================================================
-            %==================================================================================
-            %==================================================================================
-            %==================================================================================   
-        end
-        if version == 2
-            %==================================================================================
-            %==================================================================================
-%             lcorr = find((ad(:,6,i)==1 & ad(:,7,i)==1))*1.1;%actual left reward port rewarded
-%             lwro = find((ad(:,6,i)==2 & ad(:,7,i)==0))*1.15;%actual left reward port unrewarded
-%             rcorr = find((ad(:,6,i)==2 & ad(:,7,i)==1))*(-0.1);%actual right reward port rewarded
-%             rwro  = find((ad(:,6,i)==1 & ad(:,7,i)==0))*(-0.15);%actual right reward port unrewarded
-            %==================================================================================
-            %==================================================================================         
-            %==================================================================================
-            %==================================================================================
-            
-        end
+        cl = (ad(:,(6+version),i)==1);
+        cr = (ad(:,(6+version),i)==2);
+        cc = reshape((ad(:,(6+version),i)==1),1,size(ad,1));
         xs = [(ad(:,4,i)==2),(ad(:,4,i)==1),cl,cr];
         ht = [0.1,0.1,0.075,-0.075];
         hv = [1.3,1.3,1.10,-0.10];
         col = [1 0 0; 0 0 1; 1 .5 0;0 .8 0];
         lt = [2,2,1,1,1,1];
-        (shade(xs,0,hv, ht, col,lt));
 %         plot(find(pta(i,:)==1),1,'Color', [0 0.2 0]); %plot the 1's
 %         plot(find(pta(i,:)==0),0,'Color', [0 0.8 0]); %plot the 0's
         avgval = 20;
-        plot(moveavg(cc,avgval), 'c');
-        plot(moveavg(pta(i,:),avgval),'k');
-%         plot(
-        l = legend(['reach' num2str(halfac(1,i))],' ',['reach' num2str(halfac(2,i))],...
-            ' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
-            'P(reward|left) moving avg','Choice moving avg');
-        l.FontSize = 16;
+%         plot(moveavg(cc,avgval), 'c');
+        if trajec ==1
+            shade(([(ad(:,4,i)==2),(ad(:,4,i)==1),cl,cr, psorted(1+500*(i-1):500*i,3)==0 ...
+                , psorted(1+500*(i-1):500*i,3)==1]),-1.1 ...
+                ,[1.3,1.3,1.10,-0.025, -0.2,-0.2]...
+                ,[0.1,0.1,0.075,0.075,0.075,0.075]...
+                ,[1 0 0; 0 0 1; 1 .5 0;0 .8 0; 0 0.2 0.2; 0.8 0 0]...
+                ,[2,2,1,1,1,1,1,1]);
+            plot(moveavg(cc,avgval), 'c');
+            plot(moveavg(psorted((1+500*(i-1):500*i),1),avgval),'k');
+            plot(1:500,opaldata(:,i));
+            legend(['reach' num2str(halfac(2,i))],' ',['reach' num2str(halfac(1,i))],...
+                ' ','Reward target: left', ' ', 'Reward target: right' ,' ', ...
+                'single movement', ' ', 'trapline', ' ',...
+                'P(reward|left) moving avg','Choice moving avg (from trajectories)', ['opal, ac =' num2str(acv)],'FontSize',18);           
+        else
+            (shade(xs,0,hv, ht, col,lt));
+            plot(moveavg(cc,avgval), 'c');
+            plot(moveavg(pta(i,:),avgval),'k');
+            l = legend(['reach' num2str(halfac(2,i))],' ',['reach' num2str(halfac(1,i))],...
+                ' ','Reward target: left', ' ', 'Reward target: right' ,'', ...
+                'P(reward|left) moving avg','Choice moving avg','FontSize',18);
+        end
         xlabel('Trials');
         ylabel('Probability');
         xlim([0, size(ad,1)]);
-        ylim([-0.2,1.3]);
+        ylim([-0.25,1.3]);
         ha = axes('Position',[0 0 1 1],'Xlim',[0 1],'Ylim',[0 1],'Box','off','Visible','off','Units','normalized', 'clipping' , 'off');
         t = text(0.5, 1,['P(choose L) over time, usr ' num2str(i) ',movavg= ' num2str(avgval) ' trials'],'HorizontalAlignment' ...
-        ,'center','VerticalAlignment', 'top');
+        ,'center','VerticalAlignment', 'top','FontSize',22);
         t.FontSize = 22;
+        
 end
 % figure

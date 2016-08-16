@@ -39,12 +39,14 @@ for k = 1:ns
         if numel(ptrial>0)
             [a ,cdist, b] = distance2curve(ptrial(:,(version+5):(version+6)),mp(rnum,:));
             ptrial1 = ptrial(find(ptrial(:,end-1)==2),:);
-            ptrial2 = ptrial(find(ptrial(:,end-1)==3),:);
+%             ptrial2 = ptrial(find(ptrial(:,end-1)==3),:);
             NuoLi = ptrial1(([1; (sum(diff(ptrial1(:,(version+5):(version+6)))~=0,2))])~=0,...
                 (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
 %             NuoLi2 = ptrial2(([1; (sum(diff(ptrial2(:,(version+5):(version+6)))~=0,2))])~=0,...
 %                 (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
             pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
+            deriv = numel(findpeaks(movAv(abs(diff(NuoLi(:,1))./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1))),round(length(NuoLi)/12))));
+            if deriv<30
             if pthresh<0.5
                 pchoice = 1;%1 left
                 [a ,cdist2, b] = distance2curve(ptrial(:,(version+5):(version+6)),[x(2), y(1)]);
@@ -79,8 +81,15 @@ for k = 1:ns
                 end
             psort(p,:) = [abs(pchoice-2); rw; trap];
 %             psort(p,:,k) = [abs(pchoice-2); rw; trap];
+            else
+                psort(p,:) = [abs(pchoice-2); rw; 2];
+            end
         else
-            psort(p,:) = [2; 2; 2];
+            if version == 1
+                psort(p,:) = [sum((ad(p,6)==1 & ad(p,7)==1) | (ad(p,6)==0 & ad(p,7)==2)); 2; 2];
+            else
+                psort(p,:) = [ad(p,(version+7)); 2; 2];
+            end
 %             psort(p,:,k) = [2; 2; 2];
         end
     end
