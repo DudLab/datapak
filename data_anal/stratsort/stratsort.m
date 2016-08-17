@@ -2,7 +2,7 @@ function psorted = stratsort(tpd,ns,version,ad)
 % trl = 457;%457 has TRAPLINE%33whack
 % trialtot = (numel(unique(tpd(:,1,1)))-1);%500
 % psort = zeros(500,3,ns);%subjchoice,correct/incorrect,trapline
-psort = zeros(500*ns,3);%subjchoice,correct/incorrect,trapline
+psort = zeros(500*ns,4);%subjchoice,correct/incorrect,trapline
 if version == 1
     lrb = tpd(1,10,1);
     x = [tpd(1,12), tpd(1,14)];
@@ -53,7 +53,14 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                 [a ,cdist2, b] = distance2curve(NuoLi(:,:),[x(1), y(rnum)]);
 %                 [a ,cdist2, b] = distance2curve(NuoLi2(:,:),[x(1), y(rnum)]);          
             end
+%             tl = ad(p,(6+version));
+%             if(pchoice == ad(p,(6+version)))%ad(p,7,k))
+%                     rw = 1;
+%             else
+%                     rw = 0;
+%             end
             if nargin ==3 & version == 2
+                tl = ptrial(2,4);
                 if (pchoice == ptrial(2,4))
                     rw = 1;
                 else
@@ -61,6 +68,7 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                 end
             end
             if nargin == 4 & version == 1
+                tl = ad(p,7);
                 if (version == 1 & pchoice == ad(p,7))%ad(p,7,k))
                     rw = 1;
                 else
@@ -76,15 +84,15 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                     strat = 3;
                 end
             end
-            psort(p,:) = [abs(pchoice-2); rw; strat];
+            psort(p,:) = [abs(pchoice-2); rw; strat; tl];
             else
-                psort(p,:) = [abs(pchoice-2); rw; 9];
+                psort(p,:) = [abs(pchoice-2); rw; 9; 9];
             end
         else
             if version == 1
-                psort(p,:) = [sum((ad(p,6)==1 & ad(p,7)==1) | (ad(p,6)==0 & ad(p,7)==2)); 9; 9];
+                psort(p,:) = [sum((ad(p,6)==1 & ad(p,7)==1) | (ad(p,6)==0 & ad(p,7)==2)); 9; 9; 9];
             else
-                psort(p,:) = [ad(p,(version+7)); 9; 9];
+                psort(p,:) = [ad(p,(version+7)); 9; 9; 9];
             end
 %             psort(p,:,k) = [2; 2; 2];
         end
