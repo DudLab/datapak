@@ -240,26 +240,26 @@ if version == 2
     psorted = stratsort(tpd,ns,version);
 end
 if ns>1
-    for r = 1:rn
+	for r = 1:rn
         figure(r+1);
     %         hold all
         for i = 1:pn
     %         hold on            
         subplot(5,2,i);
         x = 1:length(pt(:,:,r,i));
-        semline(pt(:,:,r,i),10,'r');
+                semline(pt(:,:,r,i),10,'r');
     %             shadedErrorBar(x,pt(:,:,t,i),{@mean, @(x) 1*std(x)},'r',0);
-        hold all
-        title(['p(r)=' num2str(rprob(i))]);
-        xlabel('trials');
-        ylabel('choice prob');
+                hold all
+                title(['p(r)=' num2str(rprob(i))]);
+                xlabel('trials');
+                ylabel('choice prob');
+            end
+                a = axes;
+                t1 = title(['P(choose L) at reach' num2str(t)]);
+                a.Visible = 'off';
+                t1.Visible = 'on';
         end
-        a = axes;
-        t1 = title(['P(choose L) at reach' num2str(t)]);
-        a.Visible = 'off';
-        t1.Visible = 'on';
     end
-end
 %=================================================================================
 %=================================================================================
 % SORT STRATEGIES & TRAJECTORIES
