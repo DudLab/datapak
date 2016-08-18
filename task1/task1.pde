@@ -9,7 +9,7 @@ import java.util.*;
 import processing.net.*; 
 import processing.serial.*;
 import javax.swing.*; 
-
+Serial myPort;  // The serial port
 
 PrintWriter output;
 PrintWriter parameters;
@@ -22,6 +22,7 @@ String paramData = " ";
 String directoryName = "test";
 String testsubjectname = " ";
 String i = " ";
+String myString = null;
 int pn = 5; //number of probabilities
 int rnum = 2;// number of reaches
 int rdt = 350;
@@ -31,6 +32,7 @@ int rblock = 0;
 int bw = 50;//blockwidth ORIGINAL 25
 int blocktot = pn*rnum;
 int maxtrials = 500;
+int lf = 10;// Linefeed in ASCII
 IntList pp;//prob randomly shuffled
 IntList rp;//reach randomly shuffled
 int trialstate = 1;// forage, collect soforth
@@ -69,7 +71,8 @@ int flickerint=0;
 int rpos;//left or right
 int wpos;// wrongpos
 int ppos;
-int ultrasonicmode = 0;
+int ultrasonicmode = 0;//IF USE ULTRASONIC SENSORS OR MOUSE
+// 1 = yes; 0 = no
 int practiceint=10;
 float points = 0;
 float maxpoints;
@@ -138,8 +141,16 @@ void setup(){
       sp[i] = problist[pp.get(i)];
     
   }
+  //configure ultrasonic serial if ultrasonicmode ==1
+  if (ultrasonicmode == 1){
+    myPort = new Serial(this, Serial.list()[2], 9600);
+    myPort.clear();
+    myString = myPort.readStringUntil(lf);
+    myString = null;
+  }
   println(rindex);
   println(sp);
+  println(rlist);
   //==========================================================================
   //===============CSV STUFF==================================================
   //==========================================================================
@@ -173,11 +184,24 @@ void draw(){
     px = mouseX;
     py = mouseY;
   }else{
+      while (myPort.available() > 0) {
+      myString = myPort.readStringUntil(lf);
+      if (myString != null) {
+        myString = trim(myString);
+        String split[] = split(myString, ",");
+        if (split.length == 2){
+        //if (abs(vx-pvx)>0.2){
+          px = float(split[1]);
+          py = float(split[0]);
+        }
+      }
+    }
   }
   //text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
+  //text("points:" +points, (displayWidth*0.125), 300);
   text("trial:" +trialcnt, (displayWidth*0.125), 320);
-  text("block:" +block, (displayWidth*0.125), 340);
-  text("dist:" +dista, (displayWidth*0.125), 360);
+  text("points:" +points, (displayWidth*0.125), 340);
+  //text("points:" +dista, (displayWidth*0.125), 360);
   //text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
   //text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
@@ -300,7 +324,7 @@ void draw(){
       totd = cd + fd;
       ddif = totd-optd;
       maxpoints = maxpoints + 100;
-      points = points + 100*((optd/totd))*pnt;
+      //points = points + 100*((optd/totd))*pnt;
       if (oncircler(x0, y0, sd) == true){
         if (practiceint>0){
           practiceint--;
@@ -308,6 +332,7 @@ void draw(){
         if (practiceint<1){
           //trialcnt++;
           if (trialcnt>0){
+          points = points + 100*((optd/totd))*pnt;
           // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, rpos, forageDist, totDist, optdist, diff, score";
           data =time+","+ int(trialcnt)+","+ int(bw) + "," + (rindex[rblock] +1)+ "," + p + ","+ ppos + ","+ rightorwrong +","+rpos+","+int(fd)+"," + int(totd)
             + "," + int(optd)+"," + int(ddif) + "," +int(points);

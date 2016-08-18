@@ -1,4 +1,4 @@
-import processing.serial.*; //<>//
+import processing.serial.*; //<>// //<>//
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
@@ -75,14 +75,14 @@ void draw() {
       //if (abs(vx-pvx)>0.2){
         vx = float(split[1]);
         vy = float(split[0]);
-        if (start == 1){
-          fill(255);
-          textSize(20);
-          text("OK",400,300);
+        //if (start == 1){
+          //fill(255);
+          //textSize(20);
+          //text("OK",400,300);
         data = time+","+float(split[0]);
         output.println(data);
         output.flush();
-        }
+        //}
       //}else{
       //  vx = float(split[1]);//float(floor(float(String.format("%.2f", ((pvx+float(split[1]))/2)))*10))/10;
       //}
@@ -99,14 +99,11 @@ void draw() {
       //  pvy = tvy;
       //  tvy = vy;
       //}
-      //println("c: "+ vx +"," +"p: "+ pvx + ","+ "c: "+ vy +"," +"p: "+ pvy);
+      println("c: "+ vx +"," +"p: "+ pvx + ","+ "c: "+ vy +"," +"p: "+ pvy);
       }
     }
   }
   background(0);
   //fill(255);
   //rect((width/2), (height/2)+ (vy*5), 30, 30); //-(vx*5)
-}
-void keyPressed(){
-  start = 1;
 }

@@ -13,10 +13,11 @@ for k = 1:ns
         tpd = vertcat(tpd,[tpd1,repmat(k:k, [size(tpd1,1),1])]);
     end
     figure(1);
-        set(gca,'fontsize',18);
         subplot(ns,1,k);
+                set(gca,'fontsize',18);
         plot(tpd(tpd(:,3)==k,1),tpd(tpd(:,3)==k,2));
-        title(strcat('Distance over time(milliseconds)with ',testobject{k}));
+%         title(strcat('Distance over time(milliseconds)with: ',testobject{k}));
+        title('example reaches, starting point = 63 cm');
         xlabel('Time(milliseconds)');
         ylabel('Distance(cm)');
 end

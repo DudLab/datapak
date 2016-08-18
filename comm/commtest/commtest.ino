@@ -49,7 +49,7 @@ rd =  sensor(tp2,ep2);
 
 
 // Delay 50ms before next reading.
- delay(50);
+delay(10);
 }
 float sensor(int tp,int ep){
   digitalWrite(tp, LOW);
