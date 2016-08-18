@@ -1,5 +1,8 @@
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// Task 1; 4thresh 5 probs
+// Task 1;
+//if using ultrasonic sensors, first upload arduino in commtest to the board
+//and set the variable "ultrasonicmode" to one
+//SEE VARIABLE SECTION BELOW AND CHANGE ULTRASONIC SECTION ACCORDING TO RIG DIMENSIONS
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 //monitor of 27inch x 19.5
 import controlP5.*;
@@ -66,13 +69,21 @@ float rl[] = new float[rnum];
 float rindex[] = new float[rnum];
 float px;
 float py;
-
+//=============================================================================
+//=============================================================================
+//ULTRASONICSTUFF
+//=============================================================================
+//=============================================================================
+int ultrasonicmode = 0;//IF USE ULTRASONIC SENSORS OR MOUSE
+// 1 = yes; 0 = no
+int boxwidth = 0;//width(cm) of rig box(move area)
+int boxlength = 0;//length(cm) of rig box(move area) dimension used for reach
+//=============================================================================
+//=============================================================================
 int flickerint=0;
 int rpos;//left or right
 int wpos;// wrongpos
 int ppos;
-int ultrasonicmode = 0;//IF USE ULTRASONIC SENSORS OR MOUSE
-// 1 = yes; 0 = no
 int practiceint=10;
 float points = 0;
 float maxpoints;
@@ -112,7 +123,8 @@ void setup(){
     mS = str(m);
   }
   //========================================================================
-  //===============SHUFFLE PROBABILIIES=====================================
+  //===============SHUFFLE PROBABILIIES (Per block)
+  //===============and (LEFT)REACHES ( per half session of trials, i.e., 250
   //========================================================================
   pp = new IntList();
   rp = new IntList();
@@ -127,12 +139,12 @@ void setup(){
     for (int r =0; r<pn; r++){
         temp.append(r);
     }
-    temp.shuffle();//if want random
-    pp.append(temp);
+    temp.shuffle();
+    pp.append(temp);//shuffle probability
     //rp.append(tempr);
   }
   tempr.shuffle();
-  rp.append(tempr);
+  rp.append(tempr);//shuffle reach
   for (int i = 0; i < rp.size(); i++){
     rl[i] = rlist[rp.get(i)];
     rindex[i] = rp.get(i);
@@ -141,13 +153,19 @@ void setup(){
       sp[i] = problist[pp.get(i)];
     
   }
+  //========================================================================
+  //========================================================================
   //configure ultrasonic serial if ultrasonicmode ==1
+  //========================================================================
+  //========================================================================
   if (ultrasonicmode == 1){
     myPort = new Serial(this, Serial.list()[2], 9600);
     myPort.clear();
     myString = myPort.readStringUntil(lf);
     myString = null;
   }
+  //========================================================================
+  //========================================================================
   println(rindex);
   println(sp);
   println(rlist);

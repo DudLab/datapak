@@ -79,7 +79,7 @@ void draw() {
           //fill(255);
           //textSize(20);
           //text("OK",400,300);
-        data = time+","+float(split[0]);
+        data = time+","+float(split[1])+ "," +float(split[0]);
         output.println(data);
         output.flush();
         //}
