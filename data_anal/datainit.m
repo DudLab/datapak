@@ -145,7 +145,7 @@ for k = 1:ns
             if version == 1
 %               PROB CHOOSE LEFT
 % old "timestamp, trialNum, blockWidth, position_number, LeftTriggerProbability, rightORwrong, Rewardposition, forageDistance, collectionDistance, totalDistance, optimalTotalDistance, Totaldifference, score"
-%               CHOOSE LEFT FROM ONLIEN SORTER
+%               CHOOSE LEFT FROM ONLINE SORTER
                 chleft(i,t,k) = ((sum((td(sdx:sl*i,6,t,k) == 1 & td(sdx:sl*i,7,t,k) == 1))) ...
                     + (sum((td(sdx:sl*i,6,t,k)== 0 & td(sdx:sl*i,7,t,k) == 2))))/sl;
                 pt(k,:,t,i) = reshape(((td1(sdx1:sl1*i,6,t,k)==1 & td1(sdx1:sl1*i,7,t,k)==1) ...
@@ -157,7 +157,7 @@ for k = 1:ns
             if version == 2
 %               PROB CHOOSE LEFT
             %            // "timestamp, trialNum, blockWidth, reach4, leftprob5, playerpos6, Rightorwrong7, rpos8, forageDist, totDist, optdist, diff, score";
-%               CHOOSE LEFT FROM ONLIEN SORTER
+%               CHOOSE LEFT FROM ONLINE SORTER
                 chleft(i,hval,k) = (numel(td((td(sdx:sl*i,6,t)== 1))))/sl;%1 = left
                 pt(k,:,hval,i) = reshape((td1(sdx1:sl1*i,6,t,k)==1),1,sl1);
 %                 pt(k,:,t,i) = reshape(cumsum(td(sdx1:sl1*i,6,t,k)==1)./reshape(1:(sl1),sl1,1),1,sl1);

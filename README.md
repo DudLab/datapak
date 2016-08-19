@@ -16,6 +16,9 @@ Task 2 is designed to collect data on whether humans learn faster by reaching ou
  
 # Usage
 <img src="https://github.com/bnhwa/datapak/blob/master/docs/t1typename.png " width="400" height="250" />
+If utilizing ultrasonic sensors, first upload comm/commtest.ino to the arduino
+Ensure that 
+Go to task1/task1.pde and change the variable "ultrasonicmode" to 1
 
 At the beginning of each task, test subjects are prompted by the computer to provide their names.
 
@@ -24,7 +27,7 @@ At the beginning of each task, test subjects are prompted by the computer to pro
 ###STEP 1
 <img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice1.png " width="400" height="250" />
 
-First, subjects begin by using their computer mouses to move onto the start/collection area, which initiates a practice round in which two target areas are shown.
+First, subjects begin by using their controllers to move onto the start/collection area, which initiates a practice round in which two target areas are shown.
 
 ###STEP 2
 <img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice2.png " width="400" height="250" />
@@ -35,11 +38,11 @@ Subjects then are prompted to move and select between the two probabalistically 
 <img src="https://github.com/bnhwa/datapak/blob/master/docs/t1practice4.png " width="400" height="250" />
 
 When subjects move onto the correct area, that and both area flashes and dissapears respectively.
-Then, subjects are prompted to move back towards the start/collection area.  This action then initiates the next trial, in which the aforementioned steps repeat. However, following the practice round, target areas are no longer visible; though, when the subject moves on the correct target area, that area flashes briefly.
+Then, subjects are prompted to move back towards the start/collection area.  When the subject is back on the start area, the next trial begins and the aforementioned steps repeat. However, following the practice round, target areas are no longer visible; though, when the subject moves on the correct target area, that area flashes briefly.
 
 <img src="https://github.com/bnhwa/datapak/blob/master/docs/t1half.png " width="400" height="250" />
 
-Moreover, as mentioned earlier, for the second half of trials, the left target area moves vertically further from its original position.
+Moreover, as mentioned earlier, for the second half of trials, the left target area moves switches to another reach.
 
 ##Task 2
 
@@ -63,3 +66,8 @@ Then, as denoted by the screen text, the subject will be prompted to move either
 
 However, following the practice round, the rings are no longer visible; though, when the subject moves on the correct ring and fullfills the necessary conditions, that ring will ring flash briefly
 
+#Data analysis code
+
+The required functions are stored in data_anal/necessary functions/
+please add them to the MATLAB search path
+In doing so, 
