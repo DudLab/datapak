@@ -75,19 +75,32 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                     rw = 0;
                 end
             end
-%             if cdist2>ptrial(1,8+version)*version*1.5%if distance from other target distance
-            if cdist2>((dist(rnum)/2)) & rw==1;%if distance from other target distance
-                %greater,
-%                 if cdist<
+            if cdist2>((dist(rnum)/2)) & rw == 1;
+%               if forage curve's distance from other target distance 
+%               is greater than half of distance between target areas and
+%               the trial is correct, the forage strategy is categorized
+%               as "single reach"
                 strat = 1;%SINGLE REACH
             else
-                if incircle(x0,y0,NuoLi,tgd)==1 
+                if incircle(x0,y0,NuoLi,tgd*1.5)==1
+%                   if the minimum closest distance between the center of 
+%                   the start/collect area and the forage curve's 
+%                   increasing points is less than 1.5* the start/collect
+%                   area's diameter, the trajectory is classified as a 
+%                   double reach, as long as the trajectory returns to
+%                   within tgd*1.5 distance of start/collect area even if
+%                   traplines occur after such action
                     strat = 2;%double reach it is
                 else
+%                   anything else is trapline; can use the variable cdist
+%                   closest (distance from forage curve to midpoint) to
+%                   further refine trapline.
                     strat = 3;%BEEZ N THE TRAP(LINE), haha bad pop culture reference
                 end
             end
-            psort(p,:) = [abs(pchoice-2); rw; strat; tl];%OUTPUT vector
+            psort(p,:) = [abs(pchoice-2); rw; strat; tl];%OUTPUT vector of:
+%             choice (returned as 1 for left, 0 for right, right or wrong,
+%             strategy, and actual reach
             else
                 psort(p,:) = [abs(pchoice-2); rw; 9; 9];%OUTPUT vector for unknown strategy
             end
@@ -101,12 +114,10 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
     end
 psorted = psort;
 end
-%check if trajectory returns back to start area/ larger circle around start
-%area implemented into the function as tgd*1.5, increasing the value of 1.5
-%will increase ability for 
+% SEE WHERE FUNCTION IS USED IN LINE 85
 function [ yn ] = incircle(x0,y0,NuoLi,tgd)%CHECK WITH V2 TGD
     deriv  = [0, movAv(diff(NuoLi(:,2)),round(length(diff(NuoLi(:,2)))/6))];
     yn = (min(sqrt(sum(power(NuoLi((deriv>0),:)...
     -repmat([x0, y0],[numel(NuoLi((deriv>0)))...
-    ,1]),2),2)))<(tgd*1.5));%TGD*1.5 = range of starting diameter
+    ,1]),2),2)))<(tgd));%TGD*1.5 = range of starting diameter
 end

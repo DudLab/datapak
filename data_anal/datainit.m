@@ -3,7 +3,7 @@
 filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trialdata/';
 % GET DIRECTORY FOR TASK 1 TRAJECTORY DATA
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
-%
+opalt = 0;%include opal model alongside user choice probability over time
 % trajec = 1;% get user choice/right or wrong from offline trajectory sorter
 fnamesp = dir(strcat(filepathp,'*.csv'));
 fnames = dir(strcat(filepath,'*.csv'));
@@ -21,15 +21,14 @@ for k = 1:ns
     fname = fnames(k).name;
     ad(:,:,k) = csvread(strcat(filepath,fname),2, 0);
 	fnamep = fnamesp(k).name;
-%       pd1 = csvread(strcat(filepathp,fnamep), 2,0);
     tpd1 = csvread(strcat(filepathp,fnamep), 2,0);
     if k < 2
-        %add column of to positiondata indicating subject number, then
+        %add column to positiondata indicating subject number, then
         %vertically concenate
         tpd = [tpd1(tpd1(:,1)<(1+(500*k)),:),repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])];
         ad1 = csvread(strcat(filepath,fname),2, 0);
     else
-        %add column of to positiondata indicating subject number, then
+        %add column to positiondata indicating subject number, then
         %vertically concenate
         tpd1(:,1) = tpd1(:,1)+500*(k-1);
         tpd = vertcat(tpd, [tpd1(tpd1(:,1)<(1+(500*k)),:),[repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])]]);
@@ -46,8 +45,6 @@ rn = numel(unique(ad(:,4,1)));
 pn = numel(unique(ad(:,5,1)));
 col = size(ad,2);
 tt = pn*b/half;
-cl = varycolor(4);
-poscl = varycolor(500);
 if half == 2
     hd = reshape((b/2)+1:b,(b/2),1);
     for i = 1:(rn*pn)
@@ -72,6 +69,18 @@ correct = zeros(tt,rn,ns);
 idxc = zeros(rn,ns);
 incorrect = zeros(tt,rn,ns);% trial number for correct
 idxn = zeros(rn,ns);
+%=================================================================================
+%=================================================================================
+% GET TRAJECTORY SORTED DATA
+%=================================================================================
+%=================================================================================
+% the function stratsort returns a ((n subjects*500) by 4) vector of values
+if version == 1
+    psorted = stratsort(tpd,ns,version,ad1);%get offline sorted data"true choice"
+end
+if version == 2
+    psorted = stratsort(tpd,ns,version);
+end
 for k = 1:ns
 %=================================================================================
 %=================================================================================
@@ -179,7 +188,6 @@ avg1 = sum(avg,2)/rn;
 % OPAL MODEL STUFF
 %=================================================================================
 %=================================================================================
-opalt = 0;
 %get opal simulation for each test subject
 if opalt==1
 acv = 0.1;%ac value
@@ -245,12 +253,6 @@ figure(1);
 % IF USING ULTRASONIC SENSORS, CHECK VARIABLE DERIV(not that of local
 % function) TO SEE IF THRESHOLD IS TOO LOW, due to noise in ultrasonic
 % sensing
-if version == 1
-    psorted = stratsort(tpd,ns,version,ad1);%get offline sorted data"true choice"
-end
-if version == 2
-    psorted = stratsort(tpd,ns,version);
-end
 if ns>1
     for r = 1:rn
         figure(r+1);
@@ -379,7 +381,7 @@ for i = 1:ns
 %                 ,[1 0 0; 0 0 1; 1 .5 0;0 .8 0; 0 0.2 0.2; 0.8 0 0]...
 %                 ,[2,2,1,1,1,1,1,1]);
         plot(moveavg(cc,avgval), 'c');
-        plot(moveavg(psorted((1+500*(i-1):500*i),1),avgval),'k');
+        plot(moveavg(psorted((1+500*(i-1):500*i),1),avgval),'k');%get user choice from trajectories
         if opalt == 1
             plot(1:500,opaldata(:,i));
             legend(['reach' num2str(halfac(2,i))],' ',['reach' num2str(halfac(1,i))],...

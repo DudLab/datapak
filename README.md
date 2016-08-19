@@ -15,12 +15,12 @@ Task 1 collects data on how humans' decisions in reaching-based behavioral tasks
 Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward based. This task involves human subjects using a computer mouse to move outward from a start area onto 3 of equally spaced rings and back. Once on the correct ring area (which becomes invisible after the practice round) the player holds the up button, while keeping the mouse still. While this is being done, a bar will extend, denoting the length of minimum time needed to press the up key. If the up key is held down continually and the bar disappears, the subject is not over the correct area. Once the subject is on the correct ring area and meets the aforementioned conditions, the ring flashes, and the subject must move inward or outward, denoted by the text on the screen.  The spacing between rings is taken from a set of 3 existing distances, which are shuffled randomly and changed every block of trials.
  
 # Usage
-<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1typename.png " width="400" height="250" />
 If utilizing ultrasonic sensors, first upload comm/commtest.ino to the arduino
 Ensure that 
 Go to task1/task1.pde and change the variable "ultrasonicmode" to 1
 
 At the beginning of each task, test subjects are prompted by the computer to provide their names.
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/t1typename.png " width="400" height="250" />
 
 ##Task 1
 
@@ -70,4 +70,4 @@ However, following the practice round, the rings are no longer visible; though, 
 
 The required functions are stored in data_anal/necessary functions/
 please add them to the MATLAB search path
-In doing so, 
+In doing so, then
