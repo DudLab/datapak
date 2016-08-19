@@ -3,7 +3,8 @@
 filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trialdata/';
 % GET DIRECTORY FOR TASK 1 TRAJECTORY DATA
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
-
+%
+% trajec = 1;% get user choice/right or wrong from offline trajectory sorter
 fnamesp = dir(strcat(filepathp,'*.csv'));
 fnames = dir(strcat(filepath,'*.csv'));
 nopos = 0;%0 = no positionstuff; 1 = yes
@@ -178,7 +179,7 @@ avg1 = sum(avg,2)/rn;
 % OPAL MODEL STUFF
 %=================================================================================
 %=================================================================================
-opalt = 1;
+opalt = 0;
 %get opal simulation for each test subject
 if opalt==1
 acv = 0.1;%ac value

@@ -36,7 +36,6 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
         
         if numel(ptrial>0)
 %           DISTANCE FROM ENTIRE CURVE TO MIDPOINT OF TARGET AREAS
-            [a ,cdist, b] = distance2curve(ptrial(:,(version+5):(version+6)),mp(rnum,:));
             ptrial1 = ptrial(find(ptrial(:,end-1)==2),:);
 %             ptrial2 = ptrial(find(ptrial(:,end-1)==3),:);
             NuoLi = ptrial1(([1; (sum(diff(ptrial1(:,(version+5):(version+6)))~=0,2))])~=0,...
@@ -45,6 +44,7 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
 %                 (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
             pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
             deriv = numel(findpeaks(movAv(abs(diff(NuoLi(:,1))./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1))),round(length(NuoLi)/12))));
+            [a ,cdist, b] = distance2curve(NuoLi(:,:),mp(rnum,:));
             if deriv<30%MAY HAVE TO INCREASE IF USING ULTRASONIC SENSORS, WHICH HAVE FREQUENT NOISE
             if pthresh<0.5
                 pchoice = 1;%1 left
@@ -77,7 +77,10 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                     rw = 0;
                 end
             end
-            if cdist2>ptrial(1,8+version)*1.5
+%             if cdist2>ptrial(1,8+version)*version*1.5%if distance from other target distance
+            if cdist2>((dist(rnum)/2)) & rw==1;%if distance from other target distance
+                %greater,
+%                 if cdist<
                 strat = 1;%SINGLE REACH
             else
                 if incircle(x0,y0,NuoLi,tgd)==1

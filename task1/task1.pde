@@ -195,6 +195,26 @@ void setup(){
       sp[i] = problist[pp.get(i)];
     
   }
+  if (ultrasonicmode == 0 ){
+    sd =  displayWidth/12;//displayWidth/10;// startdiameter60
+    tgd = displayWidth/12;//targetdiameter
+    tgdx = displayWidth/4;//x distance from target area
+    x0 = displayWidth/2;//pixel coodrinates
+    y0 = (displayHeight)-sd;//
+  }else{
+    //CHANGE VALUES ACCORDING TO ULTRASONIC RIG
+    //IMPORTANT:
+    //FUNCTIONS TO CHANGE CM TO PIXELS
+    //DOUBLE CHECK TO MAKE SURE IF IT WORKS
+    //cm is converted into pixel xy values , 
+    //but outputted as cm values in the csv
+    //OR, offline conversion can be done
+    sd =  (usd/boxwidth)*displayWidth;//starting diameter size
+    tgd = (utgd/boxwidth)*displayWidth;//target diameter size
+    tgdx = (utgdx/boxwidth)*displayWidth;//target area x distance from center
+    x0 = displayWidth/2;//pixel coodrinates for start area x
+    y0 = (displayHeight)-sd;//initial start area y  
+  }
   println(rindex);
   println(sp);
   println(rlist);
@@ -232,23 +252,7 @@ void draw(){
   if (ultrasonicmode == 0){//no ultrasonic; only computer mouse
     px = mouseX;
     py = mouseY;
-    sd =  displayWidth/12;//displayWidth/10;// startdiameter60
-    tgd = displayWidth/12;//targetdiameter
-    tgdx = displayWidth/4;//x distance from target area
-    x0 = displayWidth/2;//pixel coodrinates
-    y0 = (displayHeight)-sd;//
   }else{
-    //CHANGE VALUES ACCORDING TO ULTRASONIC RIG
-    //IMPORTANT:
-    //FUNCTIONS TO CHANGE CM TO PIXELS
-    //DOUBLE CHECK TO MAKE SURE IF IT WORKS
-    //pixel xy values, but outputted as cm values//
-    //OR, offline conversion can be done
-    sd =  (usd/boxwidth)*displayWidth;//starting diameter size
-    tgd = (utgd/boxwidth)*displayWidth;//target diameter size
-    tgdx = (utgdx/boxwidth)*displayWidth;//target area x distance from center
-    x0 = displayWidth/2;//pixel coodrinates for start area x
-    y0 = (displayHeight)-sd;//initial start area y
       while (myPort.available() > 0) {
       myString = myPort.readStringUntil(lf);
       if (myString != null) {
