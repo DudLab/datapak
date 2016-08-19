@@ -1,4 +1,5 @@
 function [choicemean] = opal(ad, version, ns, aci)
+% AD1 matrix for trialdata, version, number of subjects, initial aci value
     %=============================================================
     choices = 2;
     cho = [1,2];

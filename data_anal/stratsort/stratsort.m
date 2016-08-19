@@ -1,4 +1,5 @@
 function psorted = stratsort(tpd,ns,version,ad)
+% 
 % trl = 457;%457 has TRAPLINE%33whack
 % trialtot = (numel(unique(tpd(:,1,1)))-1);%500
 % psort = zeros(500,3,ns);%subjchoice,correct/incorrect,trapline
@@ -34,6 +35,7 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
         end
         
         if numel(ptrial>0)
+%           DISTANCE FROM ENTIRE CURVE TO MIDPOINT OF TARGET AREAS
             [a ,cdist, b] = distance2curve(ptrial(:,(version+5):(version+6)),mp(rnum,:));
             ptrial1 = ptrial(find(ptrial(:,end-1)==2),:);
 %             ptrial2 = ptrial(find(ptrial(:,end-1)==3),:);
@@ -43,7 +45,7 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
 %                 (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
             pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
             deriv = numel(findpeaks(movAv(abs(diff(NuoLi(:,1))./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1))),round(length(NuoLi)/12))));
-            if deriv<30
+            if deriv<30%MAY HAVE TO INCREASE IF USING ULTRASONIC SENSORS, WHICH HAVE FREQUENT NOISE
             if pthresh<0.5
                 pchoice = 1;%1 left
                 [a ,cdist2, b] = distance2curve(NuoLi(:,:),[x(2), y(1)]);
@@ -76,17 +78,17 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                 end
             end
             if cdist2>ptrial(1,8+version)*1.5
-                strat = 1;
+                strat = 1;%SINGLE REACH
             else
                 if incircle(x0,y0,NuoLi,tgd)==1
                     strat = 2;%double reach it is
                 else
-                    strat = 3;
+                    strat = 3;%BEEZ N THE TRAP(LINE), haha bad pop culture reference
                 end
             end
-            psort(p,:) = [abs(pchoice-2); rw; strat; tl];
+            psort(p,:) = [abs(pchoice-2); rw; strat; tl];%OUTPUT vector
             else
-                psort(p,:) = [abs(pchoice-2); rw; 9; 9];
+                psort(p,:) = [abs(pchoice-2); rw; 9; 9];%OUTPUT vector for unknown strategy
             end
         else
             if version == 1
@@ -104,5 +106,5 @@ function [ yn ] = incircle(x0,y0,NuoLi,tgd)%CHECK WITH V2 TGD
     deriv  = [0, movAv(diff(NuoLi(:,2)),round(length(diff(NuoLi(:,2)))/6))];
     yn = (min(sqrt(sum(power(NuoLi((deriv>0),:)...
     -repmat([x0, y0],[numel(NuoLi((deriv>0)))...
-    ,1]),2),2)))<(tgd*1.5));
+    ,1]),2),2)))<(tgd*1.5));%TGD*1.5 = range in which
 end

@@ -1,10 +1,11 @@
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 // Task 1;
-//if using ultrasonic sensors, first upload arduino in commtest to the board
-//and set the variable "ultrasonicmode" to one
+//if using ultrasonic sensors, first upload arduino code in commtest to the arduino board
+//and set the variable "ultrasonicmode" in this task to one
 //SEE VARIABLE SECTION BELOW AND CHANGE ULTRASONIC SECTION ACCORDING TO RIG DIMENSIONS
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//monitor of 27inch x 19.5
+//NEED TO IMPLEMENT SCALING OF ULTRASONIC INPUT in CM TO DISPLAY(pixel) COORDINATES
+//WHEN USING ULTRASONIC, the CODE WILL OUTPUT CM VALUES
 import controlP5.*;
 import java.applet.Applet;
 import java.awt.*;
@@ -28,8 +29,6 @@ String i = " ";
 String myString = null;
 int pn = 5; //number of probabilities
 int rnum = 2;// number of reaches
-int rdt = 350;
-int rlefty[] = new int[rnum];//reach distance list of left
 int block = 0;
 int rblock = 0;
 int bw = 50;//blockwidth ORIGINAL 25
@@ -42,8 +41,8 @@ int trialstate = 1;// forage, collect soforth
 int trialcnt = 0;
 int pnt;//points
 int offset = displayHeight/20;
-int sd = displayWidth/20;//displayWidth/10;// startdiameter60
-int tgd = displayWidth/10;//targetdiameter150
+float sd = displayWidth/20;//displayWidth/10;// startdiameter60
+float tgd = displayWidth/10;//targetdiameter150
 float dista;
 float fd = 0;//foragedistance
 float cd = 0;//collectdistance
@@ -51,33 +50,61 @@ float rightorwrong = 0;
 float totd = 0;//totaldistance
 float optd = 0;//optimaldistance
 float ddif = 0;//difference subjectd - optd
-int x0 = displayWidth/2;//init starting position
-float y0;//or lower
+
+float x0 = displayWidth/2;//start/trialinit y
+float y0;//start/trialinit y
 float x1;
 float y1;
 float x2;
 float y2;
 float tgdx = displayWidth/4;//distance between targets
 float problist[] = {0.1,0.25,0.5,0.75,0.9};
-float rlist[] = {sqrt(pow((displayHeight*0.35),2)-pow((displayWidth/4),2))
-, sqrt(pow(((displayHeight*0.35)*2),2)-pow((displayWidth/4),2))};
+//float rlist[] = {sqrt(pow((displayHeight*0.35),2)-pow((displayWidth/4),2))
+//, sqrt(pow(((displayHeight*0.35)*2),2)-pow((displayWidth/4),2))};
 float [] reachposy = {};
-float p;
-float r;
+float p;//probability value
+float r;//reachvalue
 float sp[] = new float[pn*rnum];
 float rl[] = new float[rnum];
 float rindex[] = new float[rnum];
-float px;
-float py;
+float px;// x value; if using ultrasonic, px is in centimeters
+float py;// y value; if using ultrasonic, py is in centimeters
+float pxu;// raw ultrasonic cm x value
+float pyu;// raw ultrasonic cm y value
+float pvx;//previous frame x value
+float tvx;
+float pvy;//previous frame y value
+float tvy;
+float r1u = 30;//reach1 in raw cm
+float r2u = 60;//reach2 in raw cm
+float r1;//reach1 in pixelvalues
+float r2;//reach2 in pixelvalues
 //=============================================================================
 //=============================================================================
-//ULTRASONICSTUFF
+//ULTRASONICSTUFF: IMPORTANT
+//NEED TO IMPLEMENT SCALING OF ULTRASONIC INPUT in CM TO DISPLAY(pixel) COORDINATES
 //=============================================================================
 //=============================================================================
 int ultrasonicmode = 0;//IF USE ULTRASONIC SENSORS OR MOUSE
 // 1 = yes; 0 = no
-int boxwidth = 0;//width(cm) of rig box(move area)
-int boxlength = 0;//length(cm) of rig box(move area) dimension used for reach
+//THE FOLLOWING DIMENSIONS BELOW ARE PURELY EXAMPLES,
+//CHANGE THEM ACCORDING TO ULTRASONIC FINAL RIG
+//OH, remember to offset the ultrasonic sensors at least 3 cm from their respective
+//parallel walls, since minimum detection distance is approx 3 cm or so
+float boxwidth = 40;//width(cm) of rig box move area
+float boxlength = 80;//length(cm) of rig box move area
+//( dimension used for reachingforward)
+float utgd = boxwidth/12;//ultrasonic targetdiameter in cm
+float utgdx = boxwidth/4;//target x dist from center
+float usd = boxwidth/12;//ultrasonic targetdiameter in cm
+float rlu[] = new float[rnum];//reach ultrasonic cm
+float ru;//reachvalue in cm
+float x0u = boxwidth/2;//start/trialinit x value raw cm
+float y0u = boxlength - usd;//start/trialinit y value raw cm
+float x1u;//correct target area x in cm
+float y1u;//correct target area y in cm
+float x2u;//incorrect target area x in cm
+float y2u;// incorrect target area x in cm
 //=============================================================================
 //=============================================================================
 int flickerint=0;
@@ -128,13 +155,27 @@ void setup(){
   //========================================================================
   pp = new IntList();
   rp = new IntList();
-  float rlist[] = {sqrt(pow((displayHeight*0.35),2)-pow((displayWidth/10),2))
-  , sqrt(pow(((displayHeight*0.35)*2),2)-pow((displayWidth/10),2))};
+  if (ultrasonicmode == 0){
+    r1 = sqrt(pow((displayHeight*0.35),2)-pow((displayWidth/10),2));
+    //shorter reach
+    r2 = sqrt(pow(((displayHeight*0.35)*2),2)-pow((displayWidth/10),2));
+    //longer reach
+  }else{
+    //INITIALIZE SERIAL IF ULTRASONIC USED
+    myPort = new Serial(this, Serial.list()[2], 9600);
+    myPort.clear();
+    myString = myPort.readStringUntil(lf);
+    myString = null;
+    //CONVERT CM TO PIXELS, proportional to display
+    r1 = (r1u/boxlength)*displayHeight;//scale cm to display
+    r2 = (r2u/boxlength)*displayHeight;//scale cm to display
+  }
+  float rlist[] = {r1,r2};//reach converted into cm
+  float rlistu[] = {r1u,r2u};//raw reach cm
   IntList tempr  = new IntList();
   for (int c = 0; c < rnum; c++){
     IntList temp = new IntList();
     //IntList tempr  = new IntList();
-    rlefty[c] = rdt*(c);
     tempr.append(c);
     for (int r =0; r<pn; r++){
         temp.append(r);
@@ -147,28 +188,17 @@ void setup(){
   rp.append(tempr);//shuffle reach
   for (int i = 0; i < rp.size(); i++){
     rl[i] = rlist[rp.get(i)];
+    rlu[i] = rlistu[rp.get(i)];//ultrasonic
     rindex[i] = rp.get(i);
   }
   for (int i = 0; i < pp.size(); i++){
       sp[i] = problist[pp.get(i)];
     
   }
-  //========================================================================
-  //========================================================================
-  //configure ultrasonic serial if ultrasonicmode ==1
-  //========================================================================
-  //========================================================================
-  if (ultrasonicmode == 1){
-    myPort = new Serial(this, Serial.list()[2], 9600);
-    myPort.clear();
-    myString = myPort.readStringUntil(lf);
-    myString = null;
-  }
-  //========================================================================
-  //========================================================================
   println(rindex);
   println(sp);
   println(rlist);
+  println(rlistu);
   //==========================================================================
   //===============CSV STUFF==================================================
   //==========================================================================
@@ -192,48 +222,74 @@ void setup(){
 
 
   //information about what is in each column
-  String firstLineParam = "trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
+  //trialNum = trial number;  blockwidth = blocksize(trials); rpos = correct target area 1=left,2=right
+  String firstLineParam = "trialNum, blockWidth, MillisTime, rpos, reach, leftprob, px, py, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
   parameters.println(firstLineParam);
   parameters.flush();
 }
 void draw(){
   background(0);
-  if (ultrasonicmode == 0){
+  if (ultrasonicmode == 0){//no ultrasonic; only computer mouse
     px = mouseX;
     py = mouseY;
+    sd =  displayWidth/12;//displayWidth/10;// startdiameter60
+    tgd = displayWidth/12;//targetdiameter
+    tgdx = displayWidth/4;//x distance from target area
+    x0 = displayWidth/2;//pixel coodrinates
+    y0 = (displayHeight)-sd;//
   }else{
+    //CHANGE VALUES ACCORDING TO ULTRASONIC RIG
+    //IMPORTANT:
+    //FUNCTIONS TO CHANGE CM TO PIXELS
+    //DOUBLE CHECK TO MAKE SURE IF IT WORKS
+    //pixel xy values, but outputted as cm values//
+    //OR, offline conversion can be done
+    sd =  (usd/boxwidth)*displayWidth;//starting diameter size
+    tgd = (utgd/boxwidth)*displayWidth;//target diameter size
+    tgdx = (utgdx/boxwidth)*displayWidth;//target area x distance from center
+    x0 = displayWidth/2;//pixel coodrinates for start area x
+    y0 = (displayHeight)-sd;//initial start area y
       while (myPort.available() > 0) {
       myString = myPort.readStringUntil(lf);
       if (myString != null) {
         myString = trim(myString);
         String split[] = split(myString, ",");
         if (split.length == 2){
-        //if (abs(vx-pvx)>0.2){
-          px = float(split[1]);
-          py = float(split[0]);
+          //NEED TO CONVERT CM INTO PIXEL WIDTH HEIGHT
+          pxu = float(split[1]);//x sensor facing left wall
+          pyu = float(split[0]);// y sensor facing forward wall
+          px = (pxu/boxwidth)*displayWidth;//
+          py = (pxu/boxwidth)*displayHeight;//
         }
       }
     }
   }
   //text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
   //text("points:" +points, (displayWidth*0.125), 300);
-  text("trial:" +trialcnt, (displayWidth*0.125), 320);
-  text("points:" +points, (displayWidth*0.125), 340);
-  //text("points:" +dista, (displayWidth*0.125), 360);
+  text("trial:" +trialcnt, (displayWidth*0.125), 320);//trial
+  text("points:" +points, (displayWidth*0.125), 340);//points
+  text("xu" +x0u, (displayWidth*0.125), 360);
   //text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
   //text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
-  sd =  displayWidth/12;//displayWidth/10;// startdiameter60
-  tgd = displayWidth/12;
-  tgdx = displayWidth/4;
-  x0 = displayWidth/2;
-  y0 = (displayHeight)-sd;
-  offset = displayHeight/20;
   //==========================================================================
   //===============TEXT&VARS==================================================
   //==========================================================================
   if (ultrasonicmode == 0){
     dista = sqrt(sq(mouseX - pmouseX)+sq(mouseY - pmouseY));
+  }else{
+    //STORE PREVIOUS FRAME'S XY VALUE
+      if (tvx != pxu){
+        pvx = tvx;
+        tvx = pxu;
+      }
+      if (tvy != pyu){
+        pvy = tvy;
+        tvy = pyu;
+      }
+    //IF USING NOISY ULTRASONIC SENSOR, may want to implement moving average/thresholder
+    //to account for noisy/constantly changing xy values, which will increase distance drastically
+    dista = sqrt(sq(pxu - pvx)+sq(pyu - pvy));
   }
   if (trialstate == 2){
     fd += dista;
@@ -243,8 +299,14 @@ void draw(){
   }
   if (practiceint<1){
     //"trialNum, blockWidth, MillisTime, rpos, reach, leftprob, MouseX, MouseY, startdiameter, targetdiameter, x0,y0, x1, y1,trialstate";
-    paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + (rindex[rblock] +1) + "," + p + ","  
+    if (ultrasonicmode == 0){
+      paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + (rindex[rblock] +1) + "," + p + ","  
       + int(px) + "," + int(py) + "," + int(sd) + "," + int(tgd) + "," + int(x0) + "," + int(y0) + "," + int(x1) + "," + int(y1) + "," +int(trialstate);
+    }else{
+      //OUTPUT DATA IN CENTIMETERS
+      paramData = int(trialcnt) + "," + int(bw) + "," + str(time) + "," + int(rpos) + "," + (rindex[rblock] +1) + "," + p + ","  
+      + pxu + "," + pyu + "," + usd + "," + utgd + "," + x0u + "," + y0u + "," + x1u + "," + y1u + "," +int(trialstate);
+    }
     parameters.println(paramData);
     parameters.flush();
   }
@@ -284,10 +346,12 @@ void draw(){
         }
         if (practiceint<1){
           p = sp[block];//prob left
-          r  = rl[rblock];//reach rl
+          r  = rl[rblock];//reach rl in pixel values
+          ru = rlu[rblock];// in cm
         }else{
           p = 1;//prob left
-          r  = rl[rblock];//reach rl          
+          r  = rl[rblock];//reach rl in pixel values
+          ru = rlu[rblock];// in cm
         }
         if (random(1) <=p){
           rpos = 1;//left
@@ -301,11 +365,21 @@ void draw(){
           y1 = y0 -r;
           x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
           y2 = y0 -r;
+          
+          x1u = x0u + (2*utgdx*(rpos-1))-utgdx;
+          y1u = y0u -ru;
+          x2u = x0u + (2*utgdx*(wpos-1))-utgdx;
+          y2u = y0u -ru;
         }else{
           x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
           y1 = y0 + (rpos-2)*r - abs((rpos-1)*(min(rl)));
           x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
           y2 = y0 + (wpos-2)*r - abs((wpos-1)*(min(rl)));
+          
+          x1u = x0u + (2*utgdx*(rpos-1))-utgdx;
+          y1u = y0u + (rpos-2)*ru - abs((rpos-1)*(min(rlu)));
+          x2u = x0u + (2*utgdx*(wpos-1))-utgdx;
+          y2u = y0u + (wpos-2)*ru - abs((wpos-1)*(min(rlu)));
         }
         ppos = rpos;
         rightorwrong = 1;
@@ -338,7 +412,11 @@ void draw(){
     case 3:
       fill(col[0]);
       ellipse(x0,y0,sd,sd);
-      optd = dist(x0,y0,x1,y1) - (sd+tgd)*0.5;
+      if (ultrasonicmode == 0){
+        optd = dist(x0,y0,x1,y1) - (sd+tgd)*0.5;
+      }else{
+        optd = dist(x0u,y0u,x1u,y1u) - (usd+utgd)*0.5;
+      }
       totd = cd + fd;
       ddif = totd-optd;
       maxpoints = maxpoints + 100;
@@ -350,10 +428,12 @@ void draw(){
         if (practiceint<1){
           //trialcnt++;
           if (trialcnt>0){
-          points = points + 100*((optd/totd))*pnt;
+          points = points + 300*((optd/totd))*pnt;//award points based on combination of right trial
+          //and user diff/optimal (MAY HAVE TO ADJUST WITH ULTRASONIC
+          
           // "timestamp, trialNum, blockWidth, reach, leftprob, playerpos, Rightorwrong, rpos, forageDist, totDist, optdist, diff, score";
-          data =time+","+ int(trialcnt)+","+ int(bw) + "," + (rindex[rblock] +1)+ "," + p + ","+ ppos + ","+ rightorwrong +","+rpos+","+int(fd)+"," + int(totd)
-            + "," + int(optd)+"," + int(ddif) + "," +int(points);
+          data = time+","+ int(trialcnt)+","+ int(bw) + "," + (rindex[rblock] +1)+ "," + p + ","+ ppos + ","+ rightorwrong +","+rpos+","+fd+"," + totd
+            + "," + optd+"," + ddif + "," +int(points);
             
           output.println(data);
           output.flush();
@@ -368,14 +448,17 @@ void draw(){
     break;
   }
 }
-//void keyPressed(){
+//void keyPressed(){ testing purposes
 //  if (show == true){
 //    fill(125,125,255);
 //    ellipse(x2,y2,5*tgd,5*tgd);
 //    text("rpos: "+rpos, (displayWidth*0.125), 300);
 //  }
 //}
-boolean oncircler(float cx, float cy, int cd){
+//==========================================================================
+//===============ONLINE SORTING==================================================
+//==========================================================================
+boolean oncircler(float cx, float cy, float cd){//if on correct target area
   float dx = cx- px;
   float dy = cy - py;
   if (sqrt(sq(dx) + sq(dy)) < cd/2){
@@ -384,7 +467,8 @@ boolean oncircler(float cx, float cy, int cd){
     return false;
   }
 }
-boolean oncirclew(float cx, float cy, int cd){
+boolean oncirclew(float cx, float cy, float cd){//if on wrong target area
+//bigger diameter than correct area
   float dx = cx- px;
   float dy = cy - py;
   if (sqrt(sq(dx) + sq(dy)) < cd/2){

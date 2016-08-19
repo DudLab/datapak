@@ -1,7 +1,9 @@
 
-% get filenames
+% GET DIRECTORY FOR TASK 1 TRIALDATA
 filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trialdata/';
+% GET DIRECTORY FOR TASK 1 TRAJECTORY DATA
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
+
 fnamesp = dir(strcat(filepathp,'*.csv'));
 fnames = dir(strcat(filepath,'*.csv'));
 nopos = 0;%0 = no positionstuff; 1 = yes
@@ -21,14 +23,17 @@ for k = 1:ns
 %       pd1 = csvread(strcat(filepathp,fnamep), 2,0);
     tpd1 = csvread(strcat(filepathp,fnamep), 2,0);
     if k < 2
+        %add column of to positiondata indicating subject number, then
+        %vertically concenate
         tpd = [tpd1(tpd1(:,1)<(1+(500*k)),:),repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])];
         ad1 = csvread(strcat(filepath,fname),2, 0);
     else
+        %add column of to positiondata indicating subject number, then
+        %vertically concenate
         tpd1(:,1) = tpd1(:,1)+500*(k-1);
         tpd = vertcat(tpd, [tpd1(tpd1(:,1)<(1+(500*k)),:),[repmat(k:k,[size(tpd1(tpd1(:,1)<(1+(500*k)),:),1),1])]]);
         ad1 = vertcat(ad1,ad(:,:,k));
     end
-%     np(k) = size(pd1,1);
 end
 legendcell{k+1} = 'avg';
 %trial data for task1 and 2
@@ -101,6 +106,7 @@ for k = 1:ns
         else
             td(:,:,t,k) = td1(:,:,t,k);
         end
+%       USING ONLINE SORTER
         if version == 1
         %   CORRECT
             idxc(t,k) = numel(find(td(:,6,t,k) == 1));
@@ -138,6 +144,7 @@ for k = 1:ns
             if version == 1
 %               PROB CHOOSE LEFT
 % old "timestamp, trialNum, blockWidth, position_number, LeftTriggerProbability, rightORwrong, Rewardposition, forageDistance, collectionDistance, totalDistance, optimalTotalDistance, Totaldifference, score"
+%               CHOOSE LEFT FROM ONLIEN SORTER
                 chleft(i,t,k) = ((sum((td(sdx:sl*i,6,t,k) == 1 & td(sdx:sl*i,7,t,k) == 1))) ...
                     + (sum((td(sdx:sl*i,6,t,k)== 0 & td(sdx:sl*i,7,t,k) == 2))))/sl;
                 pt(k,:,t,i) = reshape(((td1(sdx1:sl1*i,6,t,k)==1 & td1(sdx1:sl1*i,7,t,k)==1) ...
@@ -149,6 +156,7 @@ for k = 1:ns
             if version == 2
 %               PROB CHOOSE LEFT
             %            // "timestamp, trialNum, blockWidth, reach4, leftprob5, playerpos6, Rightorwrong7, rpos8, forageDist, totDist, optdist, diff, score";
+%               CHOOSE LEFT FROM ONLIEN SORTER
                 chleft(i,hval,k) = (numel(td((td(sdx:sl*i,6,t)== 1))))/sl;%1 = left
                 pt(k,:,hval,i) = reshape((td1(sdx1:sl1*i,6,t,k)==1),1,sl1);
 %                 pt(k,:,t,i) = reshape(cumsum(td(sdx1:sl1*i,6,t,k)==1)./reshape(1:(sl1),sl1,1),1,sl1);
@@ -233,6 +241,9 @@ figure(1);
 % Get strategies, e.t.c, and sort
 %=================================================================================
 %=================================================================================
+% IF USING ULTRASONIC SENSORS, CHECK VARIABLE DERIV(not that of local
+% function) TO SEE IF THRESHOLD IS TOO LOW, due to noise in ultrasonic
+% sensing
 if version == 1
     psorted = stratsort(tpd,ns,version,ad1);%get offline sorted data"true choice"
 end
