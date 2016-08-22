@@ -8,6 +8,7 @@ filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trial
 % GET DIRECTORY FOR TASK 1 TRAJECTORY DATA
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
 opalt = 0;%include opal model alongside user choice probability over time
+acv = 0.1;%ac value
 trajec = 1;% get user choice/right or wrong from offline trajectory sorter
 % 1 = get from trajectory analysis, 0= get from onlie sorter
 % =========================================================================
@@ -207,7 +208,6 @@ avg1 = sum(avg,2)/rn;
 %=================================================================================
 %get opal simulation for each test subject
 if opalt==1
-acv = 0.1;%ac value
 opaldata = opal(ad1,version,ns,acv);
 end
 %=================================================================================

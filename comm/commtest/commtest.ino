@@ -1,10 +1,10 @@
 
 //#include <NewPing.h>
-#define tp1 3
-#define ep1 2
-#define tp2 5
-#define ep2 4
-#define led1 6
+#define tp1 3//trigger pin of forward facing sensor
+#define ep1 2//echo pin of forward facing sensor
+#define tp2 5//trigger pin of leftward facing sensor
+#define ep2 4//echo pin of leftward facing sensor
+#define led1 6//led pin (optional)
 #define led2 7
 #define sn  2
 #define maxdist 300

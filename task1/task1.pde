@@ -14,7 +14,8 @@ import processing.net.*;
 import processing.serial.*;
 import javax.swing.*; 
 Serial myPort;  // The serial port
-
+PImage maus[];
+PImage grid;
 PrintWriter output;
 PrintWriter parameters;
 String inStr; 
@@ -40,6 +41,11 @@ IntList rp;//reach randomly shuffled
 int trialstate = 1;// forage, collect soforth
 int trialcnt = 0;
 int pnt;//points
+int ms =0;
+float angle=0;
+float a;
+float pva;
+float tva;
 int offset = displayHeight/20;
 float sd = displayWidth/20;//displayWidth/10;// startdiameter60
 float tgd = displayWidth/10;//targetdiameter150
@@ -89,8 +95,8 @@ int ultrasonicmode = 0;//IF USE ULTRASONIC SENSORS OR MOUSE
 // 1 = yes; 0 = no
 //THE FOLLOWING DIMENSIONS BELOW ARE PURELY EXAMPLES,
 //CHANGE THEM ACCORDING TO ULTRASONIC FINAL RIG
-//OH, remember to offset the ultrasonic sensors at least 3 cm from their respective
-//parallel walls, since minimum detection distance is approx 3 cm or so
+//Ensure that the ultrasonic sensor's miminum distances from their respective
+//parallel walls is at least 3 centimeters or so
 float boxwidth = 40;//width(cm) of rig box move area
 float boxlength = 80;//length(cm) of rig box move area
 //( dimension used for reachingforward)
@@ -105,7 +111,7 @@ float x1u;//correct target area x in cm
 float y1u;//correct target area y in cm
 float x2u;//incorrect target area x in cm
 float y2u;// incorrect target area x in cm
-float graphics = 0;//turn graphics on or off
+float graphics = 1;//turn graphics on or off
 //=============================================================================
 //=============================================================================
 int flickerint=0;
@@ -119,6 +125,8 @@ color start = color(255,0,0);
 color left = color(51,51,255);
 color right = color(255,255,51);
 color[] col = {color(255,0,0),color(51,51,255),color(255,255,51)};
+color asdf = color(255,0,0);
+color tg = color(125,125,255);
 long time = 0;
 long trigtime = 0;
 boolean show = true;
@@ -216,6 +224,22 @@ void setup(){
     x0 = displayWidth/2;//pixel coodrinates for start area x
     y0 = (displayHeight)-sd;//initial start area y  
   }
+//===========================================================
+//Graphics
+//===========================================================
+  grid = loadImage(sketchPath()+"/graphics/grid.jpg");
+  maus = new PImage[13];
+  pushMatrix();
+  for (int i =0; i<maus.length; i++){
+    maus[i] = loadImage(sketchPath()+"/graphics/maus"+ (i + 1) + ".png");
+    maus[i].resize(100,0);
+  } 
+  popMatrix();
+  if (displayWidth>grid.width || displayHeight>grid.height){
+  grid.resize(displayWidth,displayHeight);
+  }
+  imageMode(CENTER);
+//===========================================================
   println(rindex);
   println(sp);
   println(rlist);
@@ -250,9 +274,12 @@ void setup(){
 }
 void draw(){
   background(0);
+  image(grid,displayWidth/2,displayHeight/2);
   if (ultrasonicmode == 0){//no ultrasonic; only computer mouse
     px = mouseX;
     py = mouseY;
+    pvx = pmouseX;
+    pvy = pmouseY;
   }else{
       while (myPort.available() > 0) {
       myString = myPort.readStringUntil(lf);
@@ -269,6 +296,40 @@ void draw(){
       }
     }
   }
+  //===============================================================
+  //===============================================================
+//GRAPHICS
+  //===============================================================
+  //===============================================================
+  if (graphics==1){
+    if (ms > (2*maus.length)-1) ms =0;
+    a = atan2(py - pvy,px - pvx) +(PI/2);
+    if (tva != a){
+        pva = tva;
+        tva = a;
+    }
+    pushMatrix();
+    translate(px,py);
+    if (px==pvx&& py==pvy){
+      angle = pva; 
+      rotate(angle);
+      image(maus[0],0,0);
+      //cursor(maus[0]);
+    }else{
+     angle = a;
+     rotate(angle);
+     image(maus[round(ms/2)],0,0);
+     //cursor(maus[round(i/2)]);
+    }
+    popMatrix();
+  ms++;
+  fill(asdf);
+  }
+  ellipse(px,py,40,40);
+  //===============================================================
+  //===============================================================
+  //===============================================================
+  //===============================================================
   //text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
   //text("points:" +points, (displayWidth*0.125), 300);
   text("trial:" +trialcnt, (displayWidth*0.125), 320);//trial
