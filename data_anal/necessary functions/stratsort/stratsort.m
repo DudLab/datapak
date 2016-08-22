@@ -41,6 +41,8 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
             pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
             deriv = numel(findpeaks(movAv(abs(diff(NuoLi(:,1))./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1))),round(length(NuoLi)/12))));
             [a ,cdist, b] = distance2curve(NuoLi(:,:),mp(rnum,:));
+            %ignore ultra noisy trials, based on local minima/maxima of
+            %derivative of forage curve
             if deriv<30%MAY HAVE TO INCREASE IF USING ULTRASONIC SENSORS, WHICH HAVE FREQUENT NOISE
             if pthresh<0.5
                 pchoice = 1;%1 left
@@ -98,11 +100,12 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
                     strat = 3;%BEEZ N THE TRAP(LINE), haha bad pop culture reference
                 end
             end
-            psort(p,:) = [abs(pchoice-2); rw; strat; tl];%OUTPUT vector of:
+            psort(p,:) = [pchoice; rw; strat; tl];%OUTPUT vector of:
 %             choice (returned as 1 for left, 0 for right, right or wrong,
 %             strategy, and actual reach
             else
-                psort(p,:) = [abs(pchoice-2); rw; 9; 9];%OUTPUT vector for unknown strategy
+                psort(p,:) = [pchoice; rw; 9; 9];%OUTPUT vector for unknown strategy
+%                 abs(pchoice-2)
             end
         else
             if version == 1

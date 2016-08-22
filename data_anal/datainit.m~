@@ -9,7 +9,6 @@ filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trial
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
 opalt = 0;%include opal model alongside user choice probability over time
 trajec = 1;% get user choice/right or wrong from offline trajectory sorter
-% 1 = get from trajectory analysis, 0= get from onlie sorter
 % =========================================================================
 % =========================================================================
 
@@ -22,7 +21,6 @@ np = zeros(ns);
 rprob = [0.1,0.25,0.5, 0.75,0.9];
 halfac = zeros(2,ns);
 b = 50; %block
-cl = varycolor(ns+1);%use varycolor function
 clearvars tpd
 clearvars tpd1
 for k = 1:ns
@@ -97,19 +95,20 @@ for k = 1:ns
 %=================================================================================
 %=================================================================================
     if trajec == 1%if use trajectories to obtain data
-        ad(:,(version+5),k) = psorted((1+500*(k-1):500*k),2);
-        ad1((1+500*(k-1):500*k),(version+5)) = psorted((1+500*(k-1):500*k),2);
+        ad(:,(version+5)
+        if version == 1
+            
+        end
         if version == 2
-            ad(:,6,k) = psorted((1+500*(k-1):500*k),1);
-            ad1((1+500*(k-1):500*k),6) = psorted((1+500*(k-1):500*k),1);
+            
         end
     end
     if version == 1
-        pta(:,k) = ((ad(:,6,k)==1 & ad(:,7,k)==1) ...
-            | (ad(:,6,k)==0 & ad(:,7,k)==2));
+        pta(k,:) = reshape(((ad(:,6,k)==1 & ad(:,7,k)==1) ...
+            | (ad(:,6,k)==0 & ad(:,7,k)==2)),1,(size(ad,1)));
     end
     if version == 2
-        pta(:,k) = (ad(:,6,k)==1);
+        pta(k,:) = reshape(((ad(:,6,k)==1)),1,(size(ad,1)));
     end
 %=================================================================================
 %=================================================================================
@@ -398,8 +397,7 @@ for i = 1:ns
 %                 ,[1 0 0; 0 0 1; 1 .5 0;0 .8 0; 0 0.2 0.2; 0.8 0 0]...
 %                 ,[2,2,1,1,1,1,1,1]);
         plot(moveavg(cc,avgval), 'c');
-        plot(moveavg(pta(:,i),avgval),'k');
-%         plot(moveavg(psorted((1+500*(i-1):500*i),1),avgval),'k');%get user choice from trajectories
+        plot(moveavg(psorted((1+500*(i-1):500*i),1),avgval),'k');%get user choice from trajectories
         if opalt == 1
             plot(1:500,opaldata(:,i));
             legend(['reach' num2str(halfac(2,i))],' ',['reach' num2str(halfac(1,i))],...

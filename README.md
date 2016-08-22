@@ -7,7 +7,7 @@ The following programs are designed to collect data on various elements of human
 
 ##Task 1
 
-Task 1 collects data on how humans' decisions in reaching-based behavioral tasks are affected by reward, reaching distance, probabalistic inferral, and precision. This task involves human subjects using a computer mouse to move between a start/collection area and two probabalistically determined circular target areas. The five used probabilities are randomly shuffled initially and changed for each block of the experiment. For the first half of trials, two target areas are horizontally and vertically equidistant from the start/collection area. For the remainder of trials however, the left target area is moved vertically further from its original position.
+Task 1 collects data on how humans' decisions and forage strategies in reaching-based behavioral tasks are affected by reward, reaching distance, probabalistic inferral, and precision. This task involves human subjects using a computer mouse to move between a start/collection area and two probabalistically determined circular target areas. The five used probabilities are randomly shuffled initially and changed for each block of the experiment. For the first half of trials, two target areas are horizontally and vertically equidistant from the start/collection area. For the remainder of trials however, the left target area is moved vertically further from its original position.
 
 
 ##Task 2
@@ -16,7 +16,7 @@ Task 2 is designed to collect data on whether humans learn faster by reaching ou
  
 # Usage
 If utilizing ultrasonic sensors, first upload comm/commtest.ino to the arduino
-Ensure that 
+Ensure that the arduino's'pin 2 is connected to the "echo" of the forward facing sensor"
 Go to task1/task1.pde and change the variable "ultrasonicmode" to 1
 
 At the beginning of each task, test subjects are prompted by the computer to provide their names.
@@ -69,5 +69,13 @@ However, following the practice round, the rings are no longer visible; though, 
 #Data analysis code
 
 The required functions are stored in data_anal/necessary functions/
+
 please add them to the MATLAB search path
-In doing so, then
+In doing so, then change the variables in data_anal
+	filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trialdata/';
+	% GET DIRECTORY FOR TASK 1 TRAJECTORY DATA
+	filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
+	opalt = 0;%include opal model alongside user choice probability over time
+	trajec = 1;% get user choice/right or wrong from offline trajectory sorter
+	% 1 = get from trajectory analysis, 0= get from onlie sorter
+Do not mix up versions of the task; example data

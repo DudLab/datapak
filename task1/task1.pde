@@ -105,6 +105,7 @@ float x1u;//correct target area x in cm
 float y1u;//correct target area y in cm
 float x2u;//incorrect target area x in cm
 float y2u;// incorrect target area x in cm
+float graphics = 0;//turn graphics on or off
 //=============================================================================
 //=============================================================================
 int flickerint=0;
