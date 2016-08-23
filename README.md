@@ -7,27 +7,27 @@ The following programs are designed to collect data on various elements of human
 
 ##Task 1
 
-Task 1 collects data on how humans' decisions and forage strategies in reaching-based behavioral tasks are affected by reward, reaching distance, probabalistic inferral, and precision. This task involves human subjects using a computer mouse to move between a start/collection area and two probabalistically determined circular target areas. The five used probabilities are randomly shuffled initially and changed for each block of the experiment. For the first half of trials, two target areas are horizontally and vertically equidistant from the start/collection area. For the remainder of trials however, the left target area is moved vertically further from its original position.
-The reaches are shuffled for half of trials per session;
+Task 1 collects data on how humans' decisions and forage strategies in reaching-based behavioral tasks are affected by reward, reaching distance, probability of reward, and precision. This task involves human subjects using a controller to forage among two circular target areas for the reward-yielding one. The five used probabilities are randomly shuffled and changed for each block of the experiment. The reach for the left target area is also shuffled (different for each half of trials per session).
 
 ##Task 2
 
-Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward based. This task involves human subjects using a computer mouse or ultrasonic sensor rig to move outward from a start area onto 3 of equally spaced rings and back. Once on the correct ring area (which becomes invisible after the practice round) the player holds the up button, while keeping the mouse still. While this is being done, a bar will extend, denoting the length of minimum time needed to press the up key. If the up key is held down continually and the bar disappears, the subject is not over the correct area. Once the subject is on the correct ring area and meets the aforementioned conditions, the ring flashes, and the subject must move inward or outward, denoted by the text on the screen.  The spacing between rings is taken from a set of 3 existing distances, which are shuffled randomly and changed every block of trials.
+Task 2 is designed to collect data on whether humans learn faster by reaching outward or inward as well as their strategies. This task involves human subjects using a wheel computer mouse to move outward from a start area onto a specific ring area—on which the subjects move inwards to begin the next trial (resets mouse position to center). If subjects first move beyond the correct ring area, then inwards, the test subject must return inside the correct ring area then reach outwards again.
+The ring area grows outwards for 4 blocks, then shrinks inwards for 3 blocks.
  
 # Configuration of Task 1
 
 ## Using Ultrasonic sensors
 
 ###Ultrasonic configuration
-Make sure the ultrasonic rig has one ultrasonic sensor facing forward and one facing leftwards
-First, ensure that the Ultrasonic sensors are connected to the Arduino pins set forth in comm/commtest.ino
+Ensure the ultrasonic rig has one ultrasonic sensor facing forward and one facing leftwards
+Check that the Ultrasonic sensors are connected to the Arduino pins set forth in comm/commtest.ino
 (Or you can change the pin configuration in comm/commtest.ino)
 
 	#define tp1 3//trigger pin of forward facing sensor
 	#define ep1 2//echo pin of forward facing sensor
 	#define tp2 5//trigger pin of leftward facing sensor
 	#define ep2 4//echo pin of leftward facing sensor
-In doing so, upload comm/commtest.ino onto the Arduino (check bluetooth ports)	
+In doing so, then upload comm/commtest.ino onto the Arduino (check bluetooth ports)	
 
 ###Task 1 variables
 Then, go to task1/task1.pde and set `ultrasonicmode = 1` on line 88 to enable ultrasonic sensing.  
@@ -45,6 +45,9 @@ All that is further required is that the user press the 'play' button on the pro
 ##Graphics
 If you want to have some graphics, set `graphics = 1`
 Doing so will replace the cursor with an animated mouse and provide animations for right and wrong reaches
+
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/maus1.png " width="400" height="250" />
+<img src="https://github.com/bnhwa/datapak/blob/master/docs/maus2.png " width="400" height="250" />
 
 #Task 1
 ###STEP 1
@@ -116,7 +119,7 @@ In doing so, then change the variables in data_anal, e.g.,
 `filepathp` is the directory for `task1/DataBuffer/positiondata`
 setting `opalt` to 1 adds opal model simulation to user choice over time(trials) graph; setting it to 0 turns it off
 `acv` is the initial ac value for the OPAL model simulation
-setting `trajec` =1 gets test subject choice data (their choice /rightorwrong) from the trajectory analysis
-setting `trajec` =0 gets test subject choice data (their choice /rightorwrong)from task 1's online sorter
+setting `trajec = 1' gets test subject choice data (their choice /rightorwrong) from the trajectory analysis
+setting `trajec = 0' gets test subject choice data (their choice /rightorwrong)from task 1's online sorter
 	
 Do not mix up versions of the task; example data

@@ -427,11 +427,11 @@ void draw(){
     flickerint--;  
   }
   fill(255);
-    if (trialstate >= 2) {
+    if (trialstate == 2) {
     text("forage", (displayWidth*0.125), 300);
     //ellipse(x0, y0, sd, sd);
   }
-  if (trialstate >= 3) {
+  if (trialstate == 3) {
     text("go back to collection area", (displayWidth*0.125), 300);
     ellipse(x0, y0, sd, sd);
   }
@@ -535,6 +535,7 @@ void draw(){
     
     case 3://collection
       fill(col[0]);
+      nuke.pause();
       nuke.rewind();
       ellipse(x0,y0,sd,sd);
       if (rightorwrong==1){
