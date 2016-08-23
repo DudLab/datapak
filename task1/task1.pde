@@ -12,8 +12,18 @@ import java.awt.*;
 import java.util.*;
 import processing.net.*; 
 import processing.serial.*;
-import javax.swing.*; 
+import javax.swing.*;
+import processing.sound.*;
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
 Serial myPort;  // The serial port
+Minim minim;
+AudioPlayer [] death = new AudioPlayer[1];
+AudioPlayer nuke;
 PImage maus[];
 PImage explosion[];
 PImage grid;
@@ -252,6 +262,13 @@ void setup(){
   }
   imageMode(CENTER);
 //===========================================================
+//SOUNDS
+//===========================================================
+ minim = new Minim(this);
+ nuke = minim.loadFile(sketchPath()+"/graphics/sounds/nuke.mp3");
+ for (int i = 0; i<death.length; i++){
+   death[i] = minim.loadFile(sketchPath()+"/graphics/sounds/dead"+ (i+1)+".mp3");
+ }
   println(rindex);
   println(sp);
   println(rlist);
@@ -286,6 +303,7 @@ void setup(){
 }
 void draw(){
   background(0);
+  tint(255,255);
   image(grid,displayWidth/2,displayHeight/2);
   if (ultrasonicmode == 0){//no ultrasonic; only computer mouse
     px = mouseX;
@@ -329,6 +347,9 @@ void draw(){
         tva = a;
     }
     pushMatrix();
+    if (anreset==0 && anit>2){
+            tint(255,127);
+    }
     translate(px,py);
     if (px==pvx&& py==pvy){
       angle = pva; 
@@ -478,12 +499,17 @@ void draw(){
         if (anit<explosion.length*2-1 && anreset==1){
           anit++;
           if (anit<40){
+          nuke.play();
+          death[0].play();
+          death[0].rewind();
+          tint(255,255);
           image(explosion[round(anit/2)],x2,y2);
           }
         }else{
           anreset = 0;
         }
         if (anreset==0 && anit>2 && trialstate==2){
+          tint(255,255);
           image(explosion[19],x2,y2);
         }
         if (oncirclew(x2,y2,tgd)==true && graphics==1){//4*target diameter
@@ -505,6 +531,7 @@ void draw(){
     
     case 3:
       fill(col[0]);
+      nuke.rewind();
       ellipse(x0,y0,sd,sd);
       if (rightorwrong==1){
       image(cheese,x0,y0);
