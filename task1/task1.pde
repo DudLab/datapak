@@ -15,7 +15,9 @@ import processing.serial.*;
 import javax.swing.*; 
 Serial myPort;  // The serial port
 PImage maus[];
+PImage explosion[];
 PImage grid;
+PImage cheese;
 PrintWriter output;
 PrintWriter parameters;
 String inStr; 
@@ -112,9 +114,12 @@ float y1u;//correct target area y in cm
 float x2u;//incorrect target area x in cm
 float y2u;// incorrect target area x in cm
 float graphics = 1;//turn graphics on or off
+int maussize = 100;//size of grahpic animated mouse
 //=============================================================================
 //=============================================================================
 int flickerint=0;
+int anreset = 0;// reset animation
+int anit = 0;
 int rpos;//left or right
 int wpos;// wrongpos
 int ppos;
@@ -230,9 +235,16 @@ void setup(){
   grid = loadImage(sketchPath()+"/graphics/grid.jpg");
   maus = new PImage[13];
   pushMatrix();
+  cheese = loadImage(sketchPath()+"/graphics/cheese1.png");
+  cheese.resize(int(tgd/2),0);
   for (int i =0; i<maus.length; i++){
-    maus[i] = loadImage(sketchPath()+"/graphics/maus"+ (i + 1) + ".png");
-    maus[i].resize(100,0);
+    maus[i] = loadImage(sketchPath()+"/graphics/maus/maus"+ (i + 1) + ".png");
+    maus[i].resize(maussize,0);
+  }
+  explosion = new PImage[20];
+  for (int i =0; i<explosion.length; i++){
+    explosion[i] = loadImage(sketchPath()+"/graphics/explosion/explosion"+ (i + 1) + ".png");
+    explosion[i].resize(int(tgd*3),0);
   } 
   popMatrix();
   if (displayWidth>grid.width || displayHeight>grid.height){
@@ -280,7 +292,15 @@ void draw(){
     py = mouseY;
     pvx = pmouseX;
     pvy = pmouseY;
-  }else{
+  }else{//check here
+      if (tvx != pxu){//store previous frame x
+        pvx = tvx;
+        tvx = pxu;
+      }
+      if (tvy != pyu){//store previous frame y
+        pvy = tvy;
+        tvy = pyu;
+      }
       while (myPort.available() > 0) {
       myString = myPort.readStringUntil(lf);
       if (myString != null) {
@@ -304,7 +324,7 @@ void draw(){
   if (graphics==1){
     if (ms > (2*maus.length)-1) ms =0;
     a = atan2(py - pvy,px - pvx) +(PI/2);
-    if (tva != a){
+    if (tva != a){//value from previous frams
         pva = tva;
         tva = a;
     }
@@ -330,12 +350,13 @@ void draw(){
   //===============================================================
   //===============================================================
   //===============================================================
-  //text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
+  //text("anreset"+(anreset), (displayWidth*0.125), 280);
+    //text("reach"+(rindex[rblock] +1), (displayWidth*0.125), 280);
   //text("points:" +points, (displayWidth*0.125), 300);
   text("trial:" +trialcnt, (displayWidth*0.125), 320);//trial
   text("points:" +points, (displayWidth*0.125), 340);//points
   text("xu" +x0u, (displayWidth*0.125), 360);
-  //text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
+  text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
   //text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
   //==========================================================================
@@ -345,14 +366,6 @@ void draw(){
     dista = sqrt(sq(mouseX - pmouseX)+sq(mouseY - pmouseY));
   }else{
     //STORE PREVIOUS FRAME'S XY VALUE
-      if (tvx != pxu){
-        pvx = tvx;
-        tvx = pxu;
-      }
-      if (tvy != pyu){
-        pvy = tvy;
-        tvy = pyu;
-      }
     //IF USING NOISY ULTRASONIC SENSOR, may want to implement moving average/thresholder
     //to account for noisy/constantly changing xy values, which will increase distance drastically
     dista = sqrt(sq(pxu - pvx)+sq(pyu - pvy));
@@ -461,8 +474,22 @@ void draw(){
     break;
     
     case 2://forage
-      if (trialcnt <= maxtrials){       
-        if (oncirclew(x2,y2,5*tgd)==true){//4*target diameter
+      if (trialcnt <= maxtrials){
+        if (anit<explosion.length*2-1 && anreset==1){
+          anit++;
+          if (anit<40){
+          image(explosion[round(anit/2)],x2,y2);
+          }
+        }else{
+          anreset = 0;
+        }
+        if (anreset==0 && anit>2 && trialstate==2){
+          image(explosion[19],x2,y2);
+        }
+        if (oncirclew(x2,y2,tgd)==true && graphics==1){//4*target diameter
+          anreset=1;
+        }
+        if (oncirclew(x2,y2,4*tgd)==true){//4*target diameter
           ppos = wpos;
           rightorwrong = 0;
           pnt = 0;
@@ -471,6 +498,7 @@ void draw(){
           flickerint = 15;
           trigtime = millis();
           trialstate = 3;
+          //image(cheese,x1,y1);
         }
       }
     break;
@@ -478,6 +506,9 @@ void draw(){
     case 3:
       fill(col[0]);
       ellipse(x0,y0,sd,sd);
+      if (rightorwrong==1){
+      image(cheese,x0,y0);
+      }
       if (ultrasonicmode == 0){
         optd = dist(x0,y0,x1,y1) - (sd+tgd)*0.5;
       }else{
@@ -509,6 +540,7 @@ void draw(){
           fd = 0;
           totd = 0;
         }
+        anit = 0;
         trialstate = 1;
       }
     break;
