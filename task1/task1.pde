@@ -100,7 +100,7 @@ float r2;//reach2 in pixelvalues
 //=============================================================================
 //=============================================================================
 //ULTRASONICSTUFF: IMPORTANT
-//NEED TO IMPLEMENT SCALING OF ULTRASONIC INPUT in CM TO DISPLAY(pixel) COORDINATES
+//CHECK IMPLEMENTATION OF SCALING ULTRASONIC INPUT into CM TO DISPLAY(pixel) COORDINATES
 //=============================================================================
 //=============================================================================
 int ultrasonicmode = 0;//IF USE ULTRASONIC SENSORS OR MOUSE
@@ -310,7 +310,7 @@ void draw(){
     py = mouseY;
     pvx = pmouseX;
     pvy = pmouseY;
-  }else{//check here
+  }else{//check WITH ULTRASONIC IF IT WORKS, USE SOUNDPROOF FOAM TO PREVENT DETECTION OF PERPENDICULAR WALLS
       if (tvx != pxu){//store previous frame x
         pvx = tvx;
         tvx = pxu;
@@ -376,7 +376,7 @@ void draw(){
   //text("points:" +points, (displayWidth*0.125), 300);
   text("trial:" +trialcnt, (displayWidth*0.125), 320);//trial
   text("points:" +points, (displayWidth*0.125), 340);//points
-  text("xu" +x0u, (displayWidth*0.125), 360);
+  //text("xu" +x0u, (displayWidth*0.125), 360);
   text("rightorwrong: "+rightorwrong, (displayWidth*0.125), 380);
   //text("reach"+ r, (displayWidth*0.125), displayHeight-64);
   time = millis();
@@ -427,6 +427,10 @@ void draw(){
     flickerint--;  
   }
   fill(255);
+    if (trialstate >= 2) {
+    text("forage", (displayWidth*0.125), 300);
+    //ellipse(x0, y0, sd, sd);
+  }
   if (trialstate >= 3) {
     text("go back to collection area", (displayWidth*0.125), 300);
     ellipse(x0, y0, sd, sd);
@@ -460,17 +464,17 @@ void draw(){
           rpos = 2;//right
           wpos = 1;
         }
-        if ((rindex[rblock] +1)==1){
-          x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
-          y1 = y0 -r;
-          x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
-          y2 = y0 -r;
+        //if ((rindex[rblock] +1)==1){
+        //  x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
+        //  y1 = y0 -r;
+        //  x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
+        //  y2 = y0 -r;
           
-          x1u = x0u + (2*utgdx*(rpos-1))-utgdx;
-          y1u = y0u -ru;
-          x2u = x0u + (2*utgdx*(wpos-1))-utgdx;
-          y2u = y0u -ru;
-        }else{
+        //  x1u = x0u + (2*utgdx*(rpos-1))-utgdx;
+        //  y1u = y0u -ru;
+        //  x2u = x0u + (2*utgdx*(wpos-1))-utgdx;
+        //  y2u = y0u -ru;
+        //}else{
           x1 = x0 + (2*tgdx*(rpos-1))-tgdx;
           y1 = y0 + (rpos-2)*r - abs((rpos-1)*(min(rl)));
           x2 = x0 + (2*tgdx*(wpos-1))-tgdx;
@@ -480,13 +484,13 @@ void draw(){
           y1u = y0u + (rpos-2)*ru - abs((rpos-1)*(min(rlu)));
           x2u = x0u + (2*utgdx*(wpos-1))-utgdx;
           y2u = y0u + (wpos-2)*ru - abs((wpos-1)*(min(rlu)));
-        }
+        //}
         ppos = rpos;
         rightorwrong = 1;
         pnt = 1;
         fill(col[0]);
         ellipse(x0,y0,sd,sd);
-        if (oncircler(x0, y0, sd) == true){
+        if (oncircle(x0, y0, sd) == true){
           trialstate = 2;
         }
       }else{        
@@ -512,15 +516,15 @@ void draw(){
           tint(255,255);
           image(explosion[19],x2,y2);
         }
-        if (oncirclew(x2,y2,tgd)==true && graphics==1){//4*target diameter
+        if (oncircle(x2,y2,tgd)==true && graphics==1){//4*target diameter
           anreset=1;
         }
-        if (oncirclew(x2,y2,4*tgd)==true){//4*target diameter
+        if (oncircle(x2,y2,3*tgd)==true){//4*target diameter
           ppos = wpos;
           rightorwrong = 0;
           pnt = 0;
         }
-        if (oncircler(x1,y1,tgd)==true){
+        if (oncircle(x1,y1,tgd)==true){
           flickerint = 15;
           trigtime = millis();
           trialstate = 3;
@@ -529,7 +533,7 @@ void draw(){
       }
     break;
     
-    case 3:
+    case 3://collection
       fill(col[0]);
       nuke.rewind();
       ellipse(x0,y0,sd,sd);
@@ -545,7 +549,7 @@ void draw(){
       ddif = totd-optd;
       maxpoints = maxpoints + 100;
       //points = points + 100*((optd/totd))*pnt;
-      if (oncircler(x0, y0, sd) == true){
+      if (oncircle(x0, y0, sd) == true){
         if (practiceint>0){
           practiceint--;
         }
@@ -583,7 +587,7 @@ void draw(){
 //==========================================================================
 //===============ONLINE SORTING==================================================
 //==========================================================================
-boolean oncircler(float cx, float cy, float cd){//if on correct target area
+boolean oncircle(float cx, float cy, float cd){//if on correct target area
   float dx = cx- px;
   float dy = cy - py;
   if (sqrt(sq(dx) + sq(dy)) < cd/2){
@@ -592,13 +596,13 @@ boolean oncircler(float cx, float cy, float cd){//if on correct target area
     return false;
   }
 }
-boolean oncirclew(float cx, float cy, float cd){//if on wrong target area
-//bigger diameter than correct area
-  float dx = cx- px;
-  float dy = cy - py;
-  if (sqrt(sq(dx) + sq(dy)) < cd/2){
-    return true;
-  }else{
-    return false;
-  }
-}
+//boolean oncirclew(float cx, float cy, float cd){//if on wrong target area
+////bigger diameter than correct area
+//  float dx = cx- px;
+//  float dy = cy - py;
+//  if (sqrt(sq(dx) + sq(dy)) < cd/2){
+//    return true;
+//  }else{
+//    return false;
+//  }
+//}

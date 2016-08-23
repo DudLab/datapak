@@ -39,7 +39,14 @@ mp = [[mean(x),y(1)]; [mean(x),mean(y)]]%row is reach; smaller y=furtherreach
             NuoLi = ptrial1(([1; (sum(diff(ptrial1(:,(version+5):(version+6)))~=0,2))])~=0,...
                 (version+5):(version+6));%remove duplicate time-adjacent point [x,y]%fasterprocessing
             pthresh = sum(NuoLi(:,1)>lrb)/size(NuoLi,1);
-            deriv = numel(findpeaks(movAv(abs(diff(NuoLi(:,1))./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1))),round(length(NuoLi)/12))));
+            try
+                deriv = movAv(abs(diff(NuoLi(:,1))...
+                ./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1),round(length(NuoLi)/12))));
+            catch
+                deriv = 1;
+            end
+%             deriv = numel(findpeaks(movAv(abs(diff(NuoLi(:,1))...
+%                 ./diff(reshape(1:size(NuoLi,1),size(NuoLi,1),1))),round(length(NuoLi)/12))));
             [a ,cdist, b] = distance2curve(NuoLi(:,:),mp(rnum,:));
             %ignore ultra noisy trials, based on local minima/maxima of
             %derivative of forage curve
