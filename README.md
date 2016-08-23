@@ -99,9 +99,7 @@ However, following the practice round, the rings are no longer visible; though, 
 
 #Data analysis code
 ##Information
-`datainit.m` provides data analysis for task 1 (2 target task), including trajectory analysis, strategy analysis,
-choice over time compared to 2-choice simulation of OPAL model(average of 1000 trials)
-
+`datainit.m` provides data analysis for task 1 (2 target task)
 ##Configuration
 The required functions are stored in data_anal/necessary functions/
 please add them to the MATLAB search path
