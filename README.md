@@ -99,7 +99,13 @@ However, following the practice round, the rings are no longer visible; though, 
 
 #Data analysis code
 ##Information
-`datainit.m` provides data analysis for task 1 (2 target task)
+`datainit.m` provides data analysis for task 1 (2 target task) including the following:
+graph of test subject choice as a function of probability of reward (subplot for each reach and line for each subject, including one line for average across test subjects)
+graph of standard instantaneous mean of user choice over trials (separated by reach and reward probability)
+offline trajectory sorter, which yields analysis of strategy used (single movement, double reach, trapline), user choice, correct or incorrect
+graph of trajectory strategies across all test subjects.
+graph for each test subject: user choice (moving average), actual target area distribution (moving average), (moving average), strategies, and simulation of OPAL model (over 1000 trials)
+over time (trials)
 ##Configuration
 The required functions are stored in data_anal/necessary functions/
 please add them to the MATLAB search path
@@ -111,13 +117,20 @@ In doing so, then change the variables in data_anal, e.g.,
 	filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
 	opalt = 0;%include opal model alongside user choice probability over time
 	acv = 0.1;%ac value
+	half = 2;% (half=2) use second half of trials per block for user choice as function of probability
+	% and standard instatnaneous mean of user choice (separated into reaches
+	% and reward probabilities
+	% (half=1) use all trials for the aforementioned graphs
 	trajec = 1;% get user choice/right or wrong from offline trajectory sorter
 	
 `filepath` is the directory for `task1/DataBuffer/trialdata`
 `filepathp` is the directory for `task1/DataBuffer/positiondata`
 setting `opalt` to 1 adds opal model simulation to user choice over time(trials) graph; setting it to 0 turns it off
 `acv` is the initial ac value for the OPAL model simulation
-setting `trajec = 1' gets test subject choice data (their choice /rightorwrong) from the trajectory analysis
-setting `trajec = 0' gets test subject choice data (their choice /rightorwrong)from task 1's online sorter
+setting `half = 2` uses the second half of trials per block for user choice as function of probability
+and standard instatnaneous mean graphs.
+setting `half = 1` uses all trials for the aforementioned graphs
+setting `trajec = 1` gets test subject choice data (their choice /rightorwrong) from the trajectory analysis
+setting `trajec = 0` gets test subject choice data (their choice /rightorwrong)from task 1's online sorter
 	
 Do not mix up versions of the task; example data

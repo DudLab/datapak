@@ -9,6 +9,10 @@ filepath = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/trial
 filepathp = '/Users/hwab/Dropbox (HHMI)/2015-16 experiment/task1/DataBuffer/positiondata/';
 opalt = 0;%include opal model alongside user choice probability over time
 acv = 0.1;%ac value
+half = 2;% (half=2) take second half of trials for user choice as function of probability
+% and standard instatnaneous mean of user choice (separated into reaches
+% and reward probabilities
+% (half=1) take all trials
 trajec = 1;% get user choice/right or wrong from offline trajectory sorter
 % 1 = get from trajectory analysis, 0= get from onlie sorter
 % =========================================================================
@@ -47,7 +51,6 @@ for k = 1:ns
 end
 legendcell{k+1} = 'avg';
 %trial data for task1 and 2
-half = 2;
 colp = size(tpd,2);
 % colp = size(pd1,2);
 % mpd = max(np);
